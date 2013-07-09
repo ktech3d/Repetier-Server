@@ -47,7 +47,7 @@ class PrinterState {
     bool uploading;
     PrinterTemp bed;
     PrinterTemp* extruder;
-    double x, y, z, e,emax,f;
+    double x, y, z, e,emax,f,eprinter;
     double lastX,lastY,lastZ,lastE;
     double xOffset, yOffset, zOffset, eOffset;
     double lastZPrint;

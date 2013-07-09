@@ -587,6 +587,7 @@ namespace repetier {
                 pos2+=name.length()+3;
                 posclose = epos+ename.length()-2; // Continue after block
                 Value *v = findVariable(vars,name);
+                if(v!=NULL) {
                 if(cmd.length()==0) {
                     if(v!=NULL && v->type()==array_type) {
                         Array &a = v->get_array();
@@ -605,6 +606,7 @@ namespace repetier {
                     if(!v->get_bool()) {
                         FillTemplateRecursive(text, result, vars, pos2, epos);
                     }
+                }
                 }
             } else if(tp=='!') { // Comment, simply ignore it
             } else { // Variable

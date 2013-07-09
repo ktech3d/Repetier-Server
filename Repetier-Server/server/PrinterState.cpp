@@ -43,7 +43,7 @@ void PrinterState::reset() {
     bed.tempSet = bed.tempRead = 0;
     x = y = z = e = emax = 0;
     f = 1000;
-    lastX = lastY = lastZ = lastE = 0;
+    lastX = lastY = lastZ = lastE = eprinter = 0;
     xOffset = yOffset = zOffset = eOffset = 0;
     fanOn = false;
     fanVoltage = 0;
@@ -112,12 +112,13 @@ void PrinterState::analyze(GCode &code)
                     if (relative)
                     {
                         if(code.hasX()) x += code.getX();
-                            if(code.hasY()) y += code.getY();
-                                if(code.hasZ()) z += code.getZ();
-                                    if(code.hasE()) {
-                                        eChanged = code.getE()!=0;
-                                        e += code.getE();
-                                    }
+                        if(code.hasY()) y += code.getY();
+                        if(code.hasZ()) z += code.getZ();
+                        if(code.hasE()) {
+                            eChanged = code.getE()!=0;
+                            e += code.getE();
+                            eprinter += code.getE();
+                        }
                     }
                     else
                     {
@@ -131,9 +132,11 @@ void PrinterState::analyze(GCode &code)
                             if (eRelative) {
                                 eChanged = code.getE()!=0;
                                 e += code.getE();
+                                eprinter += code.getE();
                             } else {
                                 eChanged = (eOffset+code.getE())!=e;
                                 e = eOffset + code.getE();
+                                eprinter = code.getE();
                             }
                         }
                     }
@@ -193,7 +196,7 @@ void PrinterState::analyze(GCode &code)
                 if (code.hasX()) { xOffset = x-code.getX(); x = xOffset; }
                 if (code.hasY()) { yOffset = y-code.getY(); y = yOffset; }
                 if (code.hasZ()) { zOffset = z-code.getZ(); z = zOffset; }
-                if (code.hasE()) { eOffset = e-code.getE(); lastE = e = eOffset; }
+                if (code.hasE()) { eOffset = e-code.getE(); lastE = e = eOffset; eprinter = code.getE();}
                 break;
         }
     }
@@ -419,7 +422,7 @@ std::string PrinterState::getMoveZCmd(double dz,double f) {
 std::string PrinterState::getMoveECmd(double de,double f) {
     mutex::scoped_lock l(mutex);
     char buf[100];
-    sprintf(buf,"G1 E%.2f F%.0f",relative || eRelative ? de : e+de,f);
+    sprintf(buf,"G1 E%.2f F%.0f",relative || eRelative ? de : eprinter+de,f);
     return string(buf);    
 }
 void PrinterState::setIsathome() {

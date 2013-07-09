@@ -93,7 +93,7 @@ some printer this works and for some not. So if 250000 baud does not work try 11
 === Linux ====
 
 The device name /dev/ttyUSBxx may change depending on the order the printer is enabled.
-Use instead the /dev(serial/by-id name like this for a device:
+Use instead the /dev/serial/by-id name like this for a device:
 /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A800f4AP-if00-port0
 At least if you always use the save ports/hub ports. Or create a mapping to a individual
 name with udevadm.
