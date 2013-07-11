@@ -59,7 +59,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-c /Users/littwin/Documents/Projekte/Repetier-Server/Repetier-Server/repetier-server.conf"
+            argument = "--config=/Users/littwin/Documents/Projekte/Repetier-Server/Repetier-Server/repetier-server.conf"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

@@ -20,9 +20,33 @@
 #define __Repetier_Server__WebserverAPI__
 
 #include <iostream>
+#include "Poco/Net/HTTPRequestHandler.h"
+#include "Poco/Net/HTTPRequestHandlerFactory.h"
+#include "Poco/Net/HTTPServerParams.h"
+#include "Poco/Net/HTTPServerRequest.h"
+#include "Poco/Net/HTTPServerResponse.h"
+#include <map>
+
 namespace repetier {
-    extern void HandleWebrequest(struct mg_connection *conn);
-    extern void* HandlePagerequest(struct mg_connection *conn);
+    
+    class MainRequestHandler : public Poco::Net::HTTPRequestHandler
+    {
+    public:
+        virtual void handleRequest(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp);
+        static void StaticResponse(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp);
+        static void PHPResponse(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp);
+        static void serverError(Poco::Net::HTTPServerResponse &resp);
+        static void notFoundError(Poco::Net::HTTPServerResponse &resp);
+        static void registerActionHandler(std::string name,Poco::Net::HTTPRequestHandler* action);
+    private:
+        static std::map<std::string, Poco::Net::HTTPRequestHandler*> actionMap;
+    };
+    class PrinterRequestHandler : public Poco::Net::HTTPRequestHandler
+    {
+    public:
+        virtual void handleRequest(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp);
+    };
+    extern PrinterRequestHandler printerRequestHandler;
     /** Load the given file and translate contents. Store the translated file
      in a string. Function is thread safe.
      @param filename File to load and translate.
@@ -30,8 +54,7 @@ namespace repetier {
      @param result File content as translated string.
      */
     extern void TranslateFile(const std::string &filename,const std::string &lang,std::string& result);
-    extern bool MG_getVar(const mg_request_info *info,const char *name, std::string &output);
-    extern bool MG_getPostVar(char *buf,int buflen,const mg_request_info *info,const char *name, std::string &output);
+;
     extern bool doesLanguageExist(std::string lang);
 }
 

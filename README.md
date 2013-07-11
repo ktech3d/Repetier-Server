@@ -1,5 +1,11 @@
 # Repetier-Server
 
+## About development version
+
+I'm currently exchanging the gui and some libraries. Currently it only compiles with the xcode compiler on mac.
+The CMake files get adjusted after I'm through with all changes.
+You also need the poco library (http://pocoproject.org/) to compile the sources.
+
 ## Objective
 
 The aim of this server is it, to offer a link between 3d printer and host software.

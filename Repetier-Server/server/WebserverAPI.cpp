@@ -15,11 +15,17 @@
  limitations under the License.
  */
 
-#include "mongoose.h"
 #include "WebserverAPI.h"
 #include "global_config.h"
 #include "printer.h"
 #include "json_spirit.h"
+#include "Poco/URI.h"
+#include "Poco/Path.h"
+#include "Poco/File.h"
+#include "Poco/DynamicAny.h"
+#include "Poco/StreamCopier.h"
+#include "Poco/Net/HTMLForm.h"
+#include "Poco/Net/PartHandler.h"
 #include <map>
 #include <set>
 #include "moFileReader.h"
@@ -36,10 +42,14 @@
 #if defined(_WIN32)
 #include <io.h>
 #endif
+#include "Poco/CountingStream.h"
 
 using namespace std;
 using namespace json_spirit;
 using namespace boost;
+using namespace Poco;
+using namespace Poco::Net;
+using Poco::CountingInputStream;
 
 #if defined(_WIN32) && !defined(__SYMBIAN32__) // Windows specific
 #pragma warning( disable : 4996 )
@@ -84,137 +94,168 @@ using namespace boost;
 #endif
 
 namespace repetier {
-    static const char *HTTP_500 = "HTTP/1.0 500 Server Error\r\n\r\n";
     
-	char *mystrnstr(const char *s,const char *needle,int len) {
-		int ln = (int)strlen(needle);
-		if(!ln) return (char*)s;
-		char *s2 = (char *)s;
-		for(int o=0;o<len-ln;o++) {
-			s2 = (char*)&s[o];
-			bool ok = true;
-			for(int j=0;j<ln && ok;j++) {
-				ok = s2[j]==needle[j];
-			}
-			if(ok) return s2;
-		}
-		return NULL;
-	}
-
-    // Modified verion from mongoose examples
-    bool handleFileUpload(struct mg_connection *conn,const string& filename,string& name,long &size,bool append) {
-        name.clear();
-        const char *cl_header;
-        char post_data[16 * 1024],  file_name[1024], mime_type[100],boundary[100],
-        buf[BUFSIZ*2], *eop, *s, *p;
-        // char path[999];
-        FILE *fp;
-        long long int cl, written;
-        int fd, n, post_data_len;
-        
-        // Figure out total content length. Return if it is not present or invalid.
-        cl_header = mg_get_header(conn, "Content-Length");
-        if (cl_header == NULL || (cl = strtoll(cl_header, NULL, 10)) <= 0) {
-            mg_printf(conn, "%s%s", HTTP_500, "Invalid Content-Length");
-            return false;
+    PrinterRequestHandler printerRequestHandler;
+    
+    class MyPartHandler: public Poco::Net::PartHandler
+    {
+        static int counter;
+    public:
+        MyPartHandler():
+		_length(0)
+        {
         }
-        
-        // Read the initial chunk into memory. This should be multipart POST data.
-        // Parse headers, where we should find file name and content-type.
-        post_data_len = mg_read(conn, post_data, sizeof(post_data));
-        file_name[0] = mime_type[0] = '\0';
-        for (s = p = post_data; p < &post_data[post_data_len]; p++) {
-            if (p[0] == '\r' && p[1] == '\n') {
-                if (s == p && *file_name) {
-                    p += 2;
-                    break;  // End of headers
+        ~MyPartHandler() {
+            if(_storage.isFile()) {
+                File file(_storage);
+                if(file.exists() && file.isFile())
+                    file.remove(); // Cleanup if nobody used the file
                 }
-                p[0] = p[1] = '\0';
-                sscanf(s, "Content-Type: %99s", mime_type);
-                // TODO(lsm): don't expect filename to be the 3rd field,
-                // parse the header properly instead.
-                sscanf(s, "Content-Disposition: %*s %*s filename=\"%1023[^\"]",
-                       file_name);
-                s = p + 2;
+        }
+        void handlePart(const MessageHeader& header, std::istream& stream)
+        {
+            _type = header.get("Content-Type", "(unspecified)");
+            if (header.has("Content-Disposition"))
+            {
+                std::string disp;
+                NameValueCollection params;
+                MessageHeader::splitParameters(header["Content-Disposition"], disp, params);
+                _name = params.get("name", "(unnamed)");
+                _fileName = params.get("filename", "(unnamed)");
             }
+            counter++;
+            _storage = Path(Path::temp(), std::string("upload")+NumberFormatter::format(counter)+".bin");
+            
+            CountingInputStream istr(stream);
+            ofstream ostr(_storage.toString().c_str());
+            StreamCopier::copyStream(istr, ostr);
+            _length = istr.chars();
         }
-        if(strlen(post_data)>100) {
-            mg_printf(conn, "%s%s", HTTP_500, "Boundary too long");
-            return false;
-        }
-        boundary[0] = '\r';
-        boundary[1] = '\n';
-        strcpy(&boundary[2],post_data);
-        // Finished parsing headers. Now "p" points to the first byte of data.
-        // Calculate file size
-        cl -= p - post_data;      // Subtract headers size
-                                  // cl -= strlen(post_data);  // Subtract the boundary marker at the end
-                                  //   cl -= 6;                  // Subtract "\r\n" before and after boundary
         
-        // Construct destination file name. Write to /tmp, do not allow
-        // paths that contain slashes.
-        /*if ((s = strrchr(file_name, '/')) == NULL) {
-            s = file_name;
+        int length() const
+        {
+            return _length;
         }
-        snprintf(path, sizeof(path), "/tmp/%s", s);*/
         
-        if (file_name[0] == '\0') {
-            mg_printf(conn, "%s%s", HTTP_500, "Can't get file name");
-        } else if (cl <= 0) {
-            mg_printf(conn, "%s%s", HTTP_500, "Empty file");
-        } else if ((fd = myopen(filename.c_str(), O_CREAT | (append ? O_APPEND : O_TRUNC) |
-                              O_RDWR /*| O_WRONLY | O_EXLOCK | O_CLOEXEC*/,0666)) < 0) {
-            // We're opening the file with exclusive lock held. This guarantee us that
-            // there is no other thread can save into the same file simultaneously.
-            mg_printf(conn, "%s%s", HTTP_500, "Cannot open file");
-        } else if ((fp = fdopen(fd,(append ? "a+" : "w"))) == NULL) {
-            mg_printf(conn, "%s%s", HTTP_500, "Cannot reopen file stream");
-            myclose(fd);
-        } else {
-            bool finished = false;
-            name = file_name;
-            int boundlen = (int)strlen(boundary);
-            // Success. Write data into the file.
-            eop = post_data + post_data_len;
-            n = p + cl > eop ? (int) (eop - p) : (int) cl;
-            char *p2 = mystrnstr(p,boundary,n);
-            size_t startnew = 0;
-            if(p2!=NULL) { // End boundary detected
-                finished = true;
-                n = (int)(p2-p);
-            } else if(n>boundlen) {
-                n-=boundlen;
-                startnew = boundlen;
-            }
-            (void) fwrite(p, 1, n, fp);
-            written = n;
-            if(!finished)
-                memcpy(buf,&p[n],boundlen);
-            while (!finished && written < cl &&
-                   (n = mg_read(conn, &buf[startnew],(size_t)( cl - written > sizeof(buf)-startnew ?
-                                sizeof(buf)-startnew : cl - written))) > 0) {
-                n+=startnew;
-                p2 = mystrnstr(buf,boundary,n);
-                startnew = 0;
-                if(p2!=NULL) { // End boundary detected
-                    finished = true;
-                    n = (int)(p2-buf);
-                } else if(n>boundlen) {
-                    n-=boundlen;
-                    startnew = boundlen;
-                }
-
-                (void) fwrite(buf, 1, n, fp);
-                written += n;
-                if(!finished)
-                    memcpy(buf,&buf[n],boundlen);
-            }
-            (void) fclose(fp);
-            size = (long)written;
-            return true;
+        const std::string& name() const
+        {
+            return _name;
         }
-        return false;
+        
+        const std::string& fileName() const
+        {
+            return _fileName;
+        }
+        
+        const std::string& contentType() const
+        {
+            return _type;		
+        }
+        const Path& storage() const {
+            return _storage;
+        }
+    private:
+        int _length;
+        std::string _type;
+        std::string _name;
+        std::string _fileName;
+        Path _storage;
+    };
+    int MyPartHandler::counter = 0;
+    
+    std::map<std::string, Poco::Net::HTTPRequestHandler*> MainRequestHandler::actionMap;
+    
+    void MainRequestHandler::handleRequest(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp) {
+        string uriString = req.getURI();
+        size_t endp = uriString.find_first_of('?');
+        if(endp!=string::npos)
+            uriString = uriString.substr(0,endp);
+        Path path(uriString);
+        string extension = path.getExtension();
+        if(extension == "php" || req.getURI().length()<2) {
+            PHPResponse(req, resp);
+            return;
+        }
+        Poco::URI uri(req.getURI());
+        vector<string>::iterator it,end;
+        vector<string> segments;
+        uri.getPathSegments(segments);
+        string &base =segments[0];
+        map<string,HTTPRequestHandler*>::iterator itHandler = actionMap.find(base);
+        if(itHandler != actionMap.end())
+            (*itHandler).second->handleRequest(req,resp);
+        else
+            StaticResponse(req, resp);
     }
+    void MainRequestHandler::serverError(Poco::Net::HTTPServerResponse &resp) {
+        
+    }
+    void MainRequestHandler::notFoundError(Poco::Net::HTTPServerResponse &resp) {
+        ostream& out = resp.send();
+        resp.setStatus(HTTPResponse::HTTP_NOT_FOUND);
+        resp.setContentType("text/plain");
+        out << "Requested file not found.";
+        out.flush();
+    }
+    void MainRequestHandler::registerActionHandler(std::string name,Poco::Net::HTTPRequestHandler* action) {
+        actionMap[name] = action;
+    }
+
+    void MainRequestHandler::StaticResponse(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp) {
+        ostream& out = resp.send();
+        Poco::URI uri(req.getURI());
+        vector<string>::iterator it,end;
+        vector<string> segments;
+        uri.getPathSegments(segments);
+        it = segments.begin();
+        end = segments.end();
+        cout << "Segment count " << segments.size() << endl;
+        for(;it!=end;++it) {
+            cout << "Parsed " << *it << endl;
+        }
+        string path = uri.getPath();
+        Path filePath = Path(gconfig->getWebsiteRoot()).append(path);
+        File file(filePath);
+        if(!file.exists() || !file.isFile()) {
+            notFoundError(resp);
+            return;
+        }
+        cout << "File " << filePath.toString() << endl;
+        size_t extPos = path.find_last_of('.');
+        string extension = "php";
+        if(extPos!=string::npos) extension = path.substr(extPos+1);
+        cout << "Extension = " << extension << endl;
+        resp.setStatus(HTTPResponse::HTTP_OK);
+        if(extension=="php" || extension=="html")
+            resp.setContentType("text/html; charset=utf-8");
+        else if(extension=="jpg")
+            resp.setContentType("image/jpeg");
+        else if(extension=="png")
+            resp.setContentType("image/png");
+        else if(extension=="gif")
+            resp.setContentType("image/gif");
+        else if(extension=="css")
+            resp.setContentType("text/css");
+        else if(extension=="js")
+            resp.setContentType("application/javascript");
+        else if(extension=="woff")
+            resp.setContentType("application/font-woff");
+        else if(extension=="otf")
+            resp.setContentType("application/octet-stream");
+        else if(extension=="eot")
+            resp.setContentType("application/vnd.ms-fontobject");
+        else if(extension=="ttf")
+            resp.setContentType("application/octet-stream");
+        else if(extension=="svg")
+            resp.setContentType("image/svg+xml");
+        else
+            resp.setContentType("text/plain");
+        resp.setContentLength(file.getSize());
+        ifstream in(filePath.toString().c_str());
+        StreamCopier::copyStream(in,out);
+        out.flush();
+    }
+    
     void listPrinter(Object &ret) {
         Array parr;
         std::vector<Printer*> *list = &gconfig->getPrinterList();
@@ -233,24 +274,23 @@ namespace repetier {
         gconfig->fillJSONMessages(msg);
         ret.push_back(Pair("messages",msg));
     }
-    void HandleWebrequest(struct mg_connection *conn) {
-        mg_printf(conn, "HTTP/1.0 200 OK\r\n"
-                  "Cache-Control:public, max-age=0\r\n"
-                  "Server: Repetier-Server\r\n"
-                  "Content-Type: text/html; charset=utf-8\r\n\r\n");
-        const struct mg_request_info *ri = mg_get_request_info(conn);
+    void PrinterRequestHandler::handleRequest(HTTPServerRequest &req, HTTPServerResponse &resp) {
+        MyPartHandler partHandler;
+        HTMLForm form(req,req.stream(),partHandler);
+        resp.setStatus(HTTPResponse::HTTP_OK);
+        resp.setContentType("Content-Type: text/html; charset=utf-8");
+        resp.set("Cache-Control", "public, max-age=0");
+        ostream& out = resp.send();
+        Poco::URI uri(req.getURI());
+        vector<string> segments;
+        uri.getPathSegments(segments);
+        
         // First check the path for its parts
-        int start(9); // /printer/
-        int end(9);
         string error;
         Printer *printer = NULL;
-        const char* uri = ri->uri;
-        while(uri[end] && uri[end]!='/') end++;
-        string cmdgroup(&uri[start],end-start);
-        if(uri[end]) { // Read printer string
-            start = end = end+1;
-            while(uri[end] && uri[end]!='/') end++;
-            printer = gconfig->findPrinterSlug(string(&uri[start],end-start));        
+        string cmdgroup = (segments.size()>1 ? segments[1] : "");
+        if(segments.size()>2) { // Read printer string
+            printer = gconfig->findPrinterSlug(segments[2]);
         }
         Object ret;
         if(cmdgroup=="list") {
@@ -258,8 +298,7 @@ namespace repetier {
         } else if(printer==NULL) {
             error = "Unknown printer";
         } else if(cmdgroup=="job") {
-            string a;
-            MG_getVar(ri,"a",a);
+            string a = form.get("a","");
             if(a=="list") {
                 printer->getJobManager()->fillSJONObject("data",ret);
                 Array msg;
@@ -269,29 +308,29 @@ namespace repetier {
 #ifdef DEBUG
                 cout << "Upload job" << endl;
 #endif
-                string name,jobname;
-                long size;
-                MG_getVar(ri,"name", jobname);
+                string name,jobname = form.get("name");
                 PrintjobPtr job = printer->getJobManager()->createNewPrintjob(jobname);
-                handleFileUpload(conn,job->getFilename(), name,size,false);
+                File file(partHandler.storage());
+                file.renameTo(job->getFilename());
+                long size=partHandler.length();
                 printer->getJobManager()->finishPrintjobCreation(job,name,size);
                 printer->getJobManager()->fillSJONObject("data",ret);
 #ifdef DEBUG
                 cout << "Name:" << name << " Size:" << size << endl;
 #endif
             } else if(a=="remove") {
-                string sid;
-                if(MG_getVar(ri,"id",sid)) {
-                    int id = atoi(sid.c_str());
+                DynamicAny sid(form.get("id",""));
+                if(!sid.isNumeric()) {
+                    int id = sid.convert<int>();
                     PrintjobPtr job = printer->getJobManager()->findById(id);
                     if(job.get())
                         printer->getJobManager()->RemovePrintjob(job);
                 }
                 printer->getJobManager()->fillSJONObject("data",ret);
             } else if(a=="start") {
-                string sid;
-                if(MG_getVar(ri,"id",sid)) {
-                    int id = atoi(sid.c_str());
+                DynamicAny sid(form.get("id",""));
+                if(!sid.isNumeric()) {
+                    int id = sid.convert<int>();
                     PrintjobPtr job = printer->getJobManager()->findById(id);
                     if(job.get()) {
                         printer->getJobManager()->startJob(id);
@@ -299,9 +338,9 @@ namespace repetier {
                 }
                 printer->getJobManager()->fillSJONObject("data",ret);
             } else if(a=="stop") {
-                string sid;
-                if(MG_getVar(ri,"id",sid)) {
-                    int id = atoi(sid.c_str());
+                DynamicAny sid(form.get("id",""));
+                if(!sid.isNumeric()) {
+                    int id = sid.convert<int>();
                     PrintjobPtr job = printer->getJobManager()->findById(id);
                     if(job.get()) {
                         printer->getJobManager()->killJob(id);
@@ -311,37 +350,36 @@ namespace repetier {
                 printer->getJobManager()->fillSJONObject("data",ret);                
             }
         } else if(cmdgroup=="model") {
-            string a;
-            MG_getVar(ri,"a",a);
+            string a(form.get("a",""));
             if(a=="list") {
                 printer->getModelManager()->fillSJONObject("data",ret);
             } else if(a=="upload") {
 #ifdef DEBUG
                 cout << "Upload model" << endl;
 #endif
-                string name,jobname;
-                long size=0;
-                MG_getVar(ri,"name", jobname);
+                string name,jobname(form.get("name",""));
                 PrintjobPtr job = printer->getModelManager()->createNewPrintjob(jobname);
-                handleFileUpload(conn,job->getFilename(), name,size,false);
+                File file(partHandler.storage());
+                file.renameTo(job->getFilename());
+                long size=partHandler.length();
                 printer->getModelManager()->finishPrintjobCreation(job,name,size);
                 printer->getModelManager()->fillSJONObject("data",ret);
 #ifdef DEBUG
                 cout << "Name:" << name << " Size:" << size << endl;
 #endif
             } else if(a=="remove") {
-                string sid;
-                if(MG_getVar(ri,"id",sid)) {
-                    int id = atoi(sid.c_str());
+                DynamicAny sid(form.get("id",""));
+                if(!sid.isNumeric()) {
+                    int id = sid.convert<int>();
                     PrintjobPtr job = printer->getModelManager()->findById(id);
                     if(job.get())
                         printer->getModelManager()->RemovePrintjob(job);
                 }	
                 printer->getModelManager()->fillSJONObject("data",ret);
             } else if(a=="copy") {
-                string sid;
-                if(MG_getVar(ri,"id",sid)) {
-                    int id = atoi(sid.c_str());
+                DynamicAny sid(form.get("id",""));
+                if(!sid.isNumeric()) {
+                    int id = sid.convert<int>();
                     PrintjobPtr model = printer->getModelManager()->findById(id);
                     if(model.get()) {
                         PrintjobPtr job = printer->getJobManager()->createNewPrintjob(model->getName());
@@ -362,61 +400,40 @@ namespace repetier {
                 printer->getJobManager()->fillSJONObject("data",ret);
             }
         } else if(cmdgroup=="script") {
-            string a;
-            MG_getVar(ri,"a",a);
+            string a(form.get("a",""));
             if(a=="list") {
                 printer->getScriptManager()->fillSJONObject("data",ret);
-            } if(a=="") {
-                const int MAX_VAR_LEN = 256*1024;
-                char buffer[MAX_VAR_LEN+1];
-                int post_data_len = mg_read(conn, buffer, MAX_VAR_LEN);
-                MG_getPostVar(buffer,post_data_len,ri,"a",a);
-                if(a=="save") {
-                    string name,jobname;
-                    MG_getPostVar(buffer,post_data_len,ri,"f", jobname);
-                    PrintjobPtr job = printer->getScriptManager()->findByName(jobname);
-                    string text;
-                    MG_getPostVar(buffer,post_data_len,ri,"text", text);
-                    try {
-                        ofstream out;
-                        out.open(job->getFilename().c_str());
-                        out << text;
-                        out.close();
-                    } catch(std::exception &ex) {
-                        RLog::log("Error writing script: @",static_cast<const string>(ex.what()));
-                    }
-                } else if(a=="load") {
-                    string name;
-                    if(MG_getPostVar(buffer,post_data_len,ri,"f",name)) {
-                    PrintjobPtr job = printer->getScriptManager()->findByName(name);
-                    if(job.get()) {
-                        try {
-                            ifstream in;
-                            in.open(job->getFilename().c_str());
-                            char buf[200];
-                            while(!in.eof()) {
-                                in.getline(buf, 200); // Strips \n
-                                size_t l = strlen(buf);
-                                if(buf[l]=='\r')
-                                    buf[l] = 0;
-                                    mg_printf(conn,"%s\n",buf);
-                                }
-                                in.close();
-                            } catch(std::exception &ex) {
-                                RLog::log("Error reading script: @",static_cast<string>(ex.what()));
-                            }
-                        }
-                    }
-                    return;
+            } else if(a=="save") {
+                string name,jobname(form.get("f",""));
+                PrintjobPtr job = printer->getScriptManager()->findByName(jobname);
+                string text(form.get("text",""));
+                try {
+                    ofstream out;
+                    out.open(job->getFilename().c_str());
+                    out << text;
+                    out.close();
+                } catch(std::exception &ex) {
+                    RLog::log("Error writing script: @",static_cast<const string>(ex.what()));
                 }
+            } else if(a=="load") {
+                string name(form.get("f",""));
+                PrintjobPtr job = printer->getScriptManager()->findByName(name);
+                if(job.get()) {
+                    try {
+                        ifstream in;
+                        in.open(job->getFilename().c_str());
+                        StreamCopier::copyStream(in,out);
+                    } catch(std::exception &ex) {
+                        RLog::log("Error reading script: @",static_cast<string>(ex.what()));
+                    }
+                }
+                return;
             }
         } else if(cmdgroup=="msg") {
-            string a;
-            string sid;
-            MG_getVar(ri,"a",a);
-            MG_getVar(ri,"id",sid);
+            string a(form.get("a",""));
+            DynamicAny sid(form.get("id",""));
             int id = 0;
-            if(sid.length()>0) id = atoi(sid.c_str());
+            if(sid.isNumeric()) id = sid.convert<int>();
             if(a=="unpause") {
                 printer->stopPause();
             }
@@ -427,11 +444,10 @@ namespace repetier {
                 ret.push_back(Pair("messages",msg));
             }
         } else if(cmdgroup == "pconfig") {
-            string a;
-            MG_getVar(ri,"a",a);
+            string a(form.get("a",""));
             if(a=="active") {
-                string mode;
-                if(MG_getVar(ri, "mode",mode)) {
+                string mode(form.get("mode",""));
+                if(!mode.empty()) {
                     printer->setActive(mode=="1");
                 }
                 listPrinter(ret);
@@ -440,18 +456,18 @@ namespace repetier {
             error = "Printer offline";
             // ============ ONLINE COMMANDS FROM HERE ==============
         } else if(cmdgroup=="send") {
-            string cmd;
-            if(MG_getVar(ri,"cmd", cmd)) {
+            string cmd(form.get("cmd",""));
+            if(!cmd.empty()) {
                 printer->injectManualCommand(cmd);
             }
         } else if(cmdgroup=="response") { // Return log
-            string sfilter,sstart;
+            DynamicAny sfilter(form.get("filter","")),sstart(form.get("start",""));
             uint8_t filter=0;
             uint32_t start=0;
-            if(MG_getVar(ri,"filter",sfilter))
-                filter = atoi(sfilter.c_str());
-            if(MG_getVar(ri,"start",sstart))
-                start = (uint32_t)atol(sstart.c_str());
+            if(!sfilter.isNumeric())
+                filter = sfilter.convert<uint8_t>();
+            if(!sstart.isNumeric())
+                start = sstart.convert<uint32_t>();
             boost::shared_ptr<list<boost::shared_ptr<PrinterResponse> > > rlist = printer->getResponsesSince(start,filter, start);
             Object lobj;
             lobj.push_back(Pair("lastid",(int)start));
@@ -472,43 +488,19 @@ namespace repetier {
             lobj.push_back(Pair("state",state));
             ret.push_back(Pair("data",lobj));
         } else if(cmdgroup=="move") {
-            string sx,sy,sz,se;
+            DynamicAny sx(form.get("x","")),sy(form.get("y","")),sz(form.get("z","")),se(form.get("e",""));
             double x=0,y=0,z=0,e=0;
-            if(MG_getVar(ri,"x",sx)) x = atof(sx.c_str());
-            if(MG_getVar(ri,"y",sy)) y = atof(sy.c_str());
-            if(MG_getVar(ri,"z",sz)) z = atof(sz.c_str());
-            if(MG_getVar(ri,"e",se)) e = atof(se.c_str());
+            if(sx.isNumeric()) x = sx.convert<double>();
+            if(sy.isNumeric()) y = sy.convert<double>();
+            if(sz.isNumeric()) z = sz.convert<double>();
+            if(se.isNumeric()) e = se.convert<double>();
             printer->move(x, y, z, e);
         }
         ret.push_back(Pair("error",error));
     
         // Print result
-		mg_printf(conn,"%s",write(ret,json_spirit::raw_utf8).c_str());
-    }
-    bool MG_getVar(const mg_request_info *info,const char *name, std::string &output)
-    {
-        output.clear();
-        if(info->query_string==NULL) return false;
-        const int MAX_VAR_LEN = 4096;
-        char buffer[MAX_VAR_LEN];
-        int len = mg_get_var(info->query_string, strlen(info->query_string), name, buffer, MAX_VAR_LEN - 1);
-        if (len >= 0) {
-            output.append(buffer, len);
-            return true;
-        }
-        return false;
-    }
-    bool MG_getPostVar(char *buf,int buflen,const mg_request_info *info,const char *name, std::string &output) {
-        output.clear();
-        char *buffer = new char[buflen+1];
-        int len = mg_get_var(buf,buflen, name, buffer, buflen - 1);
-        if (len >= 0) {
-            output.append(buffer, len);
-            delete[] buffer;
-            return true;
-        }
-        delete[] buffer;
-        return false;        
+		out << write(ret,json_spirit::raw_utf8);
+        out.flush();
     }
     string JSONValueAsString(const Value &v) {
         switch(v.type()) {
@@ -626,17 +618,21 @@ namespace repetier {
         vars.push_front(Value(data));
         FillTemplateRecursive(text,result,vars,start,end);
     }
-    void* HandlePagerequest(struct mg_connection *conn) {
-        const struct mg_request_info *ri = mg_get_request_info(conn);
-        string uri(ri->uri);
+    void MainRequestHandler::PHPResponse(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp) {
+        string uri(req.getURI());
         if(uri.length()<=1) uri="/index.php";
-        if(uri.length()<5 || uri.substr(uri.length()-4,4)!=".php") return NULL;        
+        size_t p = uri.find_first_of('?');
+        if(p!=string::npos)
+            uri = uri.substr(0,p);
+        HTMLForm form(req);
+        //if(uri.length()<5 || uri.substr(uri.length()-4,4)!=".php") return NULL;
         
         // Step 1: Find translation file
-        char *alang = (char*)mg_get_header(conn, "Accept-Language");
+        
+        string alang = req.get("Accept-Language", "");
         string lang = "";
-        if(alang!=NULL) {
-            size_t n = strlen(alang);
+        if(!alang.empty()) {
+            size_t n = alang.length();
             int mode = 0;
             size_t lstart;
             for(size_t i=0;i<n;i++) {
@@ -666,8 +662,8 @@ namespace repetier {
         TranslateFile(gconfig->getWebsiteRoot()+uri,lang,content);
         // Step 2: Fill template parameter
         Object obj;
-        string param;
-        if(MG_getVar(ri,"pn", param)) {
+        string param = form.get("pn","");
+        if(!param.empty()) {
             Printer *p = gconfig->findPrinterSlug(param);
             if(p) p->fillJSONObject(obj);
         }
@@ -675,12 +671,12 @@ namespace repetier {
         // Step 3: Run template
         string content2;
         FillTemplate(content, content2, obj);
-        mg_printf(conn, "HTTP/1.0 200 OK\r\n"
-                  "Cache-Control:public, max-age=0\r\n"
-                  "Server: Repetier-Server\r\n"
-                  "Content-Type: text/html; charset=utf-8\r\n\r\n");
-        mg_write(conn, content2.c_str(), content2.length());
-        return (void*)"";
+        ostream &out = resp.send();
+        resp.setContentType("text/html; charset=utf-8");
+        resp.setContentLength(content2.length());
+        resp.setStatus(HTTPResponse::HTTP_OK);
+        out << content2;
+        out.flush();
     }
     static map<string,boost::shared_ptr<moFileLib::moFileReader> > rmap;
     static set<string> langNotExist;

@@ -9,6 +9,23 @@
 /* Begin PBXBuildFile section */
 		FD57C187161B5608000C4A45 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD57C186161B5608000C4A45 /* main.cpp */; };
 		FD57C189161B5608000C4A45 /* Repetier_Server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD57C188161B5608000C4A45 /* Repetier_Server.1 */; };
+		FDA1DBDC178C4CB200E40F36 /* libPocoFoundation.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBCC178C4CB200E40F36 /* libPocoFoundation.16.dylib */; };
+		FDA1DBDD178C4CB200E40F36 /* libPocoFoundation.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBCD178C4CB200E40F36 /* libPocoFoundation.16.dylib */; };
+		FDA1DBDE178C4CB200E40F36 /* libPocoFoundationd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBCE178C4CB200E40F36 /* libPocoFoundationd.16.dylib */; };
+		FDA1DBDF178C4CB200E40F36 /* libPocoFoundationd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBCF178C4CB200E40F36 /* libPocoFoundationd.16.dylib */; };
+		FDA1DBE0178C4CB200E40F36 /* libPocoNet.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD0178C4CB200E40F36 /* libPocoNet.16.dylib */; };
+		FDA1DBE1178C4CB200E40F36 /* libPocoNet.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD1178C4CB200E40F36 /* libPocoNet.16.dylib */; };
+		FDA1DBE2178C4CB200E40F36 /* libPocoNetd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD2178C4CB200E40F36 /* libPocoNetd.16.dylib */; };
+		FDA1DBE3178C4CB200E40F36 /* libPocoNetd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD3178C4CB200E40F36 /* libPocoNetd.16.dylib */; };
+		FDA1DBE4178C4CB200E40F36 /* libPocoUtil.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD4178C4CB200E40F36 /* libPocoUtil.16.dylib */; };
+		FDA1DBE5178C4CB200E40F36 /* libPocoUtil.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD5178C4CB200E40F36 /* libPocoUtil.16.dylib */; };
+		FDA1DBE6178C4CB200E40F36 /* libPocoUtild.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD6178C4CB200E40F36 /* libPocoUtild.16.dylib */; };
+		FDA1DBE7178C4CB200E40F36 /* libPocoUtild.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD7178C4CB200E40F36 /* libPocoUtild.16.dylib */; };
+		FDA1DBE8178C4CB200E40F36 /* libPocoXML.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD8178C4CB200E40F36 /* libPocoXML.16.dylib */; };
+		FDA1DBE9178C4CB200E40F36 /* libPocoXML.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBD9178C4CB200E40F36 /* libPocoXML.16.dylib */; };
+		FDA1DBEA178C4CB200E40F36 /* libPocoXMLd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBDA178C4CB200E40F36 /* libPocoXMLd.16.dylib */; };
+		FDA1DBEB178C4CB200E40F36 /* libPocoXMLd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBDB178C4CB200E40F36 /* libPocoXMLd.16.dylib */; };
+		FDA1DBEE178C4E2200E40F36 /* RepetierServerApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDA1DBEC178C4E2200E40F36 /* RepetierServerApplication.cpp */; };
 		FDABA25716860D09005522A4 /* WebserverAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDABA25516860D09005522A4 /* WebserverAPI.cpp */; };
 		FDABA26816861F44005522A4 /* json_spirit_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDABA25D16861F44005522A4 /* json_spirit_reader.cpp */; };
 		FDABA26916861F44005522A4 /* json_spirit_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDABA26116861F44005522A4 /* json_spirit_value.cpp */; };
@@ -21,7 +38,6 @@
 		FDABA280168D9B9F005522A4 /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDABA27B168D9B9E005522A4 /* libboost_system.a */; };
 		FDABA281168D9B9F005522A4 /* libboost_thread.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FDABA27C168D9B9E005522A4 /* libboost_thread.a */; };
 		FDAC19511695F1A600479AA4 /* RLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDAC194F1695F1A600479AA4 /* RLog.cpp */; };
-		FDED504B1673ACB3001F0450 /* mongoose.c in Sources */ = {isa = PBXBuildFile; fileRef = FDED50491673ACB3001F0450 /* mongoose.c */; };
 		FDED505D1673BAD8001F0450 /* grammar.c in Sources */ = {isa = PBXBuildFile; fileRef = FDED504D1673BAD8001F0450 /* grammar.c */; };
 		FDED505E1673BAD8001F0450 /* libconfig.c in Sources */ = {isa = PBXBuildFile; fileRef = FDED504F1673BAD8001F0450 /* libconfig.c */; };
 		FDED505F1673BAD8001F0450 /* libconfigcpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDED50531673BAD8001F0450 /* libconfigcpp.cpp */; };
@@ -52,6 +68,24 @@
 		FD57C182161B5608000C4A45 /* Repetier-Server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Repetier-Server"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD57C186161B5608000C4A45 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FD57C188161B5608000C4A45 /* Repetier_Server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Repetier_Server.1; sourceTree = "<group>"; };
+		FDA1DBCC178C4CB200E40F36 /* libPocoFoundation.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoFoundation.16.dylib; path = ../../../../../../usr/local/lib/libPocoFoundation.16.dylib; sourceTree = "<group>"; };
+		FDA1DBCD178C4CB200E40F36 /* libPocoFoundation.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoFoundation.16.dylib; path = ../../../../../../usr/local/lib/libPocoFoundation.16.dylib; sourceTree = "<group>"; };
+		FDA1DBCE178C4CB200E40F36 /* libPocoFoundationd.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoFoundationd.16.dylib; path = ../../../../../../usr/local/lib/libPocoFoundationd.16.dylib; sourceTree = "<group>"; };
+		FDA1DBCF178C4CB200E40F36 /* libPocoFoundationd.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoFoundationd.16.dylib; path = ../../../../../../usr/local/lib/libPocoFoundationd.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD0178C4CB200E40F36 /* libPocoNet.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoNet.16.dylib; path = ../../../../../../usr/local/lib/libPocoNet.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD1178C4CB200E40F36 /* libPocoNet.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoNet.16.dylib; path = ../../../../../../usr/local/lib/libPocoNet.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD2178C4CB200E40F36 /* libPocoNetd.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoNetd.16.dylib; path = ../../../../../../usr/local/lib/libPocoNetd.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD3178C4CB200E40F36 /* libPocoNetd.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoNetd.16.dylib; path = ../../../../../../usr/local/lib/libPocoNetd.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD4178C4CB200E40F36 /* libPocoUtil.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoUtil.16.dylib; path = ../../../../../../usr/local/lib/libPocoUtil.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD5178C4CB200E40F36 /* libPocoUtil.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoUtil.16.dylib; path = ../../../../../../usr/local/lib/libPocoUtil.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD6178C4CB200E40F36 /* libPocoUtild.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoUtild.16.dylib; path = ../../../../../../usr/local/lib/libPocoUtild.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD7178C4CB200E40F36 /* libPocoUtild.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoUtild.16.dylib; path = ../../../../../../usr/local/lib/libPocoUtild.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD8178C4CB200E40F36 /* libPocoXML.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoXML.16.dylib; path = ../../../../../../usr/local/lib/libPocoXML.16.dylib; sourceTree = "<group>"; };
+		FDA1DBD9178C4CB200E40F36 /* libPocoXML.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoXML.16.dylib; path = ../../../../../../usr/local/lib/libPocoXML.16.dylib; sourceTree = "<group>"; };
+		FDA1DBDA178C4CB200E40F36 /* libPocoXMLd.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoXMLd.16.dylib; path = ../../../../../../usr/local/lib/libPocoXMLd.16.dylib; sourceTree = "<group>"; };
+		FDA1DBDB178C4CB200E40F36 /* libPocoXMLd.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoXMLd.16.dylib; path = ../../../../../../usr/local/lib/libPocoXMLd.16.dylib; sourceTree = "<group>"; };
+		FDA1DBEC178C4E2200E40F36 /* RepetierServerApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RepetierServerApplication.cpp; sourceTree = "<group>"; };
+		FDA1DBED178C4E2200E40F36 /* RepetierServerApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RepetierServerApplication.h; sourceTree = "<group>"; };
 		FDABA25516860D09005522A4 /* WebserverAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebserverAPI.cpp; sourceTree = "<group>"; };
 		FDABA25616860D09005522A4 /* WebserverAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebserverAPI.h; sourceTree = "<group>"; };
 		FDABA25A16861F44005522A4 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -81,10 +115,6 @@
 		FDABA27C168D9B9E005522A4 /* libboost_thread.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_thread.a; path = ../../libraries/boost_1_52_0/stage/lib/libboost_thread.a; sourceTree = "<group>"; };
 		FDAC194F1695F1A600479AA4 /* RLog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RLog.cpp; sourceTree = "<group>"; };
 		FDAC19501695F1A600479AA4 /* RLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RLog.h; sourceTree = "<group>"; };
-		FDED50471673ACB3001F0450 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		FDED50481673ACB3001F0450 /* mongoose.1 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.man; path = mongoose.1; sourceTree = "<group>"; };
-		FDED50491673ACB3001F0450 /* mongoose.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = mongoose.c; sourceTree = "<group>"; };
-		FDED504A1673ACB3001F0450 /* mongoose.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mongoose.h; sourceTree = "<group>"; };
 		FDED504D1673BAD8001F0450 /* grammar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = grammar.c; sourceTree = "<group>"; };
 		FDED504E1673BAD8001F0450 /* grammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = grammar.h; sourceTree = "<group>"; };
 		FDED504F1673BAD8001F0450 /* libconfig.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libconfig.c; sourceTree = "<group>"; };
@@ -119,6 +149,22 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FDA1DBDC178C4CB200E40F36 /* libPocoFoundation.16.dylib in Frameworks */,
+				FDA1DBDD178C4CB200E40F36 /* libPocoFoundation.16.dylib in Frameworks */,
+				FDA1DBDE178C4CB200E40F36 /* libPocoFoundationd.16.dylib in Frameworks */,
+				FDA1DBDF178C4CB200E40F36 /* libPocoFoundationd.16.dylib in Frameworks */,
+				FDA1DBE0178C4CB200E40F36 /* libPocoNet.16.dylib in Frameworks */,
+				FDA1DBE1178C4CB200E40F36 /* libPocoNet.16.dylib in Frameworks */,
+				FDA1DBE2178C4CB200E40F36 /* libPocoNetd.16.dylib in Frameworks */,
+				FDA1DBE3178C4CB200E40F36 /* libPocoNetd.16.dylib in Frameworks */,
+				FDA1DBE4178C4CB200E40F36 /* libPocoUtil.16.dylib in Frameworks */,
+				FDA1DBE5178C4CB200E40F36 /* libPocoUtil.16.dylib in Frameworks */,
+				FDA1DBE6178C4CB200E40F36 /* libPocoUtild.16.dylib in Frameworks */,
+				FDA1DBE7178C4CB200E40F36 /* libPocoUtild.16.dylib in Frameworks */,
+				FDA1DBE8178C4CB200E40F36 /* libPocoXML.16.dylib in Frameworks */,
+				FDA1DBE9178C4CB200E40F36 /* libPocoXML.16.dylib in Frameworks */,
+				FDA1DBEA178C4CB200E40F36 /* libPocoXMLd.16.dylib in Frameworks */,
+				FDA1DBEB178C4CB200E40F36 /* libPocoXMLd.16.dylib in Frameworks */,
 				FDABA27D168D9B9E005522A4 /* libboost_exception.a in Frameworks */,
 				FDABA27E168D9B9F005522A4 /* libboost_filesystem.a in Frameworks */,
 				FDABA27F168D9B9F005522A4 /* libboost_program_options.a in Frameworks */,
@@ -133,6 +179,22 @@
 		FD57C177161B5607000C4A45 = {
 			isa = PBXGroup;
 			children = (
+				FDA1DBCC178C4CB200E40F36 /* libPocoFoundation.16.dylib */,
+				FDA1DBCD178C4CB200E40F36 /* libPocoFoundation.16.dylib */,
+				FDA1DBCE178C4CB200E40F36 /* libPocoFoundationd.16.dylib */,
+				FDA1DBCF178C4CB200E40F36 /* libPocoFoundationd.16.dylib */,
+				FDA1DBD0178C4CB200E40F36 /* libPocoNet.16.dylib */,
+				FDA1DBD1178C4CB200E40F36 /* libPocoNet.16.dylib */,
+				FDA1DBD2178C4CB200E40F36 /* libPocoNetd.16.dylib */,
+				FDA1DBD3178C4CB200E40F36 /* libPocoNetd.16.dylib */,
+				FDA1DBD4178C4CB200E40F36 /* libPocoUtil.16.dylib */,
+				FDA1DBD5178C4CB200E40F36 /* libPocoUtil.16.dylib */,
+				FDA1DBD6178C4CB200E40F36 /* libPocoUtild.16.dylib */,
+				FDA1DBD7178C4CB200E40F36 /* libPocoUtild.16.dylib */,
+				FDA1DBD8178C4CB200E40F36 /* libPocoXML.16.dylib */,
+				FDA1DBD9178C4CB200E40F36 /* libPocoXML.16.dylib */,
+				FDA1DBDA178C4CB200E40F36 /* libPocoXMLd.16.dylib */,
+				FDA1DBDB178C4CB200E40F36 /* libPocoXMLd.16.dylib */,
 				FDABA278168D9B9D005522A4 /* libboost_exception.a */,
 				FDABA279168D9B9D005522A4 /* libboost_filesystem.a */,
 				FDABA27A168D9B9D005522A4 /* libboost_program_options.a */,
@@ -160,7 +222,6 @@
 				FDABA25916861EC2005522A4 /* json_spirit */,
 				FDED50641673BAEA001F0450 /* server */,
 				FDED504C1673B678001F0450 /* libconfig */,
-				FDED50451673AC66001F0450 /* mongoose */,
 				FD57C186161B5608000C4A45 /* main.cpp */,
 				FD57C188161B5608000C4A45 /* Repetier_Server.1 */,
 			);
@@ -197,17 +258,6 @@
 				FDABA26D1686FCC2005522A4 /* moFileReader.cpp */,
 			);
 			path = moFileReader;
-			sourceTree = "<group>";
-		};
-		FDED50451673AC66001F0450 /* mongoose */ = {
-			isa = PBXGroup;
-			children = (
-				FDED50471673ACB3001F0450 /* LICENSE */,
-				FDED50481673ACB3001F0450 /* mongoose.1 */,
-				FDED50491673ACB3001F0450 /* mongoose.c */,
-				FDED504A1673ACB3001F0450 /* mongoose.h */,
-			);
-			path = mongoose;
 			sourceTree = "<group>";
 		};
 		FDED504C1673B678001F0450 /* libconfig */ = {
@@ -251,6 +301,8 @@
 				FDABA274168AE64F005522A4 /* Printjob.h */,
 				FDAC194F1695F1A600479AA4 /* RLog.cpp */,
 				FDAC19501695F1A600479AA4 /* RLog.h */,
+				FDA1DBEC178C4E2200E40F36 /* RepetierServerApplication.cpp */,
+				FDA1DBED178C4E2200E40F36 /* RepetierServerApplication.h */,
 			);
 			path = server;
 			sourceTree = "<group>";
@@ -306,7 +358,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				FD57C187161B5608000C4A45 /* main.cpp in Sources */,
-				FDED504B1673ACB3001F0450 /* mongoose.c in Sources */,
 				FDED505D1673BAD8001F0450 /* grammar.c in Sources */,
 				FDED505E1673BAD8001F0450 /* libconfig.c in Sources */,
 				FDED505F1673BAD8001F0450 /* libconfigcpp.cpp in Sources */,
@@ -325,6 +376,7 @@
 				FDABA26F1686FCC2005522A4 /* moFileReader.cpp in Sources */,
 				FDABA275168AE64F005522A4 /* Printjob.cpp in Sources */,
 				FDAC19511695F1A600479AA4 /* RLog.cpp in Sources */,
+				FDA1DBEE178C4E2200E40F36 /* RepetierServerApplication.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -393,10 +445,14 @@
 					"$(inherited)",
 					HAVE_XLOCALE_H,
 				);
-				HEADER_SEARCH_PATHS = /Users/littwin/Documents/Projekte/libraries/boost_1_52_0;
+				HEADER_SEARCH_PATHS = (
+					/Users/littwin/Documents/Projekte/libraries/boost_1_52_0,
+					/usr/local/include,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
 					"\"$(SRCROOT)/../../libraries/boost_1_52_0/stage/lib\"",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -410,10 +466,14 @@
 				CLANG_CXX_LIBRARY = "libstdc++";
 				DEAD_CODE_STRIPPING = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = HAVE_XLOCALE_H;
-				HEADER_SEARCH_PATHS = /Users/littwin/Documents/Projekte/libraries/boost_1_52_0;
+				HEADER_SEARCH_PATHS = (
+					/Users/littwin/Documents/Projekte/libraries/boost_1_52_0,
+					/usr/local/include,
+				);
 				LIBRARY_SEARCH_PATHS = (
 					/opt/local/lib,
 					"\"$(SRCROOT)/../../libraries/boost_1_52_0/stage/lib\"",
+					/usr/local/lib,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
