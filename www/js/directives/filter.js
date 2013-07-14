@@ -1,8 +1,7 @@
-<?php
 /**
- * Created by JetBrains PhpStorm.
+ * Created with JetBrains PhpStorm.
  * User: littwin
- * Date: 12.07.13
- * Time: 15:03
+ * Date: 13.07.13
+ * Time: 16:19
  * To change this template use File | Settings | File Templates.
  */
