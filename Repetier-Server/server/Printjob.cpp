@@ -187,6 +187,41 @@ void PrintjobManager::fillSJONObject(std::string name,json_spirit::Object &o) {
     }
     o.push_back(Pair(name,a));
 }
+
+void PrintjobManager::fillSJONObject(std::string name,json_spirit::mObject &o) {
+    mutex::scoped_lock l(filesMutex);
+    using namespace json_spirit;
+    mArray a;
+    list<shared_ptr<Printjob> >::iterator it = files.begin(),ie = files.end();
+    for(;it!=ie;it++) {
+        mObject j;
+        Printjob *job = (*it).get();
+        j["id"] = job->getId();
+        j["name"] = job->getName();
+        j["length"] = (int)job->getLength();
+        switch(job->getState()) {
+            case Printjob::startUpload:
+                j["state"] = "uploading";
+                break;
+            case Printjob::stored:
+                j["state"] = "stored";
+                break;
+            case Printjob::running:
+                j["state"] = "running";
+                j["done"] = job->percentDone();
+                break;
+            case Printjob::finished:
+                j["state"] = "finsihed";
+                break;
+            case Printjob::doesNotExist:
+                j["state"] = "error";
+                break;
+        }
+        a.push_back(j);
+    }
+    o[name] = a;
+}
+
 void PrintjobManager::getJobStatus(json_spirit::Object &obj) {
     mutex::scoped_lock l(filesMutex);
     using namespace json_spirit;
@@ -196,6 +231,17 @@ void PrintjobManager::getJobStatus(json_spirit::Object &obj) {
     } else {
         obj.push_back(Pair("job",job->getName()));
         obj.push_back(Pair("done",job->percentDone()));
+    }
+}
+void PrintjobManager::getJobStatus(json_spirit::mObject &obj) {
+    mutex::scoped_lock l(filesMutex);
+    using namespace json_spirit;
+    Printjob *job = runningJob.get();
+    if(job==NULL) {
+        obj["job"] = "none";
+    } else {
+        obj["job"] = job->getName();
+        obj["done"] = job->percentDone();
     }
 }
 PrintjobPtr PrintjobManager::findByIdInternal(int id) {

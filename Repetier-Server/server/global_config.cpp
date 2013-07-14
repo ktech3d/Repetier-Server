@@ -102,6 +102,18 @@ void GlobalConfig::fillJSONMessages(json_spirit::Array &arr) {
         arr.push_back(obj);
     }
 }
+void GlobalConfig::fillJSONMessages(json_spirit::mArray &arr) {
+    mutex::scoped_lock l(msgMutex);
+    list<RepetierMsgPtr>::iterator it = msgList.begin(),ie = msgList.end();
+    for(;it!=ie;++it) {
+        using namespace json_spirit;
+        mObject obj;
+        obj["id"] = (*it)->mesgId;
+        obj["msg"] = (*it)->message;
+        obj["link"] = (*it)->finishLink;
+        arr.push_back(obj);
+    }
+}
 
 void GlobalConfig::createMessage(std::string &msg,std::string &link) {
     mutex::scoped_lock l(msgMutex);

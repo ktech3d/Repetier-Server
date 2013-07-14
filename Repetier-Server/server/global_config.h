@@ -76,6 +76,7 @@ public:
     /** Fill the array with all open messages.
      @param obj Array to fill. */ 
     void fillJSONMessages(json_spirit::Array &obj);
+    void fillJSONMessages(json_spirit::mArray &obj);
     /** Create a new message to show. Threadsafe!
      @param msg Message to show.
      @param link Link to remove the message. */

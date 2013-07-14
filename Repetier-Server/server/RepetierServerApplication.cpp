@@ -29,6 +29,7 @@
 #include <boost/filesystem.hpp>
 #include "global_config.h"
 #include "WebserverAPI.h"
+#include "ActionHandler.h"
 
 using Poco::Net::ServerSocket;
 using Poco::Net::HTTPRequestHandler;
@@ -51,33 +52,6 @@ using namespace Poco::Net;
 using namespace Poco;
 using namespace std;
 
-class MyRequestHandler : public HTTPRequestHandler
-{
-public:
-    virtual void handleRequest(HTTPServerRequest &req, HTTPServerResponse &resp)
-    {
-        resp.setStatus(HTTPResponse::HTTP_OK);
-        resp.setContentType("text/html");
-        Poco::URI uri(req.getURI());
-        ostream& out = resp.send();
-        out << "<h1>Hello world!</h1>"
-        << "<p>Count: "  << ++count         << "</p>"
-        << "<p>Host: "   << req.getHost()   << "</p>"
-        << "<p>Method: " << req.getMethod() << "</p>"
-        << "<p>URI: "    << req.getURI()    << "</p>";
-        out << "<p>Path: " << uri.getPath() << "</p>";
-        out << "<p>Query: " << uri.getQuery() << "</p>";
-        out.flush();
-        
-        cout << endl
-        << "Response sent for count=" << count
-        << " and URI=" << req.getURI() << endl;
-    }
-    
-private:
-    static int count;
-};
-int MyRequestHandler::count = 0;
 
 class RepetierHTTPRequestHandlerFactory: public HTTPRequestHandlerFactory
 {
@@ -178,6 +152,8 @@ int RepetierServerApplication::main(const std::vector<std::string>& args)
         if(port == 0)
             port = Poco::NumberParser::parse(gconfig->getPorts());
         repetier::MainRequestHandler::registerActionHandler("printer", &repetier::printerRequestHandler);
+        repetier::MainRequestHandler::registerActionHandler("socket",&repetier::socketRequestHandler);
+        repetier::ActionHandler::registerStandardActions();
         ServerSocket socket(port);
         Poco::Net::HTTPServerParams *params = new Poco::Net::HTTPServerParams();
         params->setServerName("Repetier-Server");

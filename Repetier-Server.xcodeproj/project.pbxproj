@@ -26,6 +26,7 @@
 		FDA1DBEA178C4CB200E40F36 /* libPocoXMLd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBDA178C4CB200E40F36 /* libPocoXMLd.16.dylib */; };
 		FDA1DBEB178C4CB200E40F36 /* libPocoXMLd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBDB178C4CB200E40F36 /* libPocoXMLd.16.dylib */; };
 		FDA1DBEE178C4E2200E40F36 /* RepetierServerApplication.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDA1DBEC178C4E2200E40F36 /* RepetierServerApplication.cpp */; };
+		FDA1DBF1179159C600E40F36 /* ActionHandler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDA1DBEF179159C600E40F36 /* ActionHandler.cpp */; };
 		FDABA25716860D09005522A4 /* WebserverAPI.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDABA25516860D09005522A4 /* WebserverAPI.cpp */; };
 		FDABA26816861F44005522A4 /* json_spirit_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDABA25D16861F44005522A4 /* json_spirit_reader.cpp */; };
 		FDABA26916861F44005522A4 /* json_spirit_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDABA26116861F44005522A4 /* json_spirit_value.cpp */; };
@@ -86,6 +87,8 @@
 		FDA1DBDB178C4CB200E40F36 /* libPocoXMLd.16.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libPocoXMLd.16.dylib; path = ../../../../../../usr/local/lib/libPocoXMLd.16.dylib; sourceTree = "<group>"; };
 		FDA1DBEC178C4E2200E40F36 /* RepetierServerApplication.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RepetierServerApplication.cpp; sourceTree = "<group>"; };
 		FDA1DBED178C4E2200E40F36 /* RepetierServerApplication.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RepetierServerApplication.h; sourceTree = "<group>"; };
+		FDA1DBEF179159C600E40F36 /* ActionHandler.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ActionHandler.cpp; sourceTree = "<group>"; };
+		FDA1DBF0179159C600E40F36 /* ActionHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActionHandler.h; sourceTree = "<group>"; };
 		FDABA25516860D09005522A4 /* WebserverAPI.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebserverAPI.cpp; sourceTree = "<group>"; };
 		FDABA25616860D09005522A4 /* WebserverAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebserverAPI.h; sourceTree = "<group>"; };
 		FDABA25A16861F44005522A4 /* CMakeLists.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
@@ -303,6 +306,8 @@
 				FDAC19501695F1A600479AA4 /* RLog.h */,
 				FDA1DBEC178C4E2200E40F36 /* RepetierServerApplication.cpp */,
 				FDA1DBED178C4E2200E40F36 /* RepetierServerApplication.h */,
+				FDA1DBEF179159C600E40F36 /* ActionHandler.cpp */,
+				FDA1DBF0179159C600E40F36 /* ActionHandler.h */,
 			);
 			path = server;
 			sourceTree = "<group>";
@@ -377,6 +382,7 @@
 				FDABA275168AE64F005522A4 /* Printjob.cpp in Sources */,
 				FDAC19511695F1A600479AA4 /* RLog.cpp in Sources */,
 				FDA1DBEE178C4E2200E40F36 /* RepetierServerApplication.cpp in Sources */,
+				FDA1DBF1179159C600E40F36 /* ActionHandler.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

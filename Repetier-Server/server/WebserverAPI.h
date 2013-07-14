@@ -26,7 +26,10 @@
 #include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include <map>
+#include "json_spirit.h"
+#include <boost/thread.hpp>
 
+class Printer;
 namespace repetier {
     
     class MainRequestHandler : public Poco::Net::HTTPRequestHandler
@@ -46,7 +49,18 @@ namespace repetier {
     public:
         virtual void handleRequest(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp);
     };
+    class WebSocketRequestHandler: public Poco::Net::HTTPRequestHandler
+	/// Handle a WebSocket connection.
+    {
+    public:
+        void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
+    private:
+        Printer *printer;
+        boost::mutex sendMutex;
+    };
     extern PrinterRequestHandler printerRequestHandler;
+    extern WebSocketRequestHandler socketRequestHandler;
+    
     /** Load the given file and translate contents. Store the translated file
      in a string. Function is thread safe.
      @param filename File to load and translate.
@@ -56,6 +70,7 @@ namespace repetier {
     extern void TranslateFile(const std::string &filename,const std::string &lang,std::string& result);
 ;
     extern bool doesLanguageExist(std::string lang);
+    extern std::string JSONValueAsString(const json_spirit::Value &v);
 }
 
 #endif /* defined(__Repetier_Server__WebserverAPI__) */

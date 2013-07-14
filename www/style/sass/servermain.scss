@@ -1,12 +1,44 @@
 
-$topbar-bg: #000080
+$topbar-bg: #b6191d;
+$topbar-dropdown-link-bg: lighten($topbar-bg, 20%);
+$footer-fg: #ffffff;
+$logCommandColor: #000080;
+$logACKColor: #808080;
+$logOtherColor: #000000;
 
+@import "normalize.scss";
+@import "foundation.scss";
 
-@import "normalize.scss"
-@import "foundation.scss"
+@font-face {
+  font-family: 'Led';
+  src: url( fonts/digital-7-mono.eot),
+   url( fonts/digital-7-mono.ttf) format(truetype)
+}
 
-@font-face
-  font-family: 'Led'
-  src: url( fonts/digital-7-mono.eot)
-  src: url( fonts/digital-7-mono.ttf) format(truetype)
-
+.server-footer {
+  background: $topbar-bg;
+  color: $footer-fg;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size:0.8em;
+  padding-top:10px;
+  a {
+    color:$footer-fg;
+  }
+  h2 {
+    color:$footer-fg;
+    font-size:1.2em;
+  }
+  .vsplit {
+    border-left:1px solid $topbar-dropdown-link-bg;
+  }
+}
+.dense {margin:0;}
+.log1 {color:$logCommandColor;}
+.log2 {color:$logACKColor;}
+.log4,.log8 {color:$logOtherColor;}
+.log1,.log2,.log4,.log8 {
+  font-family: 'Courier New';
+  font-size:0.8em;
+}
+.small {font-size:0.8em;}
+.small-margin {margin-bottom:0.5em !important;}

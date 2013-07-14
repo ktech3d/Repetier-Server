@@ -88,6 +88,7 @@ public:
     static std::string decodeNamePart(std::string file);
     static int decodeIdPart(std::string file);
     void fillSJONObject(std::string name,json_spirit::Object &o);
+    void fillSJONObject(std::string name,json_spirit::mObject &o);
     PrintjobPtr findById(int id);
     PrintjobPtr findByName(std::string name);
     PrintjobPtr createNewPrintjob(std::string name);
@@ -105,6 +106,7 @@ public:
      then 10 commands for a call. */
     void manageJobs();
     void getJobStatus(json_spirit::Object &obj);
+    void getJobStatus(json_spirit::mObject &obj);
     /** Pushes the complete content of a job to the job queue
      @param name Name of the printjob
      @param p Printer for output

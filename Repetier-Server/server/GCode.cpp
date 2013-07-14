@@ -152,8 +152,8 @@ GCodeDataPacketPtr GCode::getBinary()
     }
     // compute fletcher-16 checksum
     uint16_t sum1 = 0, sum2 = 0;
-    int blen = (int)datalen,i;
-    for (i=0;i<blen;i++)
+    int i;
+    for (i=0;i<datalen;i++)
     {
         int c = data[i]; // Analyzer reports this falsely as uninitalized!
         sum1 = (sum1 + c) % 255;

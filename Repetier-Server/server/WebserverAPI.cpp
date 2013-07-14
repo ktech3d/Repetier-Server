@@ -39,16 +39,19 @@
 #include "PrinterState.h"
 #include "Printjob.h"
 #include "RLog.h"
-#if defined(_WIN32)
-#include <io.h>
-#endif
 #include "Poco/CountingStream.h"
+#include "Poco/Net/WebSocket.h"
+#include "Poco/Net/NetException.h"
+#include "Poco/Util/ServerApplication.h"
+#include "ActionHandler.h"
 
 using namespace std;
 using namespace json_spirit;
 using namespace boost;
 using namespace Poco;
 using namespace Poco::Net;
+using namespace Poco::Util;
+
 using Poco::CountingInputStream;
 
 #if defined(_WIN32) && !defined(__SYMBIAN32__) // Windows specific
@@ -68,26 +71,12 @@ using Poco::CountingInputStream;
 #define strtoll(x, y, z) _strtoi64(x, y, z)
 #endif // _MSC_VER
 
-#define O_EXLOCK 0
-#define O_CLOEXEC 0
-#define O_CREAT _O_CREAT
-#define O_APPEND _O_APPEND
-#define O_TRUNC _O_TRUNC
-#define O_RDWR _O_RDWR
 #define snprintf _snprintf
 #define strnstr _strnstr
-#define popen(x, y) _popen(x, y)
-#define pclose(x) _pclose(x)
-#define myclose(x) _close(x)
-#define myopen(x,y,z) _open(x,y,z)
 #define fseeko(x, y, z) _lseeki64(_fileno(x), (y), (z))
 #define fdopen(x, y) _fdopen((x), (y))
-#define mywrite(x, y) _write((x), (y))
 //#define read(x, y, z) _read((x), (y), (unsigned) z)
 #else
-#define myclose(x) close(x)
-#define myopen(x,y,z) open(x,y,z)
-#define mywrite(x, y) write((x), (y))
 #endif
 #ifndef O_EXLOCK
 #define O_EXLOCK 0
@@ -96,6 +85,7 @@ using Poco::CountingInputStream;
 namespace repetier {
     
     PrinterRequestHandler printerRequestHandler;
+    WebSocketRequestHandler socketRequestHandler;
     
     class MyPartHandler: public Poco::Net::PartHandler
     {
@@ -110,7 +100,7 @@ namespace repetier {
                 File file(_storage);
                 if(file.exists() && file.isFile())
                     file.remove(); // Cleanup if nobody used the file
-                }
+            }
         }
         void handlePart(const MessageHeader& header, std::istream& stream)
         {
@@ -149,7 +139,7 @@ namespace repetier {
         
         const std::string& contentType() const
         {
-            return _type;		
+            return _type;
         }
         const Path& storage() const {
             return _storage;
@@ -200,19 +190,14 @@ namespace repetier {
     void MainRequestHandler::registerActionHandler(std::string name,Poco::Net::HTTPRequestHandler* action) {
         actionMap[name] = action;
     }
-
+    
     void MainRequestHandler::StaticResponse(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp) {
-        ostream& out = resp.send();
         Poco::URI uri(req.getURI());
         vector<string>::iterator it,end;
         vector<string> segments;
         uri.getPathSegments(segments);
         it = segments.begin();
         end = segments.end();
-        cout << "Segment count " << segments.size() << endl;
-        for(;it!=end;++it) {
-            cout << "Parsed " << *it << endl;
-        }
         string path = uri.getPath();
         Path filePath = Path(gconfig->getWebsiteRoot()).append(path);
         File file(filePath);
@@ -220,12 +205,11 @@ namespace repetier {
             notFoundError(resp);
             return;
         }
-        cout << "File " << filePath.toString() << endl;
+        //cout << "File " << filePath.toString() << endl;
         size_t extPos = path.find_last_of('.');
         string extension = "php";
         if(extPos!=string::npos) extension = path.substr(extPos+1);
-        cout << "Extension = " << extension << endl;
-        resp.setStatus(HTTPResponse::HTTP_OK);
+        resp.setChunkedTransferEncoding(true);
         if(extension=="php" || extension=="html")
             resp.setContentType("text/html; charset=utf-8");
         else if(extension=="jpg")
@@ -241,20 +225,82 @@ namespace repetier {
         else if(extension=="woff")
             resp.setContentType("application/font-woff");
         else if(extension=="otf")
-            resp.setContentType("application/octet-stream");
+            resp.setContentType("font/otf");
         else if(extension=="eot")
             resp.setContentType("application/vnd.ms-fontobject");
         else if(extension=="ttf")
-            resp.setContentType("application/octet-stream");
+            resp.setContentType("font/ttf");
         else if(extension=="svg")
             resp.setContentType("image/svg+xml");
         else
             resp.setContentType("text/plain");
         resp.setContentLength(file.getSize());
+        resp.setStatus(HTTPResponse::HTTP_OK);
+        
+        ostream& out = resp.send();
         ifstream in(filePath.toString().c_str());
         StreamCopier::copyStream(in,out);
         out.flush();
     }
+    
+    void WebSocketRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
+    {
+        Application& app = Application::instance();
+        try
+        {
+            printer = NULL;
+            WebSocket ws(request, response);
+            //app.logger().information("WebSocket connection established.");
+            char buffer[8192];
+            int flags;
+            int n;
+            do
+            {
+                n = ws.receiveFrame(buffer, sizeof(buffer), flags);
+                //app.logger().information(Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)));
+                mValue cmd;
+                if(read(buffer,cmd)) {
+                    mObject &oCmd = cmd.get_obj();
+                    string action = oCmd["action"].get_str();
+                    mObject &data = oCmd["data"].get_obj();
+                    mValue rObj;
+                    if(oCmd.find("printer") != oCmd.end()) {
+                        string p = oCmd["printer"].get_str();
+                        cout << "action " << action << " printer " << p << endl;
+                        if(printer == NULL || printer->slugName != p)
+                            printer = gconfig->findPrinterSlug(p);
+                    }
+                    ActionHandler::dispatch(action, data,rObj,printer);
+                    mObject wsResponse;
+                    wsResponse["data"] = rObj;
+                    wsResponse["callback_id"] = oCmd["callback_id"];
+                    string ret = write(wsResponse,json_spirit::raw_utf8);
+                    mutex::scoped_lock l(sendMutex);
+                    ws.sendFrame(ret.c_str(), (int)ret.length(), flags);
+                }
+            }
+            while (n > 0 || (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
+            //app.logger().information("WebSocket connection closed.");
+        }
+        catch (WebSocketException& exc)
+        {
+            app.logger().log(exc);
+            switch (exc.code())
+            {
+                case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
+                    response.set("Sec-WebSocket-Version", WebSocket::WEBSOCKET_VERSION);
+                    // fallthrough
+                case WebSocket::WS_ERR_NO_HANDSHAKE:
+                case WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
+                case WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
+                    response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
+                    response.setContentLength(0);
+                    response.send();
+                    break;
+            }
+        } 
+    }
+    
     
     void listPrinter(Object &ret) {
         Array parr;
@@ -347,7 +393,7 @@ namespace repetier {
                         printer->getScriptManager()->pushCompleteJob("Kill");
                     }
                 }
-                printer->getJobManager()->fillSJONObject("data",ret);                
+                printer->getJobManager()->fillSJONObject("data",ret);
             }
         } else if(cmdgroup=="model") {
             string a(form.get("a",""));
@@ -374,7 +420,7 @@ namespace repetier {
                     PrintjobPtr job = printer->getModelManager()->findById(id);
                     if(job.get())
                         printer->getModelManager()->RemovePrintjob(job);
-                }	
+                }
                 printer->getModelManager()->fillSJONObject("data",ret);
             } else if(a=="copy") {
                 DynamicAny sid(form.get("id",""));
@@ -392,9 +438,9 @@ namespace repetier {
                             src.close();
                             printer->getJobManager()->finishPrintjobCreation(job, model->getName(), model->getLength());
                         } catch(const std::exception& ex)
-                    {
-                        cerr << "error: Unable to create job file " << job->getFilename() << ":" << ex.what() << endl;
-                    }
+                        {
+                            cerr << "error: Unable to create job file " << job->getFilename() << ":" << ex.what() << endl;
+                        }
                     }
                 }
                 printer->getJobManager()->fillSJONObject("data",ret);
@@ -497,7 +543,7 @@ namespace repetier {
             printer->move(x, y, z, e);
         }
         ret.push_back(Pair("error",error));
-    
+        
         // Print result
 		out << write(ret,json_spirit::raw_utf8);
         out.flush();
@@ -580,25 +626,25 @@ namespace repetier {
                 posclose = epos+ename.length()-2; // Continue after block
                 Value *v = findVariable(vars,name);
                 if(v!=NULL) {
-                if(cmd.length()==0) {
-                    if(v!=NULL && v->type()==array_type) {
-                        Array &a = v->get_array();
-                        vector<Value>::iterator it = a.begin(),iend = a.end();
-                        for(;it!=iend;++it) {
-                            vars.push_front(*it);
+                    if(cmd.length()==0) {
+                        if(v!=NULL && v->type()==array_type) {
+                            Array &a = v->get_array();
+                            vector<Value>::iterator it = a.begin(),iend = a.end();
+                            for(;it!=iend;++it) {
+                                vars.push_front(*it);
+                                FillTemplateRecursive(text, result, vars, pos2, epos);
+                                vars.pop_front();
+                            }
+                        }
+                    } else if(cmd=="if" && v->type()==bool_type) {
+                        if(v->get_bool()) {
                             FillTemplateRecursive(text, result, vars, pos2, epos);
-                            vars.pop_front();
+                        }
+                    } else if(cmd=="ifnot" && v->type()==bool_type) {
+                        if(!v->get_bool()) {
+                            FillTemplateRecursive(text, result, vars, pos2, epos);
                         }
                     }
-                } else if(cmd=="if" && v->type()==bool_type) {
-                    if(v->get_bool()) {
-                        FillTemplateRecursive(text, result, vars, pos2, epos);
-                    }
-                } else if(cmd=="ifnot" && v->type()==bool_type) {
-                    if(!v->get_bool()) {
-                        FillTemplateRecursive(text, result, vars, pos2, epos);
-                    }
-                }
                 }
             } else if(tp=='!') { // Comment, simply ignore it
             } else { // Variable
@@ -670,12 +716,12 @@ namespace repetier {
         obj.push_back(Pair("version",string(REPETIER_SERVER_VERSION)));
         // Step 3: Run template
         string content2;
-        FillTemplate(content, content2, obj);
+        //FillTemplate(content, content2, obj);
         ostream &out = resp.send();
         resp.setContentType("text/html; charset=utf-8");
-        resp.setContentLength(content2.length());
+        resp.setContentLength(content.length());
         resp.setStatus(HTTPResponse::HTTP_OK);
-        out << content2;
+        out << content;
         out.flush();
     }
     static map<string,boost::shared_ptr<moFileLib::moFileReader> > rmap;

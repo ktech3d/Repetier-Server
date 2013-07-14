@@ -1,0 +1,26 @@
+For a fast communication with the server the versions 0.50 upwards use websockets for most of the communication.
+The websocket is reachable vie the url ws://<domain>:<port>/socket
+
+The data send consists of an action string and an object containing the payload. Inside the server any number of
+action listener can be registered. The action string send identifies the action and the matching function is called.
+To identify responses a callback_id is also send along.
+
+Default request:
+{action:"<action to execute>",callback_id:<numeric id>,data:{<payload object>}}
+
+Answer:
+{callback_id:<id send>,data:<response as object or array>}
+
+In case the server submits an event, it looks like this:
+{event:"<event id>",data:<response as object or array>}
+
+
+Defined action:
+---------------
+
+listPrinter, data = {}
+Returns array of defined printer [{name:"name","job":"none","name":"AO-101","online":0,"slug":"ao101"}]
+In case job is not "none" it also contains done:<percent completed>
+
+select, data = {printer:"<slugname>"}
+Selects the printer for printer related calls.

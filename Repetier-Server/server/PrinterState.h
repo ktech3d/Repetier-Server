@@ -104,6 +104,7 @@ public:
     void setIsathome();
     uint32_t getLastline() {boost::mutex::scoped_lock l(mutex);return lastline;}
     void fillJSONObject(json_spirit::Object &obj);
+    void fillJSONObject(json_spirit::mObject &obj);
     std::string getMoveXCmd(double dx,double f);
     std::string getMoveYCmd(double dy,double f);
     std::string getMoveZCmd(double dz,double f);

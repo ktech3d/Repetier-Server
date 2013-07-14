@@ -471,6 +471,39 @@ void PrinterState::fillJSONObject(json_spirit::Object &obj) {
     }
     obj.push_back(Pair("extruder",ea));
 }
+void PrinterState::fillJSONObject(json_spirit::mObject &obj) {
+    using namespace json_spirit;
+    mutex::scoped_lock l(mutex);
+    obj["activeExtruder"] = activeExtruder;
+    obj["x"] = x;
+    obj["y"] = y;
+    obj["z"] = z;
+    obj["fanOn"] = fanOn;
+    obj["fanVoltage"] = fanVoltage;
+    obj["powerOn"] = powerOn;
+    obj["debugLevel"] = debugLevel;
+    obj["hasXHome"] = hasXHome;
+    obj["hasYHome"] = hasYHome;
+    obj["hasZHome"] = hasZHome;
+    obj["layer"] = layer;
+    obj["sdcardMounted"] = sdcardMounted;
+    obj["bedTempSet"] = bed.tempSet;
+    obj["bedTempRead"] = bed.tempRead;
+    obj["speedMultiply"] = speedMultiply;
+    obj["flowMultiply"] = flowMultiply;
+    obj["numExtruder"] = printer->extruderCount;
+    obj["firmware"] = firmware;
+    obj["firmwareURL"] = firmwareURL;
+    mArray ea;
+    for(int i=0;i<printer->extruderCount;i++) {
+        mObject e;
+        e["tempSet"] = extruder[i].tempSet;
+        e["tempRead"] = extruder[i].tempRead;
+        e["output"] = extruder[i].output;
+        ea.push_back(e);
+    }
+    obj["extruder"] = ea;
+}
 void PrinterState::storePause() {
     pauseX = x-xOffset;
     pauseY = y-yOffset;

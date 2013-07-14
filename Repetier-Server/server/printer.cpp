@@ -498,6 +498,9 @@ void Printer::setActive(bool v) {
 void Printer::getJobStatus(json_spirit::Object &obj) {
     jobManager->getJobStatus(obj);
 }
+void Printer::getJobStatus(json_spirit::mObject &obj) {
+    jobManager->getJobStatus(obj);
+}
 void Printer::fillJSONObject(json_spirit::Object &obj) {
     using namespace json_spirit;
     obj.push_back(Pair("active",active));

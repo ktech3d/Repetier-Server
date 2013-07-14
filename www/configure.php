@@ -39,7 +39,7 @@
           <a class="brand" href="http://www.repetier.com/server">Repetier-Server {{version}}</a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li><a href="/index.php"><?php _("Home") ?></a></li>
+              <li><a href="/index_old.php"><?php _("Home") ?></a></li>
               <li class="active"><a href="/about.php"><?php _("About")?></a></li>
               <li><a href="/documentation.php"><?php _("Documentation") ?></a></li>
             </ul>
@@ -52,7 +52,7 @@
 	<div class="span12">  
 		<ul class="breadcrumb">  
   		<li>  
-    		<a href="index.php"><i class="icon-home"></i> <?php _("Printer overview") ?></a> <span class="divider"> &gt; </span>  
+    		<a href="index_old.php"><i class="icon-home"></i> <?php _("Printer overview") ?></a> <span class="divider"> &gt; </span>
   		</li>  
   		<li class="active"><?php _("Configure")?> {{printerName}}</span></li>  
 		</ul>  

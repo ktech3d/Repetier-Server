@@ -29,6 +29,8 @@
 #include "json_spirit_value.h"
 #include <boost/cstdint.hpp>
 #include "GCode.h"
+#include "Poco/BasicEvent.h"
+#include "Poco/Delegate.h"
 
 using namespace boost;
 
@@ -120,6 +122,7 @@ class Printer {
      */
     void manageHostCommand(boost::shared_ptr<GCode> &cmd);
 public:
+    Poco::BasicEvent<json_spirit::Object> printerEvent;
     double xmin,xmax;
     double ymin,ymax;
     double zmin,zmax;
@@ -174,6 +177,7 @@ public:
     bool getActive();
     void setActive(bool v);
     void getJobStatus(json_spirit::Object &obj);
+    void getJobStatus(json_spirit::mObject &obj);
     void connectionClosed();
     inline PrintjobManager *getJobManager() {return jobManager;}
     inline PrintjobManager *getModelManager() {return modelManager;}
