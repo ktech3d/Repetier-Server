@@ -17,6 +17,7 @@
 
 #include "global_config.h"
 #include <boost/filesystem.hpp>
+#include "PrinterState.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -63,31 +64,32 @@ void GlobalConfig::readPrinterConfigs() {
         if ( is_regular(itr->status()) )
         {
             cout << "Printer config: " << itr->path() << endl;
-            Printer *p = new Printer(itr->path().string());
+            PrinterPtr p(new Printer(itr->path().string()));
+            p->Init(p);
             printers.push_back(p);
         }
     }
 }
 void GlobalConfig::startPrinterThreads() {
-    vector<Printer*>::iterator pi;
+    vector<PrinterPtr>::iterator pi;
     for(pi=printers.begin();pi!=printers.end();pi++) {
         (*pi)->startThread();
     }
 }
 
 void GlobalConfig::stopPrinterThreads() {
-    vector<Printer*>::iterator pi;
+    vector<PrinterPtr>::iterator pi;
     for(pi=printers.begin();pi!=printers.end();pi++) {
         (*pi)->stopThread();
     }
 }
 
-Printer *GlobalConfig::findPrinterSlug(const std::string& slug) {
-    for(vector<Printer*>::iterator it=printers.begin();it!=printers.end();it++) {
-        Printer *p = *it;
+PrinterPtr GlobalConfig::findPrinterSlug(const std::string& slug) {
+    for(vector<PrinterPtr>::iterator it=printers.begin();it!=printers.end();it++) {
+        PrinterPtr p = *it;
         if(p->slugName == slug) return p;
     }
-    return NULL;
+    return PrinterPtr();
 }
 
 void GlobalConfig::fillJSONMessages(json_spirit::Array &arr) {

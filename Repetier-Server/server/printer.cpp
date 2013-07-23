@@ -85,7 +85,7 @@ Printer::Printer(string conf) {
             exit(4);
         }
         lastResponseId = 0;
-        state = new PrinterState(this);
+        state = NULL;
         serial = new PrinterSerial(*this);
         resendError = 0;
         errorsReceived = 0;
@@ -106,18 +106,25 @@ Printer::Printer(string conf) {
     cout << "Printer configuration read: " << name << endl;
     cout << "Port:" << device << endl;
 #endif
-    jobManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"jobs",this);
-    modelManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"models",this);
-    scriptManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"scripts",this,true);
 }
 Printer::~Printer() {
     serial->close();
-    delete state;
+    if(state!=NULL)
+        delete state;
     delete serial;
     delete modelManager;
     delete jobManager;
     delete scriptManager;
 }
+void Printer::Init(PrinterPtr ptr) {
+    thisPtr = ptr;
+    state = new PrinterState(ptr); // done at creation
+    jobManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"jobs",ptr);
+    modelManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"models",ptr);
+    scriptManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"scripts",ptr,true);
+
+}
+
 void Printer::startThread() {
     assert(!thread);
     thread = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&Printer::run, this)));
@@ -368,7 +375,7 @@ void Printer::trySendNextLine() {
     if (resendError > 0) resendError--; // Drop error counter
                                         // then check for manual commands
     if (manualCommands.size() > 0)  {
-        gc = shared_ptr<GCode>(new GCode(*this,manualCommands.front()));
+        gc = shared_ptr<GCode>(new GCode(thisPtr,manualCommands.front()));
         if (gc->hostCommand)
         {
             manageHostCommand(gc);
@@ -389,7 +396,7 @@ void Printer::trySendNextLine() {
     }
     // do we have a printing job?
     if (jobCommands.size()>0 && !paused)  {
-        gc = shared_ptr<GCode>(new GCode(*this,jobCommands.front()));
+        gc = shared_ptr<GCode>(new GCode(thisPtr,jobCommands.front()));
         if (gc->hostCommand)
         {
             manageHostCommand(gc);
@@ -530,4 +537,34 @@ void Printer::fillJSONObject(json_spirit::Object &obj) {
         ea.push_back(e);
     }
     obj.push_back(Pair("extruder",ea));
+}
+void Printer::fillJSONObject(json_spirit::mObject &obj) {
+    using namespace json_spirit;
+    obj["active"] = active;
+    obj["paused"] = paused;
+    obj["printerName"] = name;
+    obj["slug"] = slugName;
+    obj["device"] = device;
+    obj["baudrate"] = baudrate;
+    obj["xmin"] = xmin;
+    obj["xmax"] = xmax;
+    obj["ymin"] = ymin;
+    obj["ymax"] = ymax;
+    obj["zmin"] = zmin;
+    obj["zmax"] = zmax;
+    obj["speedx"] = speedx;
+    obj["speedy"] = speedy;
+    obj["speedz"] = speedz;
+    obj["speedeExtrude"] = speedeExtrude;
+    obj["speedeRetract"] = speedeRetract;
+    obj["extruderCount"] = extruderCount;
+    obj["hasHeatedBed"] = hasHeatedBed;
+    mArray ea;
+    for(int i=0;i<extruderCount;i++) {
+        mObject e;
+        e["extruderid"] = i;
+        e["extrudernum"] = i+1;
+        ea.push_back(e);
+    }
+    obj["extruder"] = ea;
 }

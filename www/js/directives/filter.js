@@ -26,3 +26,33 @@ FilterModule.filter('printing', function () {
         return input.job;
     }
 });
+
+FilterModule.filter('byte', function () {
+    return function (input) {
+        if(input < 1024) return input+" byte";
+        input /= 1024.0;
+        if(input < 1024) return input.toFixed(1)+" kB";
+        input /= 1024.0;
+        return input.toFixed(1)+" MB";
+    }
+});
+
+function two_digits(a) {
+    a = a.toFixed(0);
+    if(a.length==1) return "0"+a;
+    return a;
+}
+FilterModule.filter('hms', function () {
+    return function (input) {
+        hours = Math.floor(input/3600);
+        input-=3600*hours;
+        min = Math.floor(input/60);
+        input -= min*60;
+        t = "";
+        if(hours>0)
+            t += hours+"h ";
+        if(min>0 || hours>0)
+            t += two_digits(min)+"m ";
+        return t+two_digits(input)+"s";
+    }
+});

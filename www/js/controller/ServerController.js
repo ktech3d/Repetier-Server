@@ -33,6 +33,9 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
         });
     };
     printerPoller();
+    $scope.closeReveal = function(id) {
+        $('#'+id).foundation('reveal', 'close');
+    }
 }
 
 function AboutController($scope) {

@@ -45,7 +45,7 @@ class GlobalConfig {
     std::string languageDir; ///< Dir with translation text.
     std::string ports; ///< Ports the server should listen to.
     std::string defaultLanguage; ///< Default language if no language is detected
-    std::vector<Printer*> printers;
+    std::vector<PrinterPtr> printers;
     int backlogSize;
     mutex msgMutex; ///< Mutex for thread safety of message system.
     int msgCounter; ///< Last used message id.
@@ -71,8 +71,8 @@ public:
      @param slug slug name of the printer you search
      @return found printer or 0 if printer does not exist.
      */
-    Printer *findPrinterSlug(const std::string& slug);
-    inline std::vector<Printer*> &getPrinterList() {return printers;}
+    PrinterPtr findPrinterSlug(const std::string& slug);
+    inline std::vector<PrinterPtr> &getPrinterList() {return printers;}
     /** Fill the array with all open messages.
      @param obj Array to fill. */ 
     void fillJSONMessages(json_spirit::Array &obj);

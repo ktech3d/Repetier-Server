@@ -23,13 +23,24 @@
 #include <boost/thread.hpp>
 #include "json_spirit_value.h"
 #include <boost/cstdint.hpp>
+#include "printer.h"
+
 using namespace boost;
 
-struct PrinterTemp {
+struct ExtruderStatus {
+    int id;
     uint64_t time;
     double tempSet;
     double tempRead;
     int8_t output;
+    double ePos;
+    double eOffset;
+    double eMax;
+    double ePrinter;
+    double lastE;
+    double e0;
+    ExtruderStatus();
+    void resetPosition();
 };
 class Printer;
 class GCode;
@@ -40,15 +51,18 @@ class GCode;
  The class is thread safe.
  */
 class PrinterState {
-    Printer *printer;
+public:
+    int extruderCount;
+    PrinterPtr printer;
     boost::mutex mutex; // Used for thread safety
-    int activeExtruder;
+    ExtruderStatus *activeExtruder;
     //float extruderTemp;
     bool uploading;
-    PrinterTemp bed;
-    PrinterTemp* extruder;
-    double x, y, z, e,emax,f,eprinter;
-    double lastX,lastY,lastZ,lastE;
+    ExtruderStatus bed;
+    ExtruderStatus* extruder;
+    double x, y, z,f; //, e,emax,f,eprinter;
+    double x0,y0,z0;
+    double lastX,lastY,lastZ; //,lastE;
     double xOffset, yOffset, zOffset, eOffset;
     double lastZPrint;
     bool fanOn;
@@ -78,20 +92,19 @@ class PrinterState {
     int extruderCountSend;
     int speedMultiply;
     int flowMultiply;
-    PrinterTemp& getExtruder(int extruderId);
+    ExtruderStatus& getExtruder(int extruderId);
     
     double pauseX,pauseY,pauseZ,pauseE,pauseF;
     bool pauseRelative;
-public:
     
-    PrinterState(Printer *p);
+    PrinterState(PrinterPtr p,int minExtruder=1);
     ~PrinterState();
     void reset();
     /** Returns the extruder temperature structure. 
      @param extruderId Id of the extruder. -1 for active extruder.
      @returns Temperature state of selected extruder.
      */
-    const PrinterTemp& getExtruder(int extruderId) const;
+    const ExtruderStatus& getExtruder(int extruderId) const;
     /** Analyses the gcode and changes the status variables accordingly. */
     void analyze(GCode &code);
     /** Analyse the response */

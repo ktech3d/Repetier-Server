@@ -58,6 +58,7 @@
 </div>
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="/jquery/jquery.min.js"></script>
+<script src="/jquery/jquery.form.js"></script>
 <!-- <script src="/js/foundation.min.js"></script>-->
 <script src="/js/foundation/foundation.js"></script>
 <script src="/js/foundation/foundation.dropdown.js"></script>

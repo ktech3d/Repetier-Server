@@ -29,21 +29,37 @@ using namespace boost;
 #define _CRT_SECURE_NO_WARNINGS // Disable deprecation warning in VS2005
 #endif
 
-PrinterState::PrinterState(Printer *p) {
+ExtruderStatus::ExtruderStatus() {
+    id = 0;
+    tempSet = tempRead = 0;
+    output = 0;
+    time = 0;
+    ePos = eMax = eOffset = ePrinter = 0;
+}
+void ExtruderStatus::resetPosition() {
+    ePos = eMax = eOffset = ePrinter = 0;
+}
+PrinterState::PrinterState(PrinterPtr p,int minExtruder) {
     printer = p;
-    extruder=new PrinterTemp[printer->extruderCount+1]; // Always one more in case 0 extruder
+    if(printer!=NULL) extruderCount = printer->extruderCount+1; else extruderCount = 10;
+    if(extruderCount<minExtruder) extruderCount = minExtruder;
+    extruder=new ExtruderStatus[extruderCount]; // Always one more in case 0 extruder
+    for(int i=0;i<extruderCount;i++)
+        extruder[i].id = i;
     reset();
 }
     
 void PrinterState::reset() {
     mutex::scoped_lock l(mutex);
-    activeExtruder = 0;
+    for(int i=0;i<extruderCount;i++)
+        extruder[i].resetPosition();
+    activeExtruder = &extruder[0];
     uploading = false;
     bed.output = 0;
     bed.tempSet = bed.tempRead = 0;
-    x = y = z = e = emax = 0;
+    x = y = z = 0;
     f = 1000;
-    lastX = lastY = lastZ = lastE = eprinter = 0;
+    lastX = lastY = lastZ = 0;
     xOffset = yOffset = zOffset = eOffset = 0;
     fanOn = false;
     fanVoltage = 0;
@@ -68,14 +84,14 @@ void PrinterState::reset() {
 PrinterState::~PrinterState() {
     delete[] extruder;
 }
-const PrinterTemp& PrinterState::getExtruder(int extruderId) const {
-    if(extruder<0) extruderId = activeExtruder;
-    if(extruderId>=printer->extruderCount) extruderId = 0;
+const ExtruderStatus& PrinterState::getExtruder(int extruderId) const {
+    if(extruder<0) return *activeExtruder;
+    if(extruderId>=extruderCount) extruderId = 0;
     return extruder[extruderId];
 }
-PrinterTemp& PrinterState::getExtruder(int extruderId) {
-    if(extruderId<0) extruderId = activeExtruder;
-    if(extruderId>=printer->extruderCount) extruderId = 0;
+ExtruderStatus& PrinterState::getExtruder(int extruderId) {
+    if(extruderId<0) return *activeExtruder;
+    if(extruderId>=extruderCount) extruderId = 0;
     return extruder[extruderId];
 }
 void PrinterState::analyze(GCode &code)
@@ -107,6 +123,11 @@ void PrinterState::analyze(GCode &code)
             case 0:
             case 1:
             {
+                isG1Move = true;
+                x0 = x;
+                y0 = y;
+                z0 = z;
+                activeExtruder->e0 = activeExtruder->ePos;
                 eChanged = false;
                 if(code.hasF()) f = code.getF();
                     if (relative)
@@ -116,8 +137,8 @@ void PrinterState::analyze(GCode &code)
                         if(code.hasZ()) z += code.getZ();
                         if(code.hasE()) {
                             eChanged = code.getE()!=0;
-                            e += code.getE();
-                            eprinter += code.getE();
+                            activeExtruder->ePos += code.getE();
+                            activeExtruder->ePrinter += code.getE();
                         }
                     }
                     else
@@ -131,12 +152,12 @@ void PrinterState::analyze(GCode &code)
                         {
                             if (eRelative) {
                                 eChanged = code.getE()!=0;
-                                e += code.getE();
-                                eprinter += code.getE();
+                                activeExtruder->ePos += code.getE();
+                                activeExtruder->ePrinter += code.getE();
                             } else {
-                                eChanged = (eOffset+code.getE())!=e;
-                                e = eOffset + code.getE();
-                                eprinter = code.getE();
+                                eChanged = (eOffset+code.getE())!=activeExtruder->ePos;
+                                activeExtruder->ePos = activeExtruder->eOffset + code.getE();
+                                activeExtruder->ePrinter = code.getE();
                             }
                         }
                     }
@@ -146,8 +167,8 @@ void PrinterState::analyze(GCode &code)
                 if (x > printer->xmax) { x = printer->xmax; hasXHome = false; }
                 if (y > printer->ymax) { y = printer->ymax; hasYHome = false; }
                 if (z > printer->zmax) { z = printer->zmax; hasZHome = false; }
-                if (e > emax) {
-                    emax = e;
+                if (activeExtruder->ePos > activeExtruder->eMax) {
+                    activeExtruder->eMax = activeExtruder->ePos;
                     if(z!=lastZPrint) {
                         lastZPrint = z;
                         layer++;
@@ -156,7 +177,7 @@ void PrinterState::analyze(GCode &code)
                 double dx = abs(x - lastX);
                 double dy = abs(y - lastY);
                 double dz = abs(z - lastZ);
-                double de = abs(e - lastE);
+                double de = abs(activeExtruder->ePos - activeExtruder->lastE);
                 if (dx + dy + dz > 0.001)
                 {
                     printingTime += sqrt(dx * dx + dy * dy + dz * dz) * 60.0f / f;
@@ -165,7 +186,7 @@ void PrinterState::analyze(GCode &code)
                 lastX = x;
                 lastY = y;
                 lastZ = z;
-                lastE = e;
+                activeExtruder->lastE = activeExtruder->ePos;
             }
                 break;
             case 28:
@@ -175,7 +196,7 @@ void PrinterState::analyze(GCode &code)
                 if (code.hasX() || homeAll) { xOffset = 0; x = printer->homex; hasXHome = true; }
                 if (code.hasY() || homeAll) { yOffset = 0; y = printer->homey; hasYHome = true; }
                 if (code.hasZ() || homeAll) { zOffset = 0; z = printer->homez; hasZHome = true; }
-                if (code.hasE()) { eOffset = 0; e = 0; emax = 0; }
+                if (code.hasE()) { activeExtruder->eOffset = 0; activeExtruder->ePos = 0; activeExtruder->eMax = 0; }
                 break;
             }
             case 162:
@@ -196,7 +217,11 @@ void PrinterState::analyze(GCode &code)
                 if (code.hasX()) { xOffset = x-code.getX(); x = xOffset; }
                 if (code.hasY()) { yOffset = y-code.getY(); y = yOffset; }
                 if (code.hasZ()) { zOffset = z-code.getZ(); z = zOffset; }
-                if (code.hasE()) { eOffset = e-code.getE(); lastE = e = eOffset; eprinter = code.getE();}
+                if (code.hasE()) {
+                    activeExtruder->eOffset = activeExtruder->ePos-code.getE();
+                    activeExtruder->lastE = activeExtruder->ePos = activeExtruder->eOffset;
+                    activeExtruder->ePrinter = code.getE();
+                }
                 break;
         }
     }
@@ -257,7 +282,7 @@ void PrinterState::analyze(GCode &code)
     }
     else if (code.hasT())
     {
-        activeExtruder = code.getT();
+        activeExtruder = &getExtruder(code.getT());
     }
 }
 // Extract the value following a identifier ident until the next space or line end.
@@ -324,7 +349,7 @@ void PrinterState::analyseResponse(const string &res,uint8_t &rtype) {
     if (extract(res,"E:",h))
     {
         double v = atof(h.c_str());
-        e = v;
+        activeExtruder->ePos = v;
     }
     if (extract(res,"T0:",h)) {
         int ecnt = 0;
@@ -332,7 +357,7 @@ void PrinterState::analyseResponse(const string &res,uint8_t &rtype) {
             sprintf(b,"T%d:",ecnt);
             if(!extract(res,b,h)) break;
             double t = atof(h.c_str());
-            PrinterTemp &ex = getExtruder(ecnt);
+            ExtruderStatus &ex = getExtruder(ecnt);
             ex.tempRead = t;
             sprintf(b,"@%d:",ecnt);
             if(extract(res,b,h)) {
@@ -346,7 +371,7 @@ void PrinterState::analyseResponse(const string &res,uint8_t &rtype) {
     if (extract(res,"T:",h))
     {
         rtype = 2;
-        PrinterTemp &ex = getExtruder(-1);
+        ExtruderStatus &ex = getExtruder(-1);
         ex.tempRead = atof(h.c_str());
         if (extract(res,"@:",h))
         {
@@ -370,12 +395,12 @@ void PrinterState::analyseResponse(const string &res,uint8_t &rtype) {
     }
     if (extract(res,"TargetExtr0:",h))  {
         rtype = 2;
-        PrinterTemp &ex = getExtruder(0);
+        ExtruderStatus &ex = getExtruder(0);
         ex.tempSet = atof(h.c_str());
     }
     if (extract(res,"TargetExtr1:",h))  {
         rtype = 2;
-        PrinterTemp &ex = getExtruder(0);
+        ExtruderStatus &ex = getExtruder(0);
         ex.tempSet = atof(h.c_str());
     }
     if (extract(res,"TargetBed:",h))  {
@@ -422,7 +447,7 @@ std::string PrinterState::getMoveZCmd(double dz,double f) {
 std::string PrinterState::getMoveECmd(double de,double f) {
     mutex::scoped_lock l(mutex);
     char buf[100];
-    sprintf(buf,"G1 E%.2f F%.0f",relative || eRelative ? de : eprinter+de,f);
+    sprintf(buf,"G1 E%.2f F%.0f",relative || eRelative ? de : activeExtruder->ePrinter+de,f);
     return string(buf);    
 }
 void PrinterState::setIsathome() {
@@ -508,7 +533,7 @@ void PrinterState::storePause() {
     pauseX = x-xOffset;
     pauseY = y-yOffset;
     pauseZ = z-zOffset;
-    pauseE = e-eOffset;
+    pauseE = activeExtruder->ePos-activeExtruder->eOffset;
     pauseF = f;
     pauseRelative = relative;
 }

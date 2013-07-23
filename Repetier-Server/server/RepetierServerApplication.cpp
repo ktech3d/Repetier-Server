@@ -51,7 +51,7 @@ using Poco::Util::HelpFormatter;
 using namespace Poco::Net;
 using namespace Poco;
 using namespace std;
-
+using namespace repetier;
 
 class RepetierHTTPRequestHandlerFactory: public HTTPRequestHandlerFactory
 {
@@ -166,19 +166,7 @@ int RepetierServerApplication::main(const std::vector<std::string>& args)
         srv.start();
         waitForTerminationRequest();
         srv.stop();
-       /* const char *options[] = {"document_root", gconfig->getWebsiteRoot().c_str(),"listening_ports", (port!=0 ? Poco::NumberFormatter::format(port).c_str() : gconfig->getPorts().c_str()), NULL};
-        
-        ctx = mg_start(&callback, NULL, options);
-        //getchar();  // Wait until user hits "enter"
-        if(gconfig->daemon) {
-            while(1) {
-                boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
-            }
-        }
-        while(true) {
-            if(getchar()=='x') break;
-        }
-        mg_stop(ctx);*/
+        ShutdownManager::waitForShutdown();
         cout << "Closing server" << endl;
         gconfig->stopPrinterThreads();
     }

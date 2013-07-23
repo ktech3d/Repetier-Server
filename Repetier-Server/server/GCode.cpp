@@ -23,6 +23,7 @@
 #include "GCode.h"
 #include "printer.h"
 #include <boost/algorithm/string.hpp>
+#include "Poco/string.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -37,12 +38,12 @@ GCodeDataPacket::~GCodeDataPacket() {
 
 
 
-GCode::GCode(Printer &printer,string const& cmd) {
-    orig = cmd;
+GCode::GCode(PrinterPtr printer,string const& cmd) {
+    orig = Poco::trim(cmd);
     text = "";
     hostCommand = false;
     forceASCII = false;
-    parse(&printer);
+    parse(printer);
 }
 GCode::~GCode() {
 }
@@ -50,7 +51,7 @@ void GCode::setN(int32_t line) {
     n = line;
     fields |= 1;
 }
-void GCode::parse(Printer *printer) {
+void GCode::parse(PrinterPtr printer) {
     fields = 128;
     fields2 = 0;
     string cmd = orig;
@@ -276,7 +277,7 @@ GCodeDataPacketPtr GCode::getAscii(bool inclLine,bool inclChecksum)
     memcpy(dp,st.c_str(),st.length());
     return shared_ptr<GCodeDataPacket>(new GCodeDataPacket((int)st.length(),dp));
 }
-void GCode::ActivateV2OrForceAscii(Printer *printer)
+void GCode::ActivateV2OrForceAscii(PrinterPtr &printer)
 {
     if (printer->binaryProtocol < 2)
     {
@@ -285,7 +286,7 @@ void GCode::ActivateV2OrForceAscii(Printer *printer)
     }
     fields |= 4096;
 }
-void GCode::addCode(Printer *printer,char c,const string& val) {
+void GCode::addCode(PrinterPtr &printer,char c,const string& val) {
     double d = atof(val.c_str());
     switch (c)
     {

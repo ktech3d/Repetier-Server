@@ -87,6 +87,31 @@ namespace repetier {
     PrinterRequestHandler printerRequestHandler;
     WebSocketRequestHandler socketRequestHandler;
     
+    
+    int ShutdownManager::openRunners = 0;
+    boost::mutex ShutdownManager::mutex;
+    bool ShutdownManager::shutdown = false;
+    void ShutdownManager::increaseRunner() {
+        mutex::scoped_lock l(mutex);
+        openRunners++;
+    }
+    void ShutdownManager::decreaseRunner() {
+        mutex::scoped_lock l(mutex);
+        openRunners--;
+    }
+    void ShutdownManager::waitForShutdown() {
+        shutdown = true;
+        do {
+            boost::this_thread::sleep(boost::posix_time::milliseconds(100));
+        } while(openRunners);
+    }
+    ShutdownManager::ShutdownManager() {
+        increaseRunner();
+    }
+    ShutdownManager::~ShutdownManager() {
+        decreaseRunner();
+    }
+    
     class MyPartHandler: public Poco::Net::PartHandler
     {
         static int counter;
@@ -156,6 +181,7 @@ namespace repetier {
     std::map<std::string, Poco::Net::HTTPRequestHandler*> MainRequestHandler::actionMap;
     
     void MainRequestHandler::handleRequest(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp) {
+        ShutdownManager shm; // Needs only to be there
         string uriString = req.getURI();
         size_t endp = uriString.find_first_of('?');
         if(endp!=string::npos)
@@ -248,7 +274,6 @@ namespace repetier {
         Application& app = Application::instance();
         try
         {
-            printer = NULL;
             WebSocket ws(request, response);
             //app.logger().information("WebSocket connection established.");
             char buffer[8192];
@@ -257,16 +282,16 @@ namespace repetier {
             do
             {
                 n = ws.receiveFrame(buffer, sizeof(buffer), flags);
+                if(ShutdownManager::shutdown) return;
                 //app.logger().information(Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)));
                 mValue cmd;
-                if(read(buffer,cmd)) {
+                if((n > 0 || (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE) && read(buffer,cmd)) {
                     mObject &oCmd = cmd.get_obj();
                     string action = oCmd["action"].get_str();
                     mObject &data = oCmd["data"].get_obj();
                     mValue rObj;
                     if(oCmd.find("printer") != oCmd.end()) {
                         string p = oCmd["printer"].get_str();
-                        cout << "action " << action << " printer " << p << endl;
                         if(printer == NULL || printer->slugName != p)
                             printer = gconfig->findPrinterSlug(p);
                     }
@@ -298,27 +323,27 @@ namespace repetier {
                     response.send();
                     break;
             }
-        } 
+        }
+        catch(Exception& ex) {
+            app.logger().log(ex);
+        }
     }
     
     
-    void listPrinter(Object &ret) {
-        Array parr;
-        std::vector<Printer*> *list = &gconfig->getPrinterList();
-        for(vector<Printer*>::iterator i=list->begin();i!=list->end();++i) {
-            Object pinfo;
-            Printer *p = *i;
-            pinfo.push_back(Pair("name",p->name));
-            pinfo.push_back(Pair("slug",p->slugName));
-            pinfo.push_back(Pair("online",(p->getOnlineStatus())));
+    void listPrinter(mObject &ret) {
+        mArray parr;
+        std::vector<PrinterPtr> *list = &gconfig->getPrinterList();
+        for(vector<PrinterPtr>::iterator i=list->begin();i!=list->end();++i) {
+            mObject pinfo;
+            PrinterPtr p = *i;
+            pinfo["name"] = p->name;
+            pinfo["slug"] = p->slugName;
+            pinfo["online"] = p->getOnlineStatus();
             p->getJobStatus(pinfo);
-            pinfo.push_back(Pair("active",p->getActive()));
+            pinfo["active"] = p->getActive();
             parr.push_back(pinfo);
         }
-        ret.push_back(Pair("data",parr));
-        Array msg;
-        gconfig->fillJSONMessages(msg);
-        ret.push_back(Pair("messages",msg));
+        ret["data"] = parr;
     }
     void PrinterRequestHandler::handleRequest(HTTPServerRequest &req, HTTPServerResponse &resp) {
         MyPartHandler partHandler;
@@ -333,12 +358,12 @@ namespace repetier {
         
         // First check the path for its parts
         string error;
-        Printer *printer = NULL;
+        PrinterPtr printer((Printer*)NULL);
         string cmdgroup = (segments.size()>1 ? segments[1] : "");
         if(segments.size()>2) { // Read printer string
             printer = gconfig->findPrinterSlug(segments[2]);
         }
-        Object ret;
+        mObject ret;
         if(cmdgroup=="list") {
             listPrinter(ret);
         } else if(printer==NULL) {
@@ -347,9 +372,9 @@ namespace repetier {
             string a = form.get("a","");
             if(a=="list") {
                 printer->getJobManager()->fillSJONObject("data",ret);
-                Array msg;
+                mArray msg;
                 gconfig->fillJSONMessages(msg);
-                ret.push_back(Pair("messages",msg));
+                ret["messages"] = msg;
             } else if(a=="upload") {
 #ifdef DEBUG
                 cout << "Upload job" << endl;
@@ -404,6 +429,8 @@ namespace repetier {
                 cout << "Upload model" << endl;
 #endif
                 string name,jobname(form.get("name",""));
+                if(jobname.length()==0)
+                    jobname = partHandler.fileName();
                 PrintjobPtr job = printer->getModelManager()->createNewPrintjob(jobname);
                 File file(partHandler.storage());
                 file.renameTo(job->getFilename());
@@ -485,9 +512,9 @@ namespace repetier {
             }
             if(id) {
                 gconfig->removeMessage(id);
-                Array msg;
+                mArray msg;
                 gconfig->fillJSONMessages(msg);
-                ret.push_back(Pair("messages",msg));
+                ret["messages"] = msg;
             }
         } else if(cmdgroup == "pconfig") {
             string a(form.get("a",""));
@@ -506,43 +533,8 @@ namespace repetier {
             if(!cmd.empty()) {
                 printer->injectManualCommand(cmd);
             }
-        } else if(cmdgroup=="response") { // Return log
-            DynamicAny sfilter(form.get("filter","")),sstart(form.get("start",""));
-            uint8_t filter=0;
-            uint32_t start=0;
-            if(!sfilter.isNumeric())
-                filter = sfilter.convert<uint8_t>();
-            if(!sstart.isNumeric())
-                start = sstart.convert<uint32_t>();
-            boost::shared_ptr<list<boost::shared_ptr<PrinterResponse> > > rlist = printer->getResponsesSince(start,filter, start);
-            Object lobj;
-            lobj.push_back(Pair("lastid",(int)start));
-            Array a;
-            list<boost::shared_ptr<PrinterResponse> >::iterator it = rlist->begin(),end=rlist->end();
-            for(;it!=end;++it) {
-                PrinterResponse *resp = (*it).get();
-                Object o;
-                o.push_back(Pair("id",(int)resp->responseId));
-                o.push_back(Pair("time",resp->getTimeString()));
-                o.push_back(Pair("text",resp->message));
-                o.push_back(Pair("type",resp->logtype));
-                a.push_back(o);
-            }
-            lobj.push_back(Pair("lines",a));
-            Object state;
-            printer->state->fillJSONObject(state);
-            lobj.push_back(Pair("state",state));
-            ret.push_back(Pair("data",lobj));
-        } else if(cmdgroup=="move") {
-            DynamicAny sx(form.get("x","")),sy(form.get("y","")),sz(form.get("z","")),se(form.get("e",""));
-            double x=0,y=0,z=0,e=0;
-            if(sx.isNumeric()) x = sx.convert<double>();
-            if(sy.isNumeric()) y = sy.convert<double>();
-            if(sz.isNumeric()) z = sz.convert<double>();
-            if(se.isNumeric()) e = se.convert<double>();
-            printer->move(x, y, z, e);
         }
-        ret.push_back(Pair("error",error));
+        ret["error"] = error;
         
         // Print result
 		out << write(ret,json_spirit::raw_utf8);
@@ -710,7 +702,7 @@ namespace repetier {
         Object obj;
         string param = form.get("pn","");
         if(!param.empty()) {
-            Printer *p = gconfig->findPrinterSlug(param);
+            PrinterPtr p = gconfig->findPrinterSlug(param);
             if(p) p->fillJSONObject(obj);
         }
         obj.push_back(Pair("version",string(REPETIER_SERVER_VERSION)));

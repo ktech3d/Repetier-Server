@@ -26,7 +26,7 @@
 using namespace boost;
 
 class Printer;
-
+typedef boost::shared_ptr<Printer> PrinterPtr;
 
 class GCodeDataPacket {
 public:
@@ -38,9 +38,9 @@ public:
 typedef boost::shared_ptr<GCodeDataPacket> GCodeDataPacketPtr;
 
 class GCode {
-    void ActivateV2OrForceAscii(Printer *printer);
-    void parse(Printer *printer);
-    void addCode(Printer *printer,char c,const std::string & val);
+    void ActivateV2OrForceAscii(PrinterPtr &printer);
+    void parse(PrinterPtr printer);
+    void addCode(PrinterPtr &printer,char c,const std::string & val);
 public:
     uint16_t fields,fields2;
     int32_t n;
@@ -54,7 +54,7 @@ public:
     bool comment;
     bool hostCommand;
     bool forceASCII;
-    GCode(Printer &printer, std::string const &cmd);
+    GCode(PrinterPtr printer, std::string const &cmd);
     ~GCode();
 
     inline bool hasM()  {return (fields & 2)!=0;}

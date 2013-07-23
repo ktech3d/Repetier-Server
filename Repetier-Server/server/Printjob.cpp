@@ -26,10 +26,14 @@
 #include "printer.h"
 #include "global_config.h"
 #include "RLog.h"
+#include "GCodeAnalyser.h"
+#include "Poco/File.h"
+#include "Poco/Path.h"
 
 using namespace std;
 using namespace boost;
 using namespace boost::filesystem;
+using namespace Poco;
 #if defined(_WIN32)
 #define _CRT_SECURE_NO_WARNINGS // Disable deprecation warning in VS2005
 #endif
@@ -37,7 +41,7 @@ using namespace boost::filesystem;
 typedef vector<path> pvec;             // store paths
 typedef list<shared_ptr<Printjob> > pjlist;
 
-PrintjobManager::PrintjobManager(string dir,Printer *_prt,bool _scripts) {
+PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts) {
     scripts = _scripts;
     printer = _prt;
     char lc = dir[dir.length()-1];
@@ -69,6 +73,7 @@ PrintjobManager::PrintjobManager(string dir,Printer *_prt,bool _scripts) {
             bool hasScript1=false,hasScript2=false,hasScript3=false,hasScript4=false,hasScript5=false;
             for (pvec::const_iterator it (v.begin()); it != v.end(); ++it)
             {
+                if((*it).string().find('.')==0) continue; // Hidden file, ignore it
                 PrintjobPtr pj(new Printjob((*it).string(),false));
                 files.push_back(pj);
                 string name = it->filename().string();
@@ -94,12 +99,16 @@ PrintjobManager::PrintjobManager(string dir,Printer *_prt,bool _scripts) {
         } else {
             for (pvec::const_iterator it (v.begin()); it != v.end(); ++it)
             {
+                string name = it->string();
+                Path p(name);
+                if(p.getExtension()!="g") continue; 
+                string sid = it->filename().string();
+                if(sid.find('.')==0) continue; // Hidden file, ignore it
                 PrintjobPtr pj(new Printjob((*it).string(),false));
                 if(!pj->isNotExistent()) {
                     files.push_back(pj);
                 }
                 // Extract id for last id;
-                string sid = it->filename().string();
                 size_t upos = sid.find('_');
                 if(upos!=string::npos) {
                     sid = sid.substr(0,upos);
@@ -217,6 +226,15 @@ void PrintjobManager::fillSJONObject(std::string name,json_spirit::mObject &o) {
                 j["state"] = "error";
                 break;
         }
+        shared_ptr<GCodeAnalyser> info = job->getInfo(printer);
+        j["printTime"] = info->printingTime;
+        j["lines"] = info->lines;
+        j["filamentTotal"] = info->totalFilamentUsed;
+        mArray extruderUsage;
+        for(vector<double>::iterator it2=info->filamentUsed.begin();it2!=info->filamentUsed.end();++it2)
+            extruderUsage.push_back(*it2);
+        j["extruderUsage"] = extruderUsage;
+        j["printed"] = info->printed;
         a.push_back(j);
     }
     o[name] = a;
@@ -241,6 +259,7 @@ void PrintjobManager::getJobStatus(json_spirit::mObject &obj) {
         obj["job"] = "none";
     } else {
         obj["job"] = job->getName();
+        obj["jobid"] = job->id;
         obj["done"] = job->percentDone();
     }
 }
@@ -299,9 +318,7 @@ void PrintjobManager::finishPrintjobCreation(PrintjobPtr job,string namerep,size
 }
 void PrintjobManager::RemovePrintjob(PrintjobPtr job) {
     mutex::scoped_lock l(filesMutex);
-    path p(job->getFilename());
-    if(exists(p) && is_regular_file(p))
-        remove(p);
+    job->removeFiles();
     files.remove(job);
 }
 void PrintjobManager::startJob(int id) {
@@ -329,7 +346,7 @@ void PrintjobManager::killJob(int id) {
     }
     try {
         files.remove(runningJob);
-        remove(path(runningJob->getFilename())); // Delete file from disk
+        runningJob->removeFiles();// Delete file from disk
     } catch(std::exception &e) {
         string msg= "Failed to remove killed job file "+runningJob->getFilename();
         string answer = "/printer/msg/"+printer->slugName+"?a=ok";
@@ -348,6 +365,7 @@ void PrintjobManager::undoCurrentJob() {
         jobin.close();
     }
     runningJob->setStored();
+    runningJob->removeFiles();
     files.remove(runningJob);
     runningJob.reset();
 }
@@ -375,7 +393,8 @@ void PrintjobManager::manageJobs() {
         files.remove(runningJob);
         runningJob->stop(printer);
         try {
-            remove(path(runningJob->getFilename())); // Delete file from disk
+            runningJob->removeFiles();
+            //remove(path(runningJob->getFilename())); // Delete file from disk
         } catch(std::exception) {
             RLog::log("error: Failed to remove finished job @",runningJob->getFilename());
             string msg= "Failed to remove finished job file "+runningJob->getFilename();
@@ -452,6 +471,8 @@ void PrintjobManager::pushCompleteJobNoBlock(std::string name,bool beginning) {
 }
 // ============= Printjob =============================
 
+mutex Printjob::InfoMutex;
+
 Printjob::Printjob(string _file,bool newjob,bool _script) {
     file = _file;
     script = _script;
@@ -479,6 +500,16 @@ Printjob::Printjob(string _file,bool newjob,bool _script) {
     }
 
 }
+shared_ptr<GCodeAnalyser> Printjob::getInfo(PrinterPtr printer) {
+    mutex::scoped_lock l(InfoMutex);
+    if(info == NULL) {
+        if(printer!=NULL)
+            info.reset(new GCodeAnalyser(printer,file));
+        else
+            info.reset(new GCodeAnalyser(file));
+    }
+    return info;
+}
 
 std::string Printjob::getName() {
     return PrintjobManager::decodeNamePart(file);
@@ -488,7 +519,7 @@ void Printjob::start() {
     linesSend = 0;
     time = boost::posix_time::microsec_clock::local_time();
 }
-void Printjob::stop(Printer *p) {
+void Printjob::stop(PrinterPtr p) {
     posix_time::ptime now  = boost::posix_time::microsec_clock::local_time();
     posix_time::time_duration td(now-time);
     char b[100];
@@ -496,4 +527,10 @@ void Printjob::stop(Printer *p) {
     string msg = "Print of "+getName()+" on printer "+p->name+ " finished. Send "+intToString(linesSend)+" lines. Printing time: "+b;
     string url = "/printer/msg/"+p->slugName+"?a=jobfinsihed";
     gconfig->createMessage(msg, url);
+}
+void Printjob::removeFiles() {
+    PrinterPtr ptr;
+    getInfo(ptr)->removeData();
+    File f(file);
+    f.remove();
 }

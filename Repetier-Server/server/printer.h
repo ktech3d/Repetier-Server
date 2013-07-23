@@ -24,6 +24,10 @@
 #include <deque>
 #include <list>
 #include <boost/shared_ptr.hpp>
+
+class Printer;
+typedef boost::shared_ptr<Printer> PrinterPtr;
+
 #include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include "json_spirit_value.h"
@@ -42,13 +46,14 @@ class PrintjobManager;
 class Printjob;
 class GCode;
 class GCodeDataPacket;
+typedef boost::shared_ptr<GCodeDataPacket> GCodeDataPacketPtr;
 
 class PrinterResponse {
 public:
     uint32_t responseId;
     boost::posix_time::ptime time;
     std::string message;
-    /** 
+    /**
      1 : Commands
      2 : ACK responses like ok, wait, temperature
      4 : Other responses
@@ -67,6 +72,7 @@ public:
 
 class Printer {
     friend class PrintjobManager;
+    PrinterPtr thisPtr;
     libconfig::Config config;
     PrintjobManager *jobManager;
     PrintjobManager *modelManager;
@@ -146,7 +152,7 @@ public:
     
     Printer(std::string conf);
     ~Printer();
-    
+    void Init(PrinterPtr ptr);
     void updateLastTempMutex();
 
     /** The serial reader calls this for each line received. */
@@ -172,6 +178,7 @@ public:
     /** Number of job commands stored */
     size_t jobCommandsStored();
     void fillJSONObject(json_spirit::Object &obj);
+    void fillJSONObject(json_spirit::mObject &obj);
     void move(double x,double y,double z,double e);
     int getOnlineStatus();
     bool getActive();

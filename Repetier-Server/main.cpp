@@ -68,6 +68,5 @@ int main(int argc, char * argv[])
 {
     RepetierServerApplication app;
     return app.run(argc, argv);
-	return 0;
 }
 

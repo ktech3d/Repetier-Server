@@ -26,12 +26,22 @@
 #include "Poco/Net/HTTPServerRequest.h"
 #include "Poco/Net/HTTPServerResponse.h"
 #include <map>
-#include "json_spirit.h"
 #include <boost/thread.hpp>
+#include "printer.h"
 
 class Printer;
 namespace repetier {
-    
+    class ShutdownManager {
+        static int openRunners;
+        static boost::mutex mutex;
+        static void increaseRunner();
+        static void decreaseRunner();
+    public:
+        ShutdownManager();
+        ~ShutdownManager();
+        static void waitForShutdown();
+        static bool shutdown;
+    };
     class MainRequestHandler : public Poco::Net::HTTPRequestHandler
     {
     public:
@@ -55,7 +65,7 @@ namespace repetier {
     public:
         void handleRequest(Poco::Net::HTTPServerRequest& request, Poco::Net::HTTPServerResponse& response);
     private:
-        Printer *printer;
+        PrinterPtr printer;
         boost::mutex sendMutex;
     };
     extern PrinterRequestHandler printerRequestHandler;

@@ -19,18 +19,20 @@
 #ifndef __Repetier_Server__Printjob__
 #define __Repetier_Server__Printjob__
 
-#include <iostream>
-#include <list>
-#include <boost/shared_ptr.hpp>
 #include <boost/thread.hpp>
-#include "json_spirit_value.h"
 #include <fstream>
 #include <boost/cstdint.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include "printer.h"
+
 using namespace boost;
 
 class Printer;
+class PrintjobManager;
+class GCodeAnalyser;
+
 class Printjob {
+    friend class PrintjobManager;
 public:
     enum PrintjobState {startUpload,stored,running,finished,doesNotExist};
     
@@ -49,9 +51,12 @@ public:
     inline void setPos(long long p) {pos = p;}
     inline double percentDone() {return 100.0*pos/(double)length;}
     inline void incrementLinesSend() {linesSend++;}
+    void removeFiles();
     void start();
-    void stop(Printer *p);
+    void stop(PrinterPtr p);
+    shared_ptr<GCodeAnalyser> getInfo(PrinterPtr printer);
 private:
+    static mutex InfoMutex;
     bool script;
     int id;
     std::string file;
@@ -60,6 +65,7 @@ private:
     PrintjobState state;
     int linesSend;
     boost::posix_time::ptime time;
+    boost::shared_ptr<GCodeAnalyser> info;
 };
 typedef boost::shared_ptr<Printjob> PrintjobPtr;
 
@@ -80,9 +86,9 @@ class PrintjobManager {
     std::ifstream jobin;
     PrintjobPtr findByIdInternal(int id);
     bool scripts;
-    Printer *printer;
+    PrinterPtr printer;
 public:
-    PrintjobManager(std::string dir,Printer *p,bool _scripts=false);
+    PrintjobManager(std::string dir,PrinterPtr p,bool _scripts=false);
     void cleanupUnfinsihed();
     std::string encodeName(int id,std::string name,std::string postfix,bool withDir);
     static std::string decodeNamePart(std::string file);

@@ -7,11 +7,12 @@
 //
 
 #include "ActionHandler.h"
-#include "printer.h"
 #include "PrinterState.h"
 #include "global_config.h"
 #include "Printjob.h"
 #include <vector>
+#include "Poco/StreamCopier.h"
+#include "GCodeAnalyser.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -23,7 +24,7 @@ namespace repetier {
     void ActionHandler::registerAction(std::string action,actionFunction func){
         actionMap[action] = func;
     }
-    void ActionHandler::dispatch(std::string &action, json_spirit::mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::dispatch(std::string &action, json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         actionFunction func = actionMap[action];
         if(func == NULL) {
             return;
@@ -39,14 +40,20 @@ namespace repetier {
         registerAction("move",&actionMove);
         registerAction("removeMessage",&actionRemoveMessage);
         registerAction("removeModel",&actionRemoveModel);
+        registerAction("listModels",&actionListModels);
+        registerAction("copyModel",&actionCopyModel);
+        registerAction("listJobs",&actionListJobs);
+        registerAction("startJob",&actionStartJob);
+        registerAction("stopJob",&actionStopJob);
+        registerAction("removeJob",&actionRemoveJob);
     }
     
-    void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mArray ret;
-        std::vector<Printer*> *list = &gconfig->getPrinterList();
-        for(vector<Printer*>::iterator i=list->begin();i!=list->end();++i) {
+        std::vector<PrinterPtr> *list = &gconfig->getPrinterList();
+        for(vector<PrinterPtr>::iterator i=list->begin();i!=list->end();++i) {
             mObject pinfo;
-            Printer *p = *i;
+            PrinterPtr p = *i;
             pinfo["name"] = p->name;
             pinfo["slug"] = p->slugName;
             pinfo["online"] = p->getOnlineStatus();
@@ -57,19 +64,19 @@ namespace repetier {
         out = ret;
     }
     
-    void ActionHandler::actionMessages(mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::actionMessages(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mArray ret;
         gconfig->fillJSONMessages(ret);
         out = ret;
     }
     
-    void ActionHandler::actionSend(mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::actionSend(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         if(printer==NULL) return;
         string cmd = obj["cmd"].get_str();
         printer->injectManualCommand(cmd);
     }
 
-    void ActionHandler::actionResponse(mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::actionResponse(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         if(printer==NULL) return;
         mObject lobj;
         uint8_t filter=obj["filter"].get_int();
@@ -94,7 +101,7 @@ namespace repetier {
         out = lobj;
     }
     
-    void ActionHandler::actionMove(mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::actionMove(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         if(printer==NULL) return;
         double x=0,y=0,z=0,e=0;
         if(obj.find("x")!=obj.end())
@@ -106,9 +113,11 @@ namespace repetier {
         if(obj.find("e")!=obj.end())
             e = obj["e"].get_real();
         printer->move(x, y, z, e);
+        mObject o;
+        out = o;
     }
 
-    void ActionHandler::actionRemoveMessage(mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::actionRemoveMessage(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         string a(obj["a"].get_str());
         int id = obj["id"].get_int();
         if(a=="unpause") {
@@ -123,7 +132,7 @@ namespace repetier {
 
     }
 
-    void ActionHandler::actionRemoveModel(mObject &obj,json_spirit::mValue &out,Printer *printer) {
+    void ActionHandler::actionRemoveModel(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         int id = obj["id"].get_int();
         PrintjobPtr job = printer->getModelManager()->findById(id);
         if(job.get())
@@ -132,4 +141,77 @@ namespace repetier {
         printer->getModelManager()->fillSJONObject("data",ret);
         out = ret;
     }
+    
+    void ActionHandler::actionListModels(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        mObject ret;
+        printer->getModelManager()->fillSJONObject("data",ret);
+        out = ret;
+    }
+    void ActionHandler::actionCopyModel(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        mObject ret;
+        int id = obj["id"].get_int();
+        PrintjobPtr model = printer->getModelManager()->findById(id);
+        if(model.get()) {
+            PrintjobPtr job = printer->getJobManager()->createNewPrintjob(model->getName());
+            job->setLength(model->getLength());
+            try {
+                    std::ifstream  src(model->getFilename().c_str());
+                    std::ofstream  dst(job->getFilename().c_str());
+                    Poco::StreamCopier::copyStream(src, dst);
+                    dst.close();
+                    src.close();
+                    printer->getJobManager()->finishPrintjobCreation(job, model->getName(), model->getLength());
+            } catch(const std::exception& ex) {
+                    cerr << "error: Unable to create job file " << job->getFilename() << ":" << ex.what() << endl;
+            }
+        }
+        printer->getJobManager()->fillSJONObject("data",ret);
+        out = ret;
+    }
+    
+    void ActionHandler::actionListJobs(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        mObject ret;
+        printer->getJobManager()->fillSJONObject("data",ret);
+        out = ret;
+    }
+    
+    void ActionHandler::actionStartJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        mObject ret;
+        int id = obj["id"].get_int();
+        PrintjobPtr job = printer->getJobManager()->findById(id);
+        if(job.get()) {
+            PrintjobPtr jobOrig = printer->getModelManager()->findByName(job->getName());
+            if(jobOrig!=NULL) {
+                shared_ptr<GCodeAnalyser> gca = jobOrig->getInfo(printer);
+                gca->printed++;
+                gca->safeData();
+            }
+            printer->getJobManager()->startJob(id);
+        }
+        printer->getJobManager()->fillSJONObject("data",ret);
+        out = ret;
+    }
+    
+    void ActionHandler::actionStopJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        mObject ret;
+        int id = obj["id"].get_int();
+        PrintjobPtr job = printer->getJobManager()->findById(id);
+        if(job.get()) {
+            printer->getJobManager()->killJob(id);
+            printer->getScriptManager()->pushCompleteJob("Kill");
+        }
+        printer->getJobManager()->fillSJONObject("data",ret);
+        out = ret;
+    }
+    
+    void ActionHandler::actionRemoveJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        mObject ret;
+        int id = obj["id"].get_int();
+        PrintjobPtr job = printer->getJobManager()->findById(id);
+        if(job.get())
+            printer->getJobManager()->RemovePrintjob(job);
+        printer->getJobManager()->fillSJONObject("data",ret);
+        out = ret;
+    }
 }
+    
