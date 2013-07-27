@@ -1,5 +1,6 @@
 /*
- Copyright 2012 Roland Littwin (repetier) repetierdev@gmail.com
+ Copyright 2012-2013 Hot-World GmbH & Co. KG
+ Author: Roland Littwin (repetier) repetierdev@gmail.com
  Homepage: http://www.repetier.com
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+ 
  */
 
 
@@ -33,10 +35,11 @@ class GCodeAnalyser;
 
 class Printjob {
     friend class PrintjobManager;
+    PrintjobManager *manager;
 public:
     enum PrintjobState {startUpload,stored,running,finished,doesNotExist};
     
-    Printjob(std::string _file,bool newjob,bool _script=false);
+    Printjob(PrintjobManager *mgr,std::string _file,bool newjob,bool _script=false);
     
     inline bool isNotExistent() {return state==doesNotExist;}
     std::string getName();
@@ -78,6 +81,7 @@ typedef boost::shared_ptr<Printjob> PrintjobPtr;
  never finished.
  */
 class PrintjobManager {
+    friend class Printjob;
     std::string directory;
     std::list<PrintjobPtr> files;
     int lastid;
@@ -87,6 +91,7 @@ class PrintjobManager {
     PrintjobPtr findByIdInternal(int id);
     bool scripts;
     PrinterPtr printer;
+    void signalChange();
 public:
     PrintjobManager(std::string dir,PrinterPtr p,bool _scripts=false);
     void cleanupUnfinsihed();

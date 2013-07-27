@@ -1,5 +1,6 @@
 /*
- Copyright 2012 Roland Littwin (repetier) repetierdev@gmail.com
+ Copyright 2012-2013 Hot-World GmbH & Co. KG
+ Author: Roland Littwin (repetier) repetierdev@gmail.com
  Homepage: http://www.repetier.com
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+ 
  */
 
 
@@ -28,6 +30,7 @@
 #include <map>
 #include <boost/thread.hpp>
 #include "printer.h"
+#include "ServerEvents.h"
 
 class Printer;
 namespace repetier {
@@ -42,6 +45,7 @@ namespace repetier {
         static void waitForShutdown();
         static bool shutdown;
     };
+    
     class MainRequestHandler : public Poco::Net::HTTPRequestHandler
     {
     public:
@@ -54,11 +58,13 @@ namespace repetier {
     private:
         static std::map<std::string, Poco::Net::HTTPRequestHandler*> actionMap;
     };
+    
     class PrinterRequestHandler : public Poco::Net::HTTPRequestHandler
     {
     public:
         virtual void handleRequest(Poco::Net::HTTPServerRequest &req, Poco::Net::HTTPServerResponse &resp);
     };
+    
     class WebSocketRequestHandler: public Poco::Net::HTTPRequestHandler
 	/// Handle a WebSocket connection.
     {

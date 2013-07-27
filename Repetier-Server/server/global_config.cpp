@@ -1,5 +1,6 @@
 /*
- Copyright 2012 Roland Littwin (repetier) repetierdev@gmail.com
+ Copyright 2012-2013 Hot-World GmbH & Co. KG
+ Author: Roland Littwin (repetier) repetierdev@gmail.com
  Homepage: http://www.repetier.com
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +14,13 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+ 
  */
 
 #include "global_config.h"
 #include <boost/filesystem.hpp>
 #include "PrinterState.h"
+#include "ServerEvents.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -124,6 +127,11 @@ void GlobalConfig::createMessage(std::string &msg,std::string &link) {
     p->message = msg;
     p->finishLink = link+"&id="+intToString(p->mesgId);
     msgList.push_back(p);
+    json_spirit::mObject data;
+    json_spirit::mValue val(data);
+    PrinterPtr pptr;
+    RepetierEventPtr event(new RepetierEvent(pptr,"messagesChanged",val));
+    RepetierEvent::fireEvent(event);
 }
 
 void GlobalConfig::removeMessage(int id) {
@@ -135,6 +143,11 @@ void GlobalConfig::removeMessage(int id) {
             break;
         }
     }
+    json_spirit::mObject data;
+    json_spirit::mValue val(data);
+    PrinterPtr pptr;
+    RepetierEventPtr event(new RepetierEvent(pptr,"messagesChanged",val));
+    RepetierEvent::fireEvent(event);
 }
 
 std::string intToString(int number) {

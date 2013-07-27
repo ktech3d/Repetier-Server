@@ -1,10 +1,21 @@
-//
-//  ActionHandler.cpp
-//  Repetier-Server
-//
-//  Created by Roland Littwin on 13.07.13.
-//
-//
+/*
+ Copyright 2012-2013 Hot-World GmbH & Co. KG
+ Author: Roland Littwin (repetier) repetierdev@gmail.com
+ Homepage: http://www.repetier.com
+ 
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+ 
+ http://www.apache.org/licenses/LICENSE-2.0
+ 
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ 
+ */
 
 #include "ActionHandler.h"
 #include "PrinterState.h"
@@ -125,9 +136,9 @@ namespace repetier {
         }
         if(id) {
             gconfig->removeMessage(id);
-            mArray msg;
-            gconfig->fillJSONMessages(msg);
-            out = msg;
+//            mArray msg;
+//            gconfig->fillJSONMessages(msg);
+//            out = msg;
         }
 
     }
@@ -137,9 +148,9 @@ namespace repetier {
         PrintjobPtr job = printer->getModelManager()->findById(id);
         if(job.get())
             printer->getModelManager()->RemovePrintjob(job);
-        mObject ret;
-        printer->getModelManager()->fillSJONObject("data",ret);
-        out = ret;
+//        mObject ret;
+//        printer->getModelManager()->fillSJONObject("data",ret);
+//        out = ret;
     }
     
     void ActionHandler::actionListModels(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -165,8 +176,8 @@ namespace repetier {
                     cerr << "error: Unable to create job file " << job->getFilename() << ":" << ex.what() << endl;
             }
         }
-        printer->getJobManager()->fillSJONObject("data",ret);
-        out = ret;
+        //  printer->getJobManager()->fillSJONObject("data",ret);
+        //  out = ret;
     }
     
     void ActionHandler::actionListJobs(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -188,8 +199,8 @@ namespace repetier {
             }
             printer->getJobManager()->startJob(id);
         }
-        printer->getJobManager()->fillSJONObject("data",ret);
-        out = ret;
+        //printer->getJobManager()->fillSJONObject("data",ret);
+        //out = ret;
     }
     
     void ActionHandler::actionStopJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -200,8 +211,8 @@ namespace repetier {
             printer->getJobManager()->killJob(id);
             printer->getScriptManager()->pushCompleteJob("Kill");
         }
-        printer->getJobManager()->fillSJONObject("data",ret);
-        out = ret;
+        //printer->getJobManager()->fillSJONObject("data",ret);
+        //out = ret;
     }
     
     void ActionHandler::actionRemoveJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -210,8 +221,8 @@ namespace repetier {
         PrintjobPtr job = printer->getJobManager()->findById(id);
         if(job.get())
             printer->getJobManager()->RemovePrintjob(job);
-        printer->getJobManager()->fillSJONObject("data",ret);
-        out = ret;
+        //printer->getJobManager()->fillSJONObject("data",ret);
+        //out = ret;
     }
 }
     

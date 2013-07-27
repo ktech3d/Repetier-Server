@@ -24,3 +24,14 @@ In case job is not "none" it also contains done:<percent completed>
 
 select, data = {printer:"<slugname>"}
 Selects the printer for printer related calls.
+
+setLoglevel {level:}
+
+Defined events:
+---------------
+messagesChanged - A message was deleted/added.
+printerChanged
+printqueueChanged - List of open print jobs changed
+jobsChanged - List of printable jobs not queued has changed
+log {time,text,type} - A log line added for the printer
+state {"activeExtruder":true,"bedTempRead":25.579999999999998,"bedTempSet":0.0000000000000000,"debugLevel":6,"extruder":[{"output":0,"tempRead":25.000000000000000,"tempSet":0.0000000000000000}],"fanOn":false,"fanVoltage":0,"firmware":"Repetier_0.81","firmwareURL":"https://github.com/repetier/Repetier-Firmware/","flowMultiply":100,"hasXHome":false,"hasYHome":false,"hasZHome":false,"layer":0,"numExtruder":1,"powerOn":true,"sdcardMounted":true,"speedMultiply":100,"x":0.0000000000000000,"y":0.0000000000000000,"z":0.0000000000000000}}

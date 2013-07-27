@@ -16,7 +16,7 @@
 </head>
 <body ng-controller="ServerController">
 <div class="contain-to-grid sticky">
-    <nav class="top-bar" >
+    <nav class="top-bar">
         <ul class="title-area">
             <!-- Title Area -->
             <li class="name">
@@ -31,10 +31,14 @@
                 <li class="divider"></li>
                 <li class="active"><a href="#"><i class="icon-flight"></i> Dashboard</a></li>
                 <li class="divider"></li>
-                <li class="has-dropdown" ><a href="#">Printer</a>
+                <li class="has-dropdown"><a href="#">Printer</a>
                     <ul class="dropdown">
-                        <li ng-repeat="p in printerList" ><a href="#/printer/{{p.slug}}">{{p.name}}</a>
+                        <li ng-repeat="p in printerList"><a href="#/printer/{{p.slug}}">{{p.name}}</a>
                     </ul>
+                </li>
+                <li class=""><a data-reveal-id="messageList" href="#">Messages <span
+                            class="round success label">{{messages.length}}</span></a>
+                </li>
             </ul>
         </section>
     </nav>
@@ -42,20 +46,40 @@
 <ng-view></ng-view>
 <div class="server-footer">
     <div class="row equalheight">
-    <div class="small-4 columns">
-        <h2>Repetier-Server</h2>
-        <p>The user friendly way to manager your 3d printer.</p>
-    </div>
-    <div class="small-4 columns vsplit">
-        <a href="#/about">About</a><br>
+        <div class="small-4 columns">
+            <h2>Repetier-Server</h2>
 
-    </div>
+            <p>The user friendly way to manager your 3d printer.</p>
+        </div>
+        <div class="small-4 columns vsplit">
+            <a href="#/about">About</a><br>
+
+        </div>
         <div class="small-4 columns vsplit">
             About<br>
 
         </div>
     </div>
 </div>
+<div id="messageList" class="reveal-modal">
+    <h2>Messages</h2>
+
+    <div style="max-height:300px;overflow:scroll">
+        <div class="row" ng-repeat="m in messages">
+            <div class="small-9 columns">
+                {{m.msg}}
+            </div>
+            <div class="small-3 button" ng-click="removeMessage($index)">Remove</div>
+        </div>
+        <a class="close-reveal-modal">&#215;</a>
+    </div>
+</div>
+<div id="connectionLost" class="reveal-modal medium">
+    <h2>Connection lost</h2>
+
+    <p>Uups! I lost my connection to the server. Trying to reconnect.</p>
+</div>
+
 <!-- Placed at the end of the document so the pages load faster -->
 <script src="/jquery/jquery.min.js"></script>
 <script src="/jquery/jquery.form.js"></script>

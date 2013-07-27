@@ -1,5 +1,6 @@
 /*
- Copyright 2012 Roland Littwin (repetier) repetierdev@gmail.com
+ Copyright 2012-2013 Hot-World GmbH & Co. KG
+ Author: Roland Littwin (repetier) repetierdev@gmail.com
  Homepage: http://www.repetier.com
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +14,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
-
+ 
  */
 
 #define _CRT_SECURE_NO_WARNINGS // Disable deprecation warning in VS2005
@@ -29,6 +30,7 @@
 #include "GCodeAnalyser.h"
 #include "Poco/File.h"
 #include "Poco/Path.h"
+#include "ServerEvents.h"
 
 using namespace std;
 using namespace boost;
@@ -74,7 +76,7 @@ PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts) {
             for (pvec::const_iterator it (v.begin()); it != v.end(); ++it)
             {
                 if((*it).string().find('.')==0) continue; // Hidden file, ignore it
-                PrintjobPtr pj(new Printjob((*it).string(),false));
+                PrintjobPtr pj(new Printjob(this,(*it).string(),false));
                 files.push_back(pj);
                 string name = it->filename().string();
                 if(name=="Start.g") hasStart = true;
@@ -87,15 +89,15 @@ PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts) {
                 if(name=="Script 4.g") hasScript4 = true;
                 if(name=="Script 5.g") hasScript5 = true;
             }
-            if(!hasStart) {files.push_back(PrintjobPtr(new Printjob(directory+"/Start.g",true,true)));}
-            if(!hasEnd) {files.push_back(PrintjobPtr(new Printjob(directory+"/End.g",true,true)));}
-            if(!hasPause) {files.push_back(PrintjobPtr(new Printjob(directory+"/Pause.g",true,true)));}
-            if(!hasKill) {files.push_back(PrintjobPtr(new Printjob(directory+"/Kill.g",true,true)));}
-            if(!hasScript1) {files.push_back(PrintjobPtr(new Printjob(directory+"/Script 1.g",true,true)));}
-            if(!hasScript2) {files.push_back(PrintjobPtr(new Printjob(directory+"/Script 2.g",true,true)));}
-            if(!hasScript3) {files.push_back(PrintjobPtr(new Printjob(directory+"/Script 3.g",true,true)));}
-            if(!hasScript4) {files.push_back(PrintjobPtr(new Printjob(directory+"/Script 4.g",true,true)));}
-            if(!hasScript5) {files.push_back(PrintjobPtr(new Printjob(directory+"/Script 5.g",true,true)));}
+            if(!hasStart) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Start.g",true,true)));}
+            if(!hasEnd) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/End.g",true,true)));}
+            if(!hasPause) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Pause.g",true,true)));}
+            if(!hasKill) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Kill.g",true,true)));}
+            if(!hasScript1) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 1.g",true,true)));}
+            if(!hasScript2) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 2.g",true,true)));}
+            if(!hasScript3) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 3.g",true,true)));}
+            if(!hasScript4) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 4.g",true,true)));}
+            if(!hasScript5) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 5.g",true,true)));}
         } else {
             for (pvec::const_iterator it (v.begin()); it != v.end(); ++it)
             {
@@ -104,7 +106,7 @@ PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts) {
                 if(p.getExtension()!="g") continue; 
                 string sid = it->filename().string();
                 if(sid.find('.')==0) continue; // Hidden file, ignore it
-                PrintjobPtr pj(new Printjob((*it).string(),false));
+                PrintjobPtr pj(new Printjob(this,(*it).string(),false));
                 if(!pj->isNotExistent()) {
                     files.push_back(pj);
                 }
@@ -287,7 +289,7 @@ PrintjobPtr PrintjobManager::findById(int id) {
 PrintjobPtr PrintjobManager::createNewPrintjob(std::string name) {
     mutex::scoped_lock l(filesMutex);
     lastid++;
-    PrintjobPtr job(new Printjob(encodeName(lastid, name, "u", true),true));
+    PrintjobPtr job(new Printjob(this,encodeName(lastid, name, "u", true),true));
     files.push_back(job);
     return job;
 }
@@ -314,12 +316,25 @@ void PrintjobManager::finishPrintjobCreation(PrintjobPtr job,string namerep,size
             static_cast<string>("?a=ok");
         gconfig->createMessage(msg,answer);
         files.remove(job);
-    }    
+    }
+    signalChange();
+}
+void PrintjobManager::signalChange() {
+    if(scripts) return;
+    json_spirit::mObject data;
+    json_spirit::mValue val(data);
+    string msg="printqueueChanged";
+    if(directory.find("models")!=string::npos)
+        msg="jobsChanged";
+    RepetierEventPtr event(new RepetierEvent(printer,msg,val));
+    RepetierEvent::fireEvent(event);
+    
 }
 void PrintjobManager::RemovePrintjob(PrintjobPtr job) {
     mutex::scoped_lock l(filesMutex);
     job->removeFiles();
     files.remove(job);
+    signalChange();
 }
 void PrintjobManager::startJob(int id) {
     mutex::scoped_lock l(filesMutex);
@@ -345,8 +360,7 @@ void PrintjobManager::killJob(int id) {
         jobin.close();
     }
     try {
-        files.remove(runningJob);
-        runningJob->removeFiles();// Delete file from disk
+        RemovePrintjob(runningJob);
     } catch(std::exception &e) {
         string msg= "Failed to remove killed job file "+runningJob->getFilename();
         string answer = "/printer/msg/"+printer->slugName+"?a=ok";
@@ -365,8 +379,7 @@ void PrintjobManager::undoCurrentJob() {
         jobin.close();
     }
     runningJob->setStored();
-    runningJob->removeFiles();
-    files.remove(runningJob);
+    RemovePrintjob(runningJob);
     runningJob.reset();
 }
 void PrintjobManager::manageJobs() {
@@ -374,7 +387,7 @@ void PrintjobManager::manageJobs() {
     if(!runningJob.get()) return; // unknown job
     if(jobin.good()) {
         string line;
-        size_t n = 100-printer->jobCommandsStored();
+        size_t n = 1000-printer->jobCommandsStored();
         if(n>10) n = 10;
         char buf[200];
         while(n && !jobin.eof()) {
@@ -390,17 +403,8 @@ void PrintjobManager::manageJobs() {
     }
     if(jobin.is_open() && !jobin.good()) {
         jobin.close();
-        files.remove(runningJob);
+        RemovePrintjob(runningJob);
         runningJob->stop(printer);
-        try {
-            runningJob->removeFiles();
-            //remove(path(runningJob->getFilename())); // Delete file from disk
-        } catch(std::exception) {
-            RLog::log("error: Failed to remove finished job @",runningJob->getFilename());
-            string msg= "Failed to remove finished job file "+runningJob->getFilename();
-            string answer = "/printer/msg/"+printer->slugName+"?a=ok";
-            gconfig->createMessage(msg,answer);
-        }
         runningJob.reset();
         l.unlock();
         printer->scriptManager->pushCompleteJobNoBlock("End");
@@ -473,7 +477,8 @@ void PrintjobManager::pushCompleteJobNoBlock(std::string name,bool beginning) {
 
 mutex Printjob::InfoMutex;
 
-Printjob::Printjob(string _file,bool newjob,bool _script) {
+Printjob::Printjob(PrintjobManager *mgr,string _file,bool newjob,bool _script) {
+    manager = mgr;
     file = _file;
     script = _script;
     path p(file);
@@ -530,7 +535,16 @@ void Printjob::stop(PrinterPtr p) {
 }
 void Printjob::removeFiles() {
     PrinterPtr ptr;
-    getInfo(ptr)->removeData();
-    File f(file);
-    f.remove();
+    try {
+        getInfo(ptr)->removeData();
+        File f(file);
+        f.remove();
+        //remove(path(runningJob->getFilename())); // Delete file from disk
+    } catch(std::exception) {
+        RLog::log("error: Failed to remove finished job @",getFilename());
+        string msg= "Failed to remove finished job file "+getFilename();
+        string answer = "/printer/msg/"+manager->printer->slugName+"?a=ok";
+        gconfig->createMessage(msg,answer);
+    }
+
 }

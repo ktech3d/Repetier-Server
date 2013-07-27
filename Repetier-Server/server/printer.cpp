@@ -1,5 +1,6 @@
 /*
- Copyright 2012 Roland Littwin (repetier) repetierdev@gmail.com
+ Copyright 2012-2013 Hot-World GmbH & Co. KG
+ Author: Roland Littwin (repetier) repetierdev@gmail.com
  Homepage: http://www.repetier.com
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+ 
  */
 
 #define _CRT_SECURE_NO_WARNINGS // Disable deprecation warning in VS2005
@@ -28,6 +30,7 @@
 #include <boost/filesystem.hpp>
 #include "json_spirit.h"
 #include "RLog.h"
+#include "ServerEvents.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -190,6 +193,15 @@ void Printer::addResponse(const std::string& msg,uint8_t rtype) {
     responses.push_back(newres);
     if(responses.size()>(size_t)gconfig->getBacklogSize())
         responses.pop_front();
+    l.unlock();
+    json_spirit::mObject o;
+    o["id"] = (int)newres->responseId;
+    o["time"] = newres->getTimeString();
+    o["text"] = newres->message;
+    o["type"] = newres->logtype;
+    RepetierEventPtr event(new RepetierEvent(thisPtr,"log",json_spirit::mValue(o)));
+    RepetierEvent::fireEvent(event);
+    
 }
 bool Printer::shouldInjectCommand(const std::string& cmd) {
     if(cmd=="@kill") {
@@ -308,6 +320,12 @@ void Printer::manageHostCommand(boost::shared_ptr<GCode> &cmd) {
         state->setIsathome();
     } else if(c=="@kill") {
         serial->resetPrinter();
+    } else if(c=="@test") {
+        json_spirit::mObject data;
+        json_spirit::mValue val(data);
+        PrinterPtr pptr;
+        RepetierEventPtr event(new RepetierEvent(pptr,"messagesChanged",val));
+        RepetierEvent::fireEvent(event);
     }
 }
 void Printer::stopPause() {
@@ -508,6 +526,19 @@ void Printer::getJobStatus(json_spirit::Object &obj) {
 void Printer::getJobStatus(json_spirit::mObject &obj) {
     jobManager->getJobStatus(obj);
 }
+void Printer::sendStateEvent() {
+    json_spirit::mObject o;
+    state->fillJSONObject(o);
+    RepetierEventPtr event(new RepetierEvent(thisPtr,"state",json_spirit::mValue(o)));
+    RepetierEvent::fireEvent(event);
+}
+void Printer::sendStatusEvent() {
+    json_spirit::mObject o;
+    fillJSONObject(o);
+    RepetierEventPtr event(new RepetierEvent(thisPtr,"status",json_spirit::mValue(o)));
+    RepetierEvent::fireEvent(event);    
+}
+
 void Printer::fillJSONObject(json_spirit::Object &obj) {
     using namespace json_spirit;
     obj.push_back(Pair("active",active));

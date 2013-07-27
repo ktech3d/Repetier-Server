@@ -12,32 +12,59 @@ PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     $scope.activeQueue = false;
 
     lastLogStart = 0;
+    var getLoglevel = function() {
+        return 12+($scope.logCommands>0 ? 1 : 0) + ($scope.logACK>0 ? 2 : 0);
+    }
+    var addLogLine = function(line) {
+        newline = line.time+': '+line.text;
+        $rootScope.active.log.push({c:'log'+line.type,t:newline});
+        $rootScope.active.log.splice(0,$rootScope.active.log.length-500);
+        lastLogStart = line.id;
+    }
     var responsePoller = function() {
         filter = 12+($scope.logCommands>0 ? 1 : 0) + ($scope.logACK>0 ? 2 : 0);
         WS.send("response",{filter:filter,start:lastLogStart}).then(function(r) {
-            lastLogStart = r['lastid'];
+            /*lastLogStart = r['lastid'];
             angular.forEach(r.lines,function(line) {
-                newline = line.time+': '+line.text;
-                $rootScope.active.log.push({c:'log'+line.type,t:newline});
+                addLogLine(line);
             });
-            $rootScope.active.log.splice(0,$rootScope.active.log.length-500);
-
+*/
             $rootScope.active.state = r.state;
             $timeout(responsePoller, 3000);
         });
     };
-    var jobPoller = function() {
+    var fetchPrintqueue = function() {
         WS.send("listJobs",{}).then(function(r) {
            $scope.queue = r.data;
-            $timeout(jobPoller,12344);
         });
     }
-    jobPoller();
     var fetchModels = function() {
         WS.send("listModels",{}).then(function(r) {
            $scope.models = r.data;
         });
     }
+    $scope.$watch('logACK',function() {
+        WS.send("setLoglevel",{level:getLoglevel()});
+    });
+    $scope.$watch('logCommands',function() {
+        WS.send("setLoglevel",{level:getLoglevel()});
+    });
+    $scope.$on("connected",function(event) {
+        fetchPrintqueue();
+        fetchModels();
+        WS.send("setLoglevel",{level:getLoglevel()});
+    });
+    $scope.$on("printqueueChanged",function(event) {
+        fetchPrintqueue();
+    });
+    $scope.$on("jobsChanged",function(event) {
+       fetchModels();
+    });
+    $scope.$on("log",function(event,data) {
+        console.log(data);
+        addLogLine(data.data);
+        $scope.$apply()
+    });
     $scope.test = function(v) {
         console.log("test");
         console.log(v);
@@ -52,7 +79,7 @@ PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     $scope.dequeActive = function() {
         console.log("dequeu");
         WS.send("removeJob",{id:$scope.activeQueue.id}).then(function(r) {
-            $scope.queue = r.data;
+            //$scope.queue = r.data;
             $scope.activeQueue = false;
         });
     }
@@ -61,7 +88,7 @@ PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     }
     $scope.deleteActiveGCode = function() {
         WS.send("removeModel",{id:$scope.activeGCode.id}).then(function(r) {
-            $scope.models = r.data;
+            //$scope.models = r.data;
             $scope.activeGCode = false;
             $('#deleteGCodeQuestion').foundation('reveal', 'close');
         });
@@ -69,10 +96,8 @@ PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     $scope.uploadGCode = function() {
         $('#formuploadgcode').ajaxSubmit(function(r) {
             r = jQuery.parseJSON(r);
-            console.log("finished");
-            console.log(r);
             $('#uploadGCode').foundation('reveal', 'close');
-            $scope.models = r.data;
+            //$scope.models = r.data;
         });
     }
     $scope.printGCode = function() {
@@ -81,7 +106,7 @@ PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
             $scope.queue = r.data;
             if($scope.queue.length == 1) {
                 WS.send("startJob",{id:$scope.queue[0].id}).then(function(r) {
-                    $scope.queue = r.data;
+                   // $scope.queue = r.data;
                 });
             }
         });

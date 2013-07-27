@@ -1,5 +1,6 @@
 /*
- Copyright 2012 Roland Littwin (repetier) repetierdev@gmail.com
+ Copyright 2012-2013 Hot-World GmbH & Co. KG
+ Author: Roland Littwin (repetier) repetierdev@gmail.com
  Homepage: http://www.repetier.com
  
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +14,7 @@
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  See the License for the specific language governing permissions and
  limitations under the License.
+ 
  */
 
 #include "WebserverAPI.h"
@@ -272,15 +274,19 @@ namespace repetier {
     void WebSocketRequestHandler::handleRequest(HTTPServerRequest& request, HTTPServerResponse& response)
     {
         Application& app = Application::instance();
+        RepetierEventQueue eventQueue;
         try
         {
             WebSocket ws(request, response);
+            ws.setReceiveTimeout(Poco::Timespan(100000));
             //app.logger().information("WebSocket connection established.");
             char buffer[8192];
             int flags;
+            int logFilter = 0;
             int n;
             do
             {
+                try {
                 n = ws.receiveFrame(buffer, sizeof(buffer), flags);
                 if(ShutdownManager::shutdown) return;
                 //app.logger().information(Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)));
@@ -289,16 +295,37 @@ namespace repetier {
                     mObject &oCmd = cmd.get_obj();
                     string action = oCmd["action"].get_str();
                     mObject &data = oCmd["data"].get_obj();
-                    mValue rObj;
+                    mObject emptyObject;
+                    mValue rObj(emptyObject);
                     if(oCmd.find("printer") != oCmd.end()) {
                         string p = oCmd["printer"].get_str();
                         if(printer == NULL || printer->slugName != p)
                             printer = gconfig->findPrinterSlug(p);
                     }
-                    ActionHandler::dispatch(action, data,rObj,printer);
+                    if(action == "setLoglevel") {
+                        logFilter = data["level"].get_int();
+                    } else
+                        ActionHandler::dispatch(action, data,rObj,printer);
                     mObject wsResponse;
                     wsResponse["data"] = rObj;
                     wsResponse["callback_id"] = oCmd["callback_id"];
+                    string ret = write(wsResponse,json_spirit::raw_utf8);
+                    mutex::scoped_lock l(sendMutex);
+                    ws.sendFrame(ret.c_str(), (int)ret.length(), flags);
+                }
+                }
+                catch(TimeoutException &to) {} // Expected timeout
+                while(eventQueue.hasMessageForPrinter(printer)) {
+                    RepetierEventPtr event = eventQueue.popEvent();
+                    mObject wsResponse;
+                    if(event->type=="log") {
+                        if((event->event.get_obj()["type"].get_int() & logFilter)==0) continue;
+                    }
+                    wsResponse["data"] = event->event;
+                    wsResponse["callback_id"] = -1;
+                    wsResponse["event"] = event->type;
+                    if(event->printer!=NULL)
+                        wsResponse["printer"] = event->printer->slugName;
                     string ret = write(wsResponse,json_spirit::raw_utf8);
                     mutex::scoped_lock l(sendMutex);
                     ws.sendFrame(ret.c_str(), (int)ret.length(), flags);

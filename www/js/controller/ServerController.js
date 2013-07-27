@@ -33,6 +33,31 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
         });
     };
     printerPoller();
+
+    var messagesPoller = function() {
+        WS.send("messages",{}).then(function(r) {
+            $rootScope.messages = r;
+        });
+    }
+    messagesPoller();
+    $scope.$on("messagesChanged",function(event,data) {
+        console.log("messages changed event");
+       messagesPoller();
+    });
+    $scope.$on("connected",function(event) {
+       messagesPoller();
+    });
+    $scope.removeMessage = function(idx) {
+        m = $rootScope.messages[idx];
+        a = 'job';
+        if(m.link.indexOf("unpause")>0)
+            a = 'unpause';
+
+        WS.send("removeMessage",{id:m.id,a:a});
+        //,function(r) {
+        //    $rootScope.messages = r;
+        //});
+    }
     $scope.closeReveal = function(id) {
         $('#'+id).foundation('reveal', 'close');
     }
