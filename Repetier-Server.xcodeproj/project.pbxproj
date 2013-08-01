@@ -32,6 +32,7 @@
 		FDAC19511695F1A600479AA4 /* RLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDAC194F1695F1A600479AA4 /* RLog.cpp */; };
 		FDD5B716179457E900DCBBF9 /* GCodeAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B714179457E800DCBBF9 /* GCodeAnalyser.cpp */; };
 		FDD5B852179ED77A00DCBBF9 /* ServerEvents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B850179ED77900DCBBF9 /* ServerEvents.cpp */; };
+		FDD5B85517A3D54C00DCBBF9 /* PrinterConfigiration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B85317A3D54B00DCBBF9 /* PrinterConfigiration.cpp */; };
 		FDED505D1673BAD8001F0450 /* grammar.c in Sources */ = {isa = PBXBuildFile; fileRef = FDED504D1673BAD8001F0450 /* grammar.c */; };
 		FDED505E1673BAD8001F0450 /* libconfig.c in Sources */ = {isa = PBXBuildFile; fileRef = FDED504F1673BAD8001F0450 /* libconfig.c */; };
 		FDED505F1673BAD8001F0450 /* libconfigcpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDED50531673BAD8001F0450 /* libconfigcpp.cpp */; };
@@ -115,6 +116,8 @@
 		FDD5B715179457E900DCBBF9 /* GCodeAnalyser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCodeAnalyser.h; sourceTree = "<group>"; };
 		FDD5B850179ED77900DCBBF9 /* ServerEvents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServerEvents.cpp; sourceTree = "<group>"; };
 		FDD5B851179ED77A00DCBBF9 /* ServerEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerEvents.h; sourceTree = "<group>"; };
+		FDD5B85317A3D54B00DCBBF9 /* PrinterConfigiration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrinterConfigiration.cpp; sourceTree = "<group>"; };
+		FDD5B85417A3D54B00DCBBF9 /* PrinterConfigiration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterConfigiration.h; sourceTree = "<group>"; };
 		FDED504D1673BAD8001F0450 /* grammar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = grammar.c; sourceTree = "<group>"; };
 		FDED504E1673BAD8001F0450 /* grammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = grammar.h; sourceTree = "<group>"; };
 		FDED504F1673BAD8001F0450 /* libconfig.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libconfig.c; sourceTree = "<group>"; };
@@ -300,6 +303,8 @@
 				FDD5B715179457E900DCBBF9 /* GCodeAnalyser.h */,
 				FDD5B850179ED77900DCBBF9 /* ServerEvents.cpp */,
 				FDD5B851179ED77A00DCBBF9 /* ServerEvents.h */,
+				FDD5B85317A3D54B00DCBBF9 /* PrinterConfigiration.cpp */,
+				FDD5B85417A3D54B00DCBBF9 /* PrinterConfigiration.h */,
 			);
 			path = server;
 			sourceTree = "<group>";
@@ -377,6 +382,7 @@
 				FDA1DBF1179159C600E40F36 /* ActionHandler.cpp in Sources */,
 				FDD5B716179457E900DCBBF9 /* GCodeAnalyser.cpp in Sources */,
 				FDD5B852179ED77A00DCBBF9 /* ServerEvents.cpp in Sources */,
+				FDD5B85517A3D54C00DCBBF9 /* PrinterConfigiration.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

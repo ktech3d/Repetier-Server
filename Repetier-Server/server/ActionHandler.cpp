@@ -24,6 +24,7 @@
 #include <vector>
 #include "Poco/StreamCopier.h"
 #include "GCodeAnalyser.h"
+#include "PrinterConfigiration.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -57,6 +58,8 @@ namespace repetier {
         registerAction("startJob",&actionStartJob);
         registerAction("stopJob",&actionStopJob);
         registerAction("removeJob",&actionRemoveJob);
+        registerAction("getPrinterConfig",&actionGetPrinterConfig);
+        registerAction("setPrinterConfig",&actionSetPrinterConfig);
     }
     
     void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -65,8 +68,8 @@ namespace repetier {
         for(vector<PrinterPtr>::iterator i=list->begin();i!=list->end();++i) {
             mObject pinfo;
             PrinterPtr p = *i;
-            pinfo["name"] = p->name;
-            pinfo["slug"] = p->slugName;
+            pinfo["name"] = p->config->name;
+            pinfo["slug"] = p->config->slug;
             pinfo["online"] = p->getOnlineStatus();
             p->getJobStatus(pinfo);
             pinfo["active"] = p->getActive();
@@ -129,6 +132,7 @@ namespace repetier {
     }
 
     void ActionHandler::actionRemoveMessage(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
         string a(obj["a"].get_str());
         int id = obj["id"].get_int();
         if(a=="unpause") {
@@ -145,6 +149,7 @@ namespace repetier {
 
     void ActionHandler::actionRemoveModel(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         int id = obj["id"].get_int();
+        if(printer == NULL) return;
         PrintjobPtr job = printer->getModelManager()->findById(id);
         if(job.get())
             printer->getModelManager()->RemovePrintjob(job);
@@ -155,10 +160,14 @@ namespace repetier {
     
     void ActionHandler::actionListModels(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
-        printer->getModelManager()->fillSJONObject("data",ret);
+        if(printer == NULL) return;
+        PrintjobManager* manager = printer->getModelManager();
+        if(manager!=NULL)
+            manager->fillSJONObject("data",ret);
         out = ret;
     }
     void ActionHandler::actionCopyModel(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
         mObject ret;
         int id = obj["id"].get_int();
         PrintjobPtr model = printer->getModelManager()->findById(id);
@@ -182,12 +191,14 @@ namespace repetier {
     
     void ActionHandler::actionListJobs(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
+        if(printer == NULL) return;
         printer->getJobManager()->fillSJONObject("data",ret);
         out = ret;
     }
     
     void ActionHandler::actionStartJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
+        if(printer == NULL) return;
         int id = obj["id"].get_int();
         PrintjobPtr job = printer->getJobManager()->findById(id);
         if(job.get()) {
@@ -205,6 +216,7 @@ namespace repetier {
     
     void ActionHandler::actionStopJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
+        if(printer == NULL) return;
         int id = obj["id"].get_int();
         PrintjobPtr job = printer->getJobManager()->findById(id);
         if(job.get()) {
@@ -217,12 +229,26 @@ namespace repetier {
     
     void ActionHandler::actionRemoveJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
+        if(printer == NULL) return;
         int id = obj["id"].get_int();
         PrintjobPtr job = printer->getJobManager()->findById(id);
         if(job.get())
             printer->getJobManager()->RemovePrintjob(job);
         //printer->getJobManager()->fillSJONObject("data",ret);
         //out = ret;
+    }
+    void ActionHandler::actionGetPrinterConfig(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        PrinterPtr p = printer;
+        if(!obj["printer"].is_null())
+            p = gconfig->findPrinterSlug(obj["printer"].get_str());
+        if(p == NULL) return;
+        out = mObject();
+        p->fillJSONConfig(out.get_obj());
+    }
+    void ActionHandler::actionSetPrinterConfig(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
+        printer->config->fromJSON(obj);
+        printer->sendConfigEvent();
     }
 }
     

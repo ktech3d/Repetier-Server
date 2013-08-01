@@ -5,7 +5,7 @@
                 <div style="float:right" data-dropdown="setupMenu"><i class="icon-cog" style="font-size:1.5em"></i></div>
                 <ul id="setupMenu" class="f-dropdown">
                     <li><a href="#">Scripts</a></li>
-                    <li><a href="#">Configuration</a></li>
+                    <li><a href="#/printerConfig/{{activeSlug}}">Configuration</a></li>
                 </ul>
                 <h4>{{active.status.name}}</h4>
 

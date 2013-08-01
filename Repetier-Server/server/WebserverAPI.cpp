@@ -46,6 +46,7 @@
 #include "Poco/Net/NetException.h"
 #include "Poco/Util/ServerApplication.h"
 #include "ActionHandler.h"
+#include "PrinterConfigiration.h"
 
 using namespace std;
 using namespace json_spirit;
@@ -299,7 +300,7 @@ namespace repetier {
                     mValue rObj(emptyObject);
                     if(oCmd.find("printer") != oCmd.end()) {
                         string p = oCmd["printer"].get_str();
-                        if(printer == NULL || printer->slugName != p)
+                        if(printer == NULL || printer->config->slug != p)
                             printer = gconfig->findPrinterSlug(p);
                     }
                     if(action == "setLoglevel") {
@@ -325,7 +326,7 @@ namespace repetier {
                     wsResponse["callback_id"] = -1;
                     wsResponse["event"] = event->type;
                     if(event->printer!=NULL)
-                        wsResponse["printer"] = event->printer->slugName;
+                        wsResponse["printer"] = event->printer->config->slug;
                     string ret = write(wsResponse,json_spirit::raw_utf8);
                     mutex::scoped_lock l(sendMutex);
                     ws.sendFrame(ret.c_str(), (int)ret.length(), flags);
@@ -363,8 +364,8 @@ namespace repetier {
         for(vector<PrinterPtr>::iterator i=list->begin();i!=list->end();++i) {
             mObject pinfo;
             PrinterPtr p = *i;
-            pinfo["name"] = p->name;
-            pinfo["slug"] = p->slugName;
+            pinfo["name"] = p->config->name;
+            pinfo["slug"] = p->config->slug;
             pinfo["online"] = p->getOnlineStatus();
             p->getJobStatus(pinfo);
             pinfo["active"] = p->getActive();
@@ -728,10 +729,10 @@ namespace repetier {
         // Step 2: Fill template parameter
         Object obj;
         string param = form.get("pn","");
-        if(!param.empty()) {
+       /* if(!param.empty()) {
             PrinterPtr p = gconfig->findPrinterSlug(param);
-            if(p) p->fillJSONObject(obj);
-        }
+            if(*p) p->fillJSONConfig(obj);
+        }*/
         obj.push_back(Pair("version",string(REPETIER_SERVER_VERSION)));
         // Step 3: Run template
         string content2;

@@ -29,6 +29,8 @@
 
 class Printer;
 typedef boost::shared_ptr<Printer> PrinterPtr;
+class PrinterConfiguration;
+typedef boost::shared_ptr<PrinterConfiguration> PrinterConfigurationPtr;
 
 #include <boost/thread.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
@@ -75,7 +77,6 @@ public:
 class Printer {
     friend class PrintjobManager;
     PrinterPtr thisPtr;
-    libconfig::Config config;
     PrintjobManager *jobManager;
     PrintjobManager *modelManager;
     PrintjobManager *scriptManager;
@@ -107,7 +108,7 @@ class Printer {
     int linesSend;
     std::size_t bytesSend;
     bool paused;
-    int updateTempEvery;
+    //int updateTempEvery;
     
     /** Resend all lines starting with line. Removes all commands stored in
      history until the given line and moves them instead into the resendLines buffer.
@@ -131,23 +132,25 @@ class Printer {
     void manageHostCommand(boost::shared_ptr<GCode> &cmd);
 public:
     Poco::BasicEvent<json_spirit::Object> printerEvent;
-    double xmin,xmax;
-    double ymin,ymax;
-    double zmin,zmax;
-    double homex,homey,homez;
-    double speedx,speedy,speedz,speedeExtrude,speedeRetract;
-    bool hasHeatedBed;
-    std::string name;
-    std::string slugName;
+    //    double xmin,xmax;
+    //    double ymin,ymax;
+    //    double zmin,zmax;
+    //    double homex,homey,homez;
+    //double speedx,speedy,speedz,speedeExtrude,speedeRetract;
+    //bool hasHeatedBed;
+    //std::string name;
+    //std::string slugName;
     
-    std::string device;
-    int32_t baudrate;
-    bool pingpong;
+    //std::string device;
+    //int32_t baudrate;
+    //bool pingpong;
     int32_t cacheSize;
-    bool okAfterResend;
+    PrinterConfigurationPtr config;
+
+    //bool okAfterResend;
     
-    int32_t extruderCount;
-    bool active;
+    //int32_t extruderCount;
+    //bool active;
     
     int binaryProtocol;
     PrinterState *state;
@@ -179,8 +182,7 @@ public:
     void injectJobCommand(const std::string& cmd);
     /** Number of job commands stored */
     size_t jobCommandsStored();
-    void fillJSONObject(json_spirit::Object &obj);
-    void fillJSONObject(json_spirit::mObject &obj);
+    void fillJSONConfig(json_spirit::mObject &obj);
     void move(double x,double y,double z,double e);
     int getOnlineStatus();
     bool getActive();
@@ -188,7 +190,7 @@ public:
     void getJobStatus(json_spirit::Object &obj);
     void getJobStatus(json_spirit::mObject &obj);
     void sendStateEvent();
-    void sendStatusEvent();
+    void sendConfigEvent();
     void connectionClosed();
     inline PrintjobManager *getJobManager() {return jobManager;}
     inline PrintjobManager *getModelManager() {return modelManager;}

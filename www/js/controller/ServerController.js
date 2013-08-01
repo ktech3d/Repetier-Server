@@ -6,6 +6,7 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
     $rootScope.activeSlug = '';
     $rootScope.serverSetup = {};
     $rootScope.printerSetup = {};
+    $rootScope.printerConfig = {};
     $rootScope.printer = {};
     window.rs = $rootScope; // for debugging
     $rootScope.selectPrinter = function(slug) {
@@ -15,6 +16,7 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
         if($rootScope.printer[slug])
             $rootScope.active = $rootScope.printer[slug];
     }
+    var firstPrinterPoll = true;
     var printerPoller = function() {
         WS.send("listPrinter",{}).then(function(r) {
             if(angular.toJson($rootScope.setup.printer) != angular.toJson(r)) {
@@ -26,25 +28,34 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
                         if(p.slug == $rootScope.activeSlug)
                             $rootScope.active = $rootScope.printer[p.slug];
                     } else $rootScope.printer[p.slug].status = p;
+                    if(firstPrinterPoll) {
+                        WS.send("getPrinterConfig",{printer: p.slug}).then(function(c) {
+                           $rootScope.printerConfig[p.slug] = c;
+                        });
+                    }
                 });
+                firstPrinterPoll = false;
             }
             //$rootScope.messages = r.data.messages;
             $timeout(printerPoller, 2000);
         });
     };
-    printerPoller();
 
     var messagesPoller = function() {
         WS.send("messages",{}).then(function(r) {
             $rootScope.messages = r;
         });
     }
-    messagesPoller();
     $scope.$on("messagesChanged",function(event,data) {
         console.log("messages changed event");
        messagesPoller();
     });
+    // Update configuration when changed
+    $scope.$on("config",function(event,data) {
+       $rootScope.printerConfig[data.data.general.slug] = data.data;
+    });
     $scope.$on("connected",function(event) {
+       printerPoller();
        messagesPoller();
     });
     $scope.removeMessage = function(idx) {

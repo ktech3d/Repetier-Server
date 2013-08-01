@@ -4,6 +4,7 @@ routeModule.config(function ($routeProvider, $locationProvider) {
         .when('/', {templateUrl: 'views/home.php', controller: HomeController})
         .when('/about', {templateUrl: 'views/about.php', controller: AboutController})
         .when('/printer/:slug', {templateUrl: 'views/printer.php', controller: PrinterController})
+        .when('/printerConfig/:slug', {templateUrl: 'views/printerConfig.php', controller: PrinterConfigController})
         .otherwise({redirectTo: '/'});
     // $locationProvider.html5Mode(true);
 });

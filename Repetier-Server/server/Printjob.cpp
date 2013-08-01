@@ -31,6 +31,7 @@
 #include "Poco/File.h"
 #include "Poco/Path.h"
 #include "ServerEvents.h"
+#include "PrinterConfigiration.h"
 
 using namespace std;
 using namespace boost;
@@ -312,7 +313,7 @@ void PrintjobManager::finishPrintjobCreation(PrintjobPtr job,string namerep,size
     } catch(std::exception e) {
         RLog::log("Error creating new job: @",e.what());
         string msg= static_cast<string>("Error creating new job: ")+e.what();
-        string answer = static_cast<string>("/printer/msg/")+printer->slugName+
+        string answer = static_cast<string>("/printer/msg/")+printer->config->slug+
             static_cast<string>("?a=ok");
         gconfig->createMessage(msg,answer);
         files.remove(job);
@@ -349,7 +350,7 @@ void PrintjobManager::startJob(int id) {
     if(!jobin.good()) {
         RLog::log("Failed to open job file @",runningJob->getFilename());
         string msg= "Failed to open job file "+runningJob->getFilename();
-        string answer = "/printer/msg/"+printer->slugName+"?a=ok";
+        string answer = "/printer/msg/"+printer->config->slug+"?a=ok";
         gconfig->createMessage(msg,answer);
     }
 }
@@ -363,7 +364,7 @@ void PrintjobManager::killJob(int id) {
         RemovePrintjob(runningJob);
     } catch(std::exception &e) {
         string msg= "Failed to remove killed job file "+runningJob->getFilename();
-        string answer = "/printer/msg/"+printer->slugName+"?a=ok";
+        string answer = "/printer/msg/"+printer->config->slug+"?a=ok";
         gconfig->createMessage(msg,answer);
     }
     runningJob.reset();
@@ -529,8 +530,8 @@ void Printjob::stop(PrinterPtr p) {
     posix_time::time_duration td(now-time);
     char b[100];
     sprintf(b,"%d:%02d:%02d",td.hours(),td.minutes(),td.seconds());
-    string msg = "Print of "+getName()+" on printer "+p->name+ " finished. Send "+intToString(linesSend)+" lines. Printing time: "+b;
-    string url = "/printer/msg/"+p->slugName+"?a=jobfinsihed";
+    string msg = "Print of "+getName()+" on printer "+p->config->name+ " finished. Send "+intToString(linesSend)+" lines. Printing time: "+b;
+    string url = "/printer/msg/"+p->config->slug+"?a=jobfinsihed";
     gconfig->createMessage(msg, url);
 }
 void Printjob::removeFiles() {
@@ -543,7 +544,7 @@ void Printjob::removeFiles() {
     } catch(std::exception) {
         RLog::log("error: Failed to remove finished job @",getFilename());
         string msg= "Failed to remove finished job file "+getFilename();
-        string answer = "/printer/msg/"+manager->printer->slugName+"?a=ok";
+        string answer = "/printer/msg/"+manager->printer->config->slug+"?a=ok";
         gconfig->createMessage(msg,answer);
     }
 

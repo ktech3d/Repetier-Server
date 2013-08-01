@@ -21,6 +21,7 @@
 #include <boost/filesystem.hpp>
 #include "PrinterState.h"
 #include "ServerEvents.h"
+#include "PrinterConfigiration.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -66,10 +67,12 @@ void GlobalConfig::readPrinterConfigs() {
     {
         if ( is_regular(itr->status()) )
         {
-            cout << "Printer config: " << itr->path() << endl;
-            PrinterPtr p(new Printer(itr->path().string()));
-            p->Init(p);
-            printers.push_back(p);
+            if(itr->path().extension()==".xml") {
+                cout << "Printer config: " << itr->path() << " extension:" << itr->path().extension() << endl;
+                PrinterPtr p(new Printer(itr->path().string()));
+                p->Init(p);
+                printers.push_back(p);
+            }
         }
     }
 }
@@ -90,7 +93,7 @@ void GlobalConfig::stopPrinterThreads() {
 PrinterPtr GlobalConfig::findPrinterSlug(const std::string& slug) {
     for(vector<PrinterPtr>::iterator it=printers.begin();it!=printers.end();it++) {
         PrinterPtr p = *it;
-        if(p->slugName == slug) return p;
+        if(p->config->slug == slug) return p;
     }
     return PrinterPtr();
 }

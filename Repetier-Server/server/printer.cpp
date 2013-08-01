@@ -31,6 +31,7 @@
 #include "json_spirit.h"
 #include "RLog.h"
 #include "ServerEvents.h"
+#include "PrinterConfigiration.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -50,65 +51,16 @@ std::string PrinterResponse::getTimeString() {
     sprintf(buf,"%2d:%02d:%02d",tm.tm_hour,tm.tm_min,tm.tm_sec);
     return string(buf);
 }
-Printer::Printer(string conf) {
+Printer::Printer(string conf):config(new PrinterConfiguration(conf)) {
     stopRequested = false;
-    okAfterResend = true;
-    try {
-        config.readFile(conf.c_str());
-        bool ok = true;
-        ok &= config.lookupValue("printer.name", name);
-        ok &= config.lookupValue("printer.slugName", slugName);
-        ok &= config.lookupValue("printer.connection.device", device);
-        ok &= config.lookupValue("printer.connection.baudrate", baudrate);
-        ok &= config.lookupValue("printer.connection.pingPong", pingpong);
-        ok &= config.lookupValue("printer.connection.readCacheSize", cacheSize);
-        ok &= config.lookupValue("printer.connection.protocol", binaryProtocol);
-        ok &= config.lookupValue("printer.connection.okAfterResend", okAfterResend);
-        ok &= config.lookupValue("printer.dimension.xmin", xmin);
-        ok &= config.lookupValue("printer.dimension.ymin", ymin);
-        ok &= config.lookupValue("printer.dimension.zmin", zmin);
-        ok &= config.lookupValue("printer.dimension.xmax", xmax);
-        ok &= config.lookupValue("printer.dimension.ymax", ymax);
-        ok &= config.lookupValue("printer.dimension.zmax", zmax);
-        ok &= config.lookupValue("printer.homing.xhome", homex);
-        ok &= config.lookupValue("printer.homing.yhome", homey);
-        ok &= config.lookupValue("printer.homing.zhome", homez);
-        ok &= config.lookupValue("printer.extruder.count", extruderCount);
-        ok &= config.lookupValue("printer.extruder.tempUpdateEvery",updateTempEvery);
-        ok &= config.lookupValue("active", active);
-        ok &= config.lookupValue("printer.speed.xaxis", speedx);
-        ok &= config.lookupValue("printer.speed.yaxis", speedy);
-        ok &= config.lookupValue("printer.speed.zaxis", speedz);
-        ok &= config.lookupValue("printer.speed.eaxisExtrude", speedeExtrude);
-        ok &= config.lookupValue("printer.speed.eaxisRetract", speedeRetract);
-        if(!config.lookupValue("printer.extruder.heatedBed",hasHeatedBed))
-            hasHeatedBed = true;
-        if(!ok) {
-            RLog::log("Printer configuration @ not complete",conf,true);
-            exit(4);
-        }
-        lastResponseId = 0;
-        state = NULL;
-        serial = new PrinterSerial(*this);
-        resendError = 0;
-        errorsReceived = 0;
-        linesSend = 0;
-        bytesSend = 0;
-        paused = false;
-    }
-    catch(libconfig::ParseException& pe) {
-        RLog::log("Error parsing printer configuration @",conf);
-        RLog::log(static_cast<string>(pe.getError())+" line @",pe.getLine());
-        exit(4);
-    }
-    catch(...) {
-        RLog::log("Error reading printer configuration @",conf);
-        exit(4);
-    }
-#ifdef DEBUG
-    cout << "Printer configuration read: " << name << endl;
-    cout << "Port:" << device << endl;
-#endif
+    lastResponseId = 0;
+    state = NULL;
+    serial = new PrinterSerial(*this);
+    resendError = 0;
+    errorsReceived = 0;
+    linesSend = 0;
+    bytesSend = 0;
+    paused = false;
 }
 Printer::~Printer() {
     serial->close();
@@ -122,9 +74,9 @@ Printer::~Printer() {
 void Printer::Init(PrinterPtr ptr) {
     thisPtr = ptr;
     state = new PrinterState(ptr); // done at creation
-    jobManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"jobs",ptr);
-    modelManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"models",ptr);
-    scriptManager = new PrintjobManager(gconfig->getStorageDirectory()+slugName+"/"+"scripts",ptr,true);
+    jobManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"jobs",ptr);
+    modelManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"models",ptr);
+    scriptManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"scripts",ptr,true);
 
 }
 
@@ -143,7 +95,7 @@ void Printer::run() {
     {
         try {
             boost::this_thread::sleep(boost::posix_time::milliseconds(10));
-            if(!active) {
+            if(!config->active) {
                 if(serial->isConnected())
                     serial->close();
                 boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
@@ -151,6 +103,7 @@ void Printer::run() {
             }
             if(!serial->isConnected()) {
                 boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
+                cacheSize = config->serialInputBufferSize;
                 serial->tryConnect();
             } else {
                 {
@@ -160,7 +113,7 @@ void Printer::run() {
                         posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
                         td = now-lastTemp;
                     } // Must close mutex to prevent deadlock!
-                    if(manualCommands.size()<5 && updateTempEvery>0 && td.seconds()>=updateTempEvery) {
+                    if(manualCommands.size()<5 && config->tempUpdateEvery>0 && td.seconds()>=config->tempUpdateEvery) {
                         injectManualCommand("M105");
                         lastTemp = microsec_clock::local_time();
                     }
@@ -178,7 +131,7 @@ void Printer::stopThread() {
     thread->interrupt();
     thread->join();
 #ifdef DEBUG
-    cout << "Thread for printer " << name << " finished" << endl;
+    cout << "Thread for printer " << config->name << " finished" << endl;
 #endif
 }
 void Printer::connectionClosed() {
@@ -230,13 +183,15 @@ void Printer::injectJobCommand(const std::string& cmd) {
 }
 void Printer::move(double x,double y,double z,double e) {
     if(x!=0)
-        injectManualCommand(state->getMoveXCmd(x, speedx*60.0));
+        injectManualCommand(state->getMoveXCmd(x, config->xySpeed*60.0));
     if(y!=0)
-        injectManualCommand(state->getMoveYCmd(y, speedy*60.0));
+        injectManualCommand(state->getMoveYCmd(y, config->xySpeed*60.0));
     if(z!=0)
-        injectManualCommand(state->getMoveZCmd(z, speedz*60.0));
-    if(e!=0)
-        injectManualCommand(state->getMoveECmd(e,60.0 * (e>0 ? speedeExtrude : speedeRetract)));
+        injectManualCommand(state->getMoveZCmd(z, config->zSpeed*60.0));
+    if(e!=0) {
+        ExtruderConfigurationPtr ex = config->getExtruder(state->activeExtruder->id);
+        injectManualCommand(state->getMoveECmd(e,60.0 * (e>0 ? ex->extrudeSpeed : ex->retractSpeed)));
+    }
 }
 
 size_t Printer::jobCommandsStored() {
@@ -266,13 +221,13 @@ void Printer::resendLine(size_t line)
 {
     {
         mutex::scoped_lock l(sendMutex);
-        ignoreNextOk = okAfterResend;
+        ignoreNextOk = config->serialOkAfterResend;
         resendError++;
         errorsReceived++;
-        if(!pingpong && errorsReceived==3 && cacheSize>63) {
+        if(!config->serialPingPong && errorsReceived==3 && cacheSize>63) {
             cacheSize = 63;
         }
-        if (pingpong)
+        if (config->serialPingPong)
             readyForNextSend = true;
         else  {
             nackLines.clear();
@@ -281,7 +236,7 @@ void Printer::resendLine(size_t line)
     
         if (resendError > 8) {
             string msg = "Receiving only error messages. Reset communication.";
-            string url = "/printer/msg/"+slugName+"?a=close";
+            string url = "/printer/msg/"+config->slug+"?a=close";
             gconfig->createMessage(msg, url);
             serial->resetPrinter();
         }
@@ -295,13 +250,13 @@ void Printer::resendLine(size_t line)
             if(addLines) resendLines.push_back(*it);
         }
         if (binaryProtocol != 0) {
-            boost::this_thread::sleep(boost::posix_time::milliseconds(320000/baudrate));
+            boost::this_thread::sleep(boost::posix_time::milliseconds(320000/config->serialBaudrate));
             uint8_t  buf[32];
             for (int i = 0; i < 32; i++) buf[i] = 0;
             serial->writeBytes(buf,32);
-            boost::this_thread::sleep(boost::posix_time::milliseconds(320000/baudrate));
+            boost::this_thread::sleep(boost::posix_time::milliseconds(320000/config->serialBaudrate));
         } else {
-            boost::this_thread::sleep(boost::posix_time::milliseconds(cacheSize*10000/baudrate)); // Wait for buffer to empty
+            boost::this_thread::sleep(boost::posix_time::milliseconds(cacheSize*10000/config->serialBaudrate)); // Wait for buffer to empty
         }
     } // unlock mutex or we get deadlock!
     trySendNextLine();
@@ -310,8 +265,8 @@ void Printer::resendLine(size_t line)
 void Printer::manageHostCommand(boost::shared_ptr<GCode> &cmd) {
     string c = cmd->hostCommandPart();
     if(c=="@pause") {
-        string msg= "Printer "+name+" paused:"+cmd->hostParameter();
-        string answer = "/printer/msg/"+slugName+"?a=unpause";
+        string msg= "Printer "+config->name+" paused:"+cmd->hostParameter();
+        string answer = "/printer/msg/"+config->slug+"?a=unpause";
         gconfig->createMessage(msg,answer);
         paused = true;
         state->storePause();
@@ -334,9 +289,9 @@ void Printer::stopPause() {
     paused = false;
 }
 bool Printer::trySendPacket(GCodeDataPacketPtr &dp,shared_ptr<GCode> &gc) {
-    if((pingpong && readyForNextSend) || (!pingpong && cacheSize>receiveCacheFill+dp->length)) {
+    if((config->serialPingPong && readyForNextSend) || (!config->serialPingPong && cacheSize>receiveCacheFill+dp->length)) {
         serial->writeBytes(dp->data,dp->length);
-        if(!pingpong) {
+        if(!config->serialPingPong) {
             receiveCacheFill += dp->length;
             nackLines.push_back(dp->length);
         } else readyForNextSend = false;
@@ -373,7 +328,7 @@ bool Printer::extract(const string& source,const string& ident,string &result)
 void Printer::trySendNextLine() {
     if (!garbageCleared) return;
     mutex::scoped_lock l(sendMutex);
-    if (pingpong && !readyForNextSend) {return;}
+    if (config->serialPingPong && !readyForNextSend) {return;}
     if (!serial->isConnected()) {return;} // Not ready yet
     shared_ptr<GCode> gc;
     GCodeDataPacketPtr dp;
@@ -476,7 +431,7 @@ void Printer::analyseResponse(string &res) {
         //    log(res, true, level);
         if (!ignoreNextOk)  // ok in response of resend?
         {
-            if (pingpong) readyForNextSend = true;
+            if (config->serialPingPong) readyForNextSend = true;
             else
             {
                 mutex::scoped_lock l(sendMutex);
@@ -497,7 +452,7 @@ void Printer::analyseResponse(string &res) {
         boost::posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
         time_duration td(now-lastCommandSend);
         if(td.total_seconds()>5) {
-            if (pingpong) readyForNextSend = true;
+            if (config->serialPingPong) readyForNextSend = true;
             else
             {
                 nackLines.clear();
@@ -515,10 +470,11 @@ int Printer::getOnlineStatus() {
     return 0;
 }
 bool Printer::getActive() {
-    return active;
+    return config->active;
 }
 void Printer::setActive(bool v) {
-    active = v;
+    config->active = v;
+    sendConfigEvent();
 }
 void Printer::getJobStatus(json_spirit::Object &obj) {
     jobManager->getJobStatus(obj);
@@ -532,70 +488,14 @@ void Printer::sendStateEvent() {
     RepetierEventPtr event(new RepetierEvent(thisPtr,"state",json_spirit::mValue(o)));
     RepetierEvent::fireEvent(event);
 }
-void Printer::sendStatusEvent() {
+void Printer::sendConfigEvent() {
     json_spirit::mObject o;
-    fillJSONObject(o);
-    RepetierEventPtr event(new RepetierEvent(thisPtr,"status",json_spirit::mValue(o)));
+    config->fillJSON(o);
+    RepetierEventPtr event(new RepetierEvent(thisPtr,"config",json_spirit::mValue(o)));
     RepetierEvent::fireEvent(event);    
 }
 
-void Printer::fillJSONObject(json_spirit::Object &obj) {
-    using namespace json_spirit;
-    obj.push_back(Pair("active",active));
-    obj.push_back(Pair("paused",paused));
-    obj.push_back(Pair("printerName",name));
-    obj.push_back(Pair("slug",slugName));
-    obj.push_back(Pair("device",device));
-    obj.push_back(Pair("baudrate",baudrate));
-    obj.push_back(Pair("xmin",xmin));
-    obj.push_back(Pair("xmax",xmax));
-    obj.push_back(Pair("ymin",ymin));
-    obj.push_back(Pair("ymax",ymax));
-    obj.push_back(Pair("zmin",zmin));
-    obj.push_back(Pair("zmax",zmax));
-    obj.push_back(Pair("speedx",speedx));
-    obj.push_back(Pair("speedy",speedy));
-    obj.push_back(Pair("speedz",speedz));
-    obj.push_back(Pair("speedeExtrude",speedeExtrude));
-    obj.push_back(Pair("speedeRetract",speedeRetract));
-    obj.push_back(Pair("extruderCount",extruderCount));
-    obj.push_back(Pair("hasHeatedBed",hasHeatedBed));
-    Array ea;
-    for(int i=0;i<extruderCount;i++) {
-        Object e;
-        e.push_back(Pair("extruderid",i));
-        e.push_back(Pair("extrudernum",i+1));
-        ea.push_back(e);
-    }
-    obj.push_back(Pair("extruder",ea));
+void Printer::fillJSONConfig(json_spirit::mObject &obj) {
+    config->fillJSON(obj);
 }
-void Printer::fillJSONObject(json_spirit::mObject &obj) {
-    using namespace json_spirit;
-    obj["active"] = active;
-    obj["paused"] = paused;
-    obj["printerName"] = name;
-    obj["slug"] = slugName;
-    obj["device"] = device;
-    obj["baudrate"] = baudrate;
-    obj["xmin"] = xmin;
-    obj["xmax"] = xmax;
-    obj["ymin"] = ymin;
-    obj["ymax"] = ymax;
-    obj["zmin"] = zmin;
-    obj["zmax"] = zmax;
-    obj["speedx"] = speedx;
-    obj["speedy"] = speedy;
-    obj["speedz"] = speedz;
-    obj["speedeExtrude"] = speedeExtrude;
-    obj["speedeRetract"] = speedeRetract;
-    obj["extruderCount"] = extruderCount;
-    obj["hasHeatedBed"] = hasHeatedBed;
-    mArray ea;
-    for(int i=0;i<extruderCount;i++) {
-        mObject e;
-        e["extruderid"] = i;
-        e["extrudernum"] = i+1;
-        ea.push_back(e);
-    }
-    obj["extruder"] = ea;
-}
+

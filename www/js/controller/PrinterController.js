@@ -1,3 +1,21 @@
+PrinterConfigController = function($scope,$routeParams,WS,$rootScope,$timeout) {
+    slug = $routeParams.slug;
+    $rootScope.selectPrinter(slug);
+    window.ed = $scope;
+    $scope.editor = angular.copy($rootScope.printerConfig[slug]) || {};
+
+    $scope.saveConfig = function() {
+        WS.send("setPrinterConfig",$scope.editor);
+    }
+    $scope.resetConfig = function() {
+        $scope.editor = $rootScope.printerConfig[slug];
+    }
+    $rootScope.$watch('printerConfig.'+slug,function(newVal) {
+        console.log("new edit");
+        $scope.editor = angular.copy(newVal);
+    });
+    //$(document).foundation();
+}
 PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     slug = $routeParams.slug;
     $rootScope.selectPrinter(slug);

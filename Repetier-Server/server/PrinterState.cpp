@@ -24,6 +24,7 @@
 #include "PrinterState.h"
 #include "printer.h"
 #include "GCode.h"
+#include "PrinterConfigiration.h"
 
 using namespace std;
 using namespace boost;
@@ -43,7 +44,7 @@ void ExtruderStatus::resetPosition() {
 }
 PrinterState::PrinterState(PrinterPtr p,int minExtruder) {
     printer = p;
-    if(printer!=NULL) extruderCount = printer->extruderCount+1; else extruderCount = 10;
+    if(printer!=NULL) extruderCount = printer->config->getExtruderCount()+1; else extruderCount = 10;
     if(extruderCount<minExtruder) extruderCount = minExtruder;
     extruder=new ExtruderStatus[extruderCount]; // Always one more in case 0 extruder
     for(int i=0;i<extruderCount;i++)
@@ -106,11 +107,11 @@ void PrinterState::analyze(GCode &code)
         if (hc=="@isathome")
         {
             hasXHome = hasYHome = hasZHome = true;
-            x = printer->homex;
+            x = printer->config->xHome;
             xOffset = 0;
-            y = printer->homey;
+            y = printer->config->yHome;
             yOffset = 0;
-            z = printer->homez;
+            z = printer->config->zHome;
             zOffset = 0;
         }
         return;
@@ -163,12 +164,12 @@ void PrinterState::analyze(GCode &code)
                             }
                         }
                     }
-                if (x < printer->xmin) { x = printer->xmin; hasXHome = false; }
-                if (y < printer->ymin) { y = printer->ymin; hasYHome = false; }
-                if (z < printer->zmin) { z = printer->zmin; hasZHome = false; }
-                if (x > printer->xmax) { x = printer->xmax; hasXHome = false; }
-                if (y > printer->ymax) { y = printer->ymax; hasYHome = false; }
-                if (z > printer->zmax) { z = printer->zmax; hasZHome = false; }
+                if (x < printer->config->xMin) { x = printer->config->xMin; hasXHome = false; }
+                if (y < printer->config->yMin) { y = printer->config->yMin; hasYHome = false; }
+                if (z < printer->config->zMin) { z = printer->config->zMin; hasZHome = false; }
+                if (x > printer->config->xMax) { x = printer->config->xMax; hasXHome = false; }
+                if (y > printer->config->yMax) { y = printer->config->yMax; hasYHome = false; }
+                if (z > printer->config->zMax) { z = printer->config->zMax; hasZHome = false; }
                 if (activeExtruder->ePos > activeExtruder->eMax) {
                     activeExtruder->eMax = activeExtruder->ePos;
                     if(z!=lastZPrint) {
@@ -195,18 +196,18 @@ void PrinterState::analyze(GCode &code)
             case 161:
             {
                 bool homeAll = !(code.hasX() || code.hasY() || code.hasZ());
-                if (code.hasX() || homeAll) { xOffset = 0; x = printer->homex; hasXHome = true; }
-                if (code.hasY() || homeAll) { yOffset = 0; y = printer->homey; hasYHome = true; }
-                if (code.hasZ() || homeAll) { zOffset = 0; z = printer->homez; hasZHome = true; }
+                if (code.hasX() || homeAll) { xOffset = 0; x = printer->config->xHome; hasXHome = true; }
+                if (code.hasY() || homeAll) { yOffset = 0; y = printer->config->yHome; hasYHome = true; }
+                if (code.hasZ() || homeAll) { zOffset = 0; z = printer->config->zHome; hasZHome = true; }
                 if (code.hasE()) { activeExtruder->eOffset = 0; activeExtruder->ePos = 0; activeExtruder->eMax = 0; }
                 break;
             }
             case 162:
             {
                 bool homeAll = !(code.hasX() || code.hasY() || code.hasZ());
-                if (code.hasX() || homeAll) { xOffset = 0; x = printer->xmax; hasXHome = true; }
-                if (code.hasY() || homeAll) { yOffset = 0; y = printer->ymax; hasYHome = true; }
-                if (code.hasZ() || homeAll) { zOffset = 0; z = printer->zmax; hasZHome = true; }
+                if (code.hasX() || homeAll) { xOffset = 0; x = printer->config->xMax; hasXHome = true; }
+                if (code.hasY() || homeAll) { yOffset = 0; y = printer->config->yMax; hasYHome = true; }
+                if (code.hasZ() || homeAll) { zOffset = 0; z = printer->config->zMax; hasZHome = true; }
                 break;
             }
             case 90:
@@ -457,11 +458,11 @@ void PrinterState::setIsathome() {
     hasXHome = true;
     hasYHome = true;
     hasZHome = true;
-    x = printer->homex;
+    x = printer->config->xHome;
     xOffset = 0;
-    y = printer->homey;
+    y = printer->config->yHome;
     yOffset = 0;
-    z = printer->homez;
+    z = printer->config->zHome;
     zOffset = 0;
 }
 
@@ -485,11 +486,11 @@ void PrinterState::fillJSONObject(json_spirit::Object &obj) {
     obj.push_back(Pair("bedTempRead",bed.tempRead));
     obj.push_back(Pair("speedMultiply",speedMultiply));
     obj.push_back(Pair("flowMultiply",flowMultiply));
-    obj.push_back(Pair("numExtruder",printer->extruderCount));
+    obj.push_back(Pair("numExtruder",printer->config->getExtruderCount()));
     obj.push_back(Pair("firmware",firmware));
     obj.push_back(Pair("firmwareURL",firmwareURL));
     Array ea;
-    for(int i=0;i<printer->extruderCount;i++) {
+    for(int i=0;i<printer->config->getExtruderCount();i++) {
         Object e;
         e.push_back(Pair("tempSet",extruder[i].tempSet));
         e.push_back(Pair("tempRead",extruder[i].tempRead));
@@ -518,11 +519,11 @@ void PrinterState::fillJSONObject(json_spirit::mObject &obj) {
     obj["bedTempRead"] = bed.tempRead;
     obj["speedMultiply"] = speedMultiply;
     obj["flowMultiply"] = flowMultiply;
-    obj["numExtruder"] = printer->extruderCount;
+    obj["numExtruder"] = printer->config->getExtruderCount();
     obj["firmware"] = firmware;
     obj["firmwareURL"] = firmwareURL;
     mArray ea;
-    for(int i=0;i<printer->extruderCount;i++) {
+    for(int i=0;i<printer->config->getExtruderCount();i++) {
         mObject e;
         e["tempSet"] = extruder[i].tempSet;
         e["tempRead"] = extruder[i].tempRead;
@@ -542,9 +543,9 @@ void PrinterState::storePause() {
 void PrinterState::injectUnpause() {
     char buf[200];
     printer->injectManualCommand("G90");
-    sprintf(buf,"G1 X%.2f Y%.2f F%.0f",pauseX,pauseY,printer->speedx*60.0);
+    sprintf(buf,"G1 X%.2f Y%.2f F%.0f",pauseX,pauseY,printer->config->xySpeed*60.0);
     printer->injectManualCommand(buf);
-    sprintf(buf,"G1 Z%.2f F%.0f",pauseZ,printer->speedz*60.0);
+    sprintf(buf,"G1 Z%.2f F%.0f",pauseZ,printer->config->zSpeed*60.0);
     printer->injectManualCommand(buf);
     sprintf(buf,"G92 E%.4f",pauseE);
     printer->injectManualCommand(buf);

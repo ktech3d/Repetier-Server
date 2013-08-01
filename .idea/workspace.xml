@@ -5,34 +5,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/ServerEvents.cpp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/ServerEvents.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.cpp" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configs/irapid.xml.orig" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configs/irapid.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/www/views/printerConfig.php" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/bootstrap-arrows.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/bootstrap-arrows.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/bootstrap.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/css/bootstrap-arrows.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/css/bootstrap-responsive.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/css/bootstrap.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/css/bootstrap.min.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/bt/css/bootstrap2.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/jquery/bootbox.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/jquery/bootbox.min.js" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/www/js/bootstrap.min.js" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCode.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCode.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCode.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCode.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/controller/PrinterController.js" afterPath="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/Printjob.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/Printjob.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/Printjob.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/Printjob.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/RLog.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/RLog.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/RLog.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/RLog.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/controller/ServerController.js" afterPath="$PROJECT_DIR$/www/js/controller/ServerController.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/directives/foundation.js" afterPath="$PROJECT_DIR$/www/js/directives/foundation.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/global_config.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/global_config.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/global_config.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/global_config.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/index.php" afterPath="$PROJECT_DIR$/www/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/main.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/main.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/printer.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/printer.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/printer.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/printer.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views/printer.php" afterPath="$PROJECT_DIR$/www/views/printer.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server.xcodeproj/project.pbxproj" afterPath="$PROJECT_DIR$/Repetier-Server.xcodeproj/project.pbxproj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/router.js" afterPath="$PROJECT_DIR$/www/js/router.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/websocket.txt" afterPath="$PROJECT_DIR$/websocket.txt" />
@@ -43,24 +45,27 @@
     <file path="/Dummy.txt" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373811123878" ignored="false" />
     <file path="/README.md" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373564355779" ignored="false" />
     <file path="/index.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374676760697" ignored="false" />
-    <file path="/ServerController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374680276621" ignored="false" />
+    <file path="/ServerController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375351156607" ignored="false" />
     <file path="/home.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373787748490" ignored="false" />
-    <file path="/router.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374677644218" ignored="false" />
+    <file path="/router.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375351294937" ignored="false" />
     <file path="/HomeController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373638900324" ignored="false" />
     <file path="/gauge.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373739864544" ignored="false" />
     <file path="/server.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373648774787" ignored="false" />
     <file path="/forms.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373650120473" ignored="false" />
     <file path="/servermain.sass" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373697124485" ignored="false" />
-    <file path="/foundation.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373792884483" ignored="false" />
+    <file path="/foundation.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375361387057" ignored="false" />
     <file path="/servermain.scss" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374588376404" ignored="false" />
     <file path="/fontello.css" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373714213714" ignored="false" />
-    <file path="/websocket.txt" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374857213852" ignored="false" />
+    <file path="/websocket.txt" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375349533400" ignored="false" />
     <file path="/filter.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374245620996" ignored="false" />
     <file path="/about.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373732993668" ignored="false" />
-    <file path="/PrinterController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374857022589" ignored="false" />
-    <file path="/printer.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1374588571871" ignored="false" />
+    <file path="/PrinterController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375360178246" ignored="false" />
+    <file path="/printer.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375351523849" ignored="false" />
     <file path="/widgets.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373818507253" ignored="false" />
-    <file path="/a.dummy" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373817202457" ignored="false" />
+    <file path="/a.dummy" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375361504739" ignored="false" />
+    <file path="/irapid.xml" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375287413989" ignored="false" />
+    <file path="/irapid.xml.orig" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375195881142" ignored="false" />
+    <file path="/printerConfig.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375359927544" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,30 +85,49 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/index.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="62" column="6" selection-start="2468" selection-end="2468" vertical-scroll-proportion="-8.541667">
-              <folding>
-                <element signature="n#style#0;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="ServerController.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/js/controller/ServerController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="49" column="0" selection-start="1813" selection-end="1891" vertical-scroll-proportion="-19.923077">
+            <state line="14" column="29" selection-start="583" selection-end="593" vertical-scroll-proportion="6.0384617">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="servermain.scss" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/style/sass/servermain.scss">
+      <file leaf-file-name="router.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/www/js/router.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="87" column="2" selection-start="1673" selection-end="1673" vertical-scroll-proportion="0.0">
+            <state line="6" column="104" selection-start="504" selection-end="504" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="printerConfig.php" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/www/views/printerConfig.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="16" column="61" selection-start="831" selection-end="860" vertical-scroll-proportion="0.458891">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="widgets.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/www/js/directives/widgets.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="37" column="0" selection-start="1134" selection-end="1134" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="websocket.txt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/websocket.txt">
+          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+            <state />
+          </provider>
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="29" column="16" selection-start="1118" selection-end="1118" vertical-scroll-proportion="-16.11111">
               <folding />
             </state>
           </provider>
@@ -112,64 +136,7 @@
       <file leaf-file-name="printer.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/views/printer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="152" column="40" selection-start="8166" selection-end="8194" vertical-scroll-proportion="-5.1">
-              <folding>
-                <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#i#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#div#0;n#div#0;n#div#1;n#div#2;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#6;n#div#0;n#div#0;n#section#2;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="printer.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/printer.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="613" column="47" selection-start="29469" selection-end="29491" vertical-scroll-proportion="-27.0">
-              <folding>
-                <marker date="1373634189000" expanded="true" signature="29545:29557" placeholder="{...}" />
-                <marker date="1373634189000" expanded="true" signature="29601:29613" placeholder="{...}" />
-                <marker date="1373634189000" expanded="true" signature="29700:29712" placeholder="{...}" />
-                <marker date="1373634189000" expanded="true" signature="29760:29772" placeholder="{...}" />
-                <marker date="1373634189000" expanded="true" signature="29840:29852" placeholder="{...}" />
-                <marker date="1373634189000" expanded="true" signature="29900:29912" placeholder="{...}" />
-                <marker date="1373634189000" expanded="true" signature="29981:29993" placeholder="{...}" />
-                <marker date="1373634189000" expanded="true" signature="30079:30092" placeholder="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="router.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/js/router.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="38" selection-start="1983" selection-end="1983" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="README.md" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/README.md">
-          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="websocket.txt" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/websocket.txt">
-          <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="6" selection-start="1354" selection-end="1354" vertical-scroll-proportion="0.68441063">
+            <state line="86" column="30" selection-start="4854" selection-end="4854" vertical-scroll-proportion="-10.0">
               <folding />
             </state>
           </provider>
@@ -178,7 +145,25 @@
       <file leaf-file-name="foundation.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/js/directives/foundation.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="62" vertical-scroll-proportion="0.0">
+            <state line="54" column="38" selection-start="2191" selection-end="2191" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="irapid.xml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/configs/irapid.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="54" column="42" selection-start="1783" selection-end="1783" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="irapid.xml.orig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/configs/irapid.xml.orig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="32" column="22" selection-start="0" selection-end="2666" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -187,7 +172,7 @@
       <file leaf-file-name="PrinterController.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="63" column="26" selection-start="2122" selection-end="2122" vertical-scroll-proportion="-20.192308">
+            <state line="16" column="6" selection-start="594" selection-end="594" vertical-scroll-proportion="-9.230769">
               <folding />
             </state>
           </provider>
@@ -211,22 +196,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/www/style/css/fontello.css" />
-        <option value="$PROJECT_DIR$/configs/irapid.cfg" />
-        <option value="$PROJECT_DIR$/www/views/about.php" />
         <option value="$PROJECT_DIR$/www/js/directives/gauge.js" />
         <option value="$PROJECT_DIR$/www/views/home.php" />
-        <option value="$PROJECT_DIR$/www/js/directives/foundation.js" />
         <option value="$PROJECT_DIR$/www/js/directives/widgets.js" />
         <option value="$PROJECT_DIR$/www/js/directives/filter.js" />
         <option value="$PROJECT_DIR$/www/printer.php" />
         <option value="$PROJECT_DIR$/www/style/sass/servermain.scss" />
-        <option value="$PROJECT_DIR$/www/views/printer.php" />
         <option value="$PROJECT_DIR$/www/index.php" />
-        <option value="$PROJECT_DIR$/www/js/router.js" />
-        <option value="$PROJECT_DIR$/www/js/controller/ServerController.js" />
-        <option value="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
+        <option value="$PROJECT_DIR$/configs/irapid.xml.orig" />
+        <option value="$PROJECT_DIR$/configs/irapid.xml" />
         <option value="$PROJECT_DIR$/websocket.txt" />
+        <option value="$PROJECT_DIR$/www/js/controller/ServerController.js" />
+        <option value="$PROJECT_DIR$/www/js/router.js" />
+        <option value="$PROJECT_DIR$/www/views/printer.php" />
+        <option value="$PROJECT_DIR$/www/views/printerConfig.php" />
+        <option value="$PROJECT_DIR$/www/js/directives/foundation.js" />
+        <option value="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
       </list>
     </option>
   </component>
@@ -522,6 +507,11 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
   </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/configs" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
       <TestRunner />
@@ -547,10 +537,10 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32905483" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2524272" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2524272" sideWeight="0.67094517" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -625,41 +615,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/INSTALL.txt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/views/home.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="36" selection-start="82" selection-end="82" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/foundation/foundation.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/directives/widgets.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="37" column="0" selection-start="1134" selection-end="1134" vertical-scroll-proportion="0.0">
-          <folding>
-            <marker date="1373818616000" expanded="true" signature="-1:-1" placeholder="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configs/irapid.cfg">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="14" selection-start="879" selection-end="879" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/js/directives/filter.js">
       <provider selected="true" editor-type-id="text-editor">
         <state line="40" column="21" selection-start="1111" selection-end="1111" vertical-scroll-proportion="0.0">
@@ -671,14 +626,14 @@
       <provider selected="true" editor-type-id="text-editor">
         <state line="613" column="47" selection-start="29469" selection-end="29491" vertical-scroll-proportion="-27.0">
           <folding>
-            <marker date="1373634189000" expanded="true" signature="29545:29557" placeholder="{...}" />
-            <marker date="1373634189000" expanded="true" signature="29601:29613" placeholder="{...}" />
-            <marker date="1373634189000" expanded="true" signature="29700:29712" placeholder="{...}" />
-            <marker date="1373634189000" expanded="true" signature="29760:29772" placeholder="{...}" />
-            <marker date="1373634189000" expanded="true" signature="29840:29852" placeholder="{...}" />
-            <marker date="1373634189000" expanded="true" signature="29900:29912" placeholder="{...}" />
-            <marker date="1373634189000" expanded="true" signature="29981:29993" placeholder="{...}" />
-            <marker date="1373634189000" expanded="true" signature="30079:30092" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1373634189000" expanded="true" signature="-1:-1" placeholder="{...}" />
           </folding>
         </state>
       </provider>
@@ -686,26 +641,6 @@
     <entry file="file://$PROJECT_DIR$/www/style/sass/servermain.scss">
       <provider selected="true" editor-type-id="text-editor">
         <state line="87" column="2" selection-start="1673" selection-end="1673" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/views/printer.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="152" column="40" selection-start="8166" selection-end="8194" vertical-scroll-proportion="-5.1">
-          <folding>
-            <element signature="n#style#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#i#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#div#0;n#div#0;n#div#1;n#div#2;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#6;n#div#0;n#div#0;n#section#2;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/directives/foundation.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="62" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -720,32 +655,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/configs/irapid.cfg">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="38" selection-start="623" selection-end="623" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/www/index.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="62" column="6" selection-start="2468" selection-end="2468" vertical-scroll-proportion="-8.541667">
+        <state line="55" column="0" selection-start="2352" selection-end="2352" vertical-scroll-proportion="-34.375">
           <folding>
             <element signature="n#style#0;n#div#0;n#div#2;n#body#0;n#html#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/router.js">
+    <entry file="file://$PROJECT_DIR$/configs/irapid.xml.orig">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="38" selection-start="1983" selection-end="1983" vertical-scroll-proportion="0.0">
+        <state line="32" column="22" selection-start="0" selection-end="2666" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/controller/ServerController.js">
+    <entry file="file://$PROJECT_DIR$/configs/irapid.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="49" column="0" selection-start="1813" selection-end="1891" vertical-scroll-proportion="-19.923077">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="63" column="26" selection-start="2122" selection-end="2122" vertical-scroll-proportion="-20.192308">
+        <state line="54" column="42" selection-start="1783" selection-end="1783" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -755,7 +690,56 @@
         <state />
       </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="6" selection-start="1354" selection-end="1354" vertical-scroll-proportion="0.68441063">
+        <state line="29" column="16" selection-start="1118" selection-end="1118" vertical-scroll-proportion="-16.11111">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/router.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="104" selection-start="504" selection-end="504" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/directives/widgets.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="37" column="0" selection-start="1134" selection-end="1134" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/views/printer.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="86" column="30" selection-start="4854" selection-end="4854" vertical-scroll-proportion="-10.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/controller/ServerController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="14" column="29" selection-start="583" selection-end="593" vertical-scroll-proportion="6.0384617">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="6" selection-start="594" selection-end="594" vertical-scroll-proportion="-9.230769">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/directives/foundation.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="54" column="38" selection-start="2191" selection-end="2191" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/views/printerConfig.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="61" selection-start="831" selection-end="860" vertical-scroll-proportion="0.458891">
           <folding />
         </state>
       </provider>

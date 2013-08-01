@@ -23,6 +23,7 @@
 
 #include "PrinterSerial.h"
 #include "printer.h"
+#include "PrinterConfigiration.h"
 #ifdef __APPLE__
 #include <sys/ioctl.h>
 #include <termios.h>
@@ -162,8 +163,8 @@ bool PrinterSerial::tryConnect() {
             writeQueue.clear();
         }
         setErrorStatus(true);//If an exception is thrown, error_ remains true
-        baudrate = asio::serial_port_base::baud_rate(printer->baudrate);
-        port.open(printer->device);
+        baudrate = asio::serial_port_base::baud_rate(printer->config->serialBaudrate);
+        port.open(printer->config->serialPort);
         port.debugTermios();
         port.set_option(parity);
         port.debugTermios();
@@ -173,7 +174,7 @@ bool PrinterSerial::tryConnect() {
         port.debugTermios();
         port.set_option(stopBits);
         port.debugTermios();
-        port.set_baudrate(printer->baudrate);
+        port.set_baudrate(printer->config->serialBaudrate);
         port.debugTermios();
         //This gives some work to the io_service before it is started
         io.post(boost::bind(&PrinterSerial::doRead, this));
@@ -181,7 +182,7 @@ bool PrinterSerial::tryConnect() {
         backgroundThread.swap(t);
         setErrorStatus(false);//If we get here, no error
         open=true; //Port is now open
-        RLog::log("Connection started:@",printer->name);
+        RLog::log("Connection started:@",printer->config->name);
         resetPrinter();
     } catch (std::exception& e)
     {
@@ -331,12 +332,12 @@ void PrinterSerial::doClose()
     port.close(ec);
     if(ec) setErrorStatus(true);
     printer->connectionClosed();
-    RLog::log("Connection closed: @",printer->name);
+    RLog::log("Connection closed: @",printer->config->name);
 }
 
 // Send reset to the printer by toggling DTR line
 void PrinterSerial::resetPrinter() {
-	RLog::log("Reset printer @",printer->name);
+	RLog::log("Reset printer @",printer->config->name);
     port.setDTR(false);
     boost::this_thread::sleep(boost::posix_time::milliseconds(200));
     port.setDTR(true);

@@ -26,6 +26,9 @@ select, data = {printer:"<slugname>"}
 Selects the printer for printer related calls.
 
 setLoglevel {level:}
+getPrinterConfig
+setPrinterConfig
+
 
 Defined events:
 ---------------

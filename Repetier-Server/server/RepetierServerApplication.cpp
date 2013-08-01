@@ -41,6 +41,7 @@
 #include "global_config.h"
 #include "WebserverAPI.h"
 #include "ActionHandler.h"
+#include "PrinterConfigiration.h"
 
 using Poco::Net::ServerSocket;
 using Poco::Net::HTTPRequestHandler;
@@ -156,6 +157,10 @@ int RepetierServerApplication::main(const std::vector<std::string>& args)
         std::string format(
                            config().getString("HTTPTimeServer.format",
                                               DateTimeFormat::SORTABLE_FORMAT));
+        
+        PrinterConfiguration pc("/Users/littwin/Documents/Projekte/Repetier-Server/Repetier-Server/configs/irapid.xml");
+        pc.saveConfiguration();
+        
         if(port == 0)
             port = Poco::NumberParser::parse(gconfig->getPorts());
         repetier::MainRequestHandler::registerActionHandler("printer", &repetier::printerRequestHandler);
