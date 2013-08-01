@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<printer>
+    <general>
+        <name>iRapid</name>
+        <slug>irapid</slug>
+        <printerVariant>cartesian</printerVariant>
+        <active>true</active>
+    </general>
+    <connection>
+        <serial>
+            <baudrate>115200</baudrate>
+            <device>/dev/tty.usbmodemfa1331</device>
+            <pingpong>false</pingpong>
+            <inputBufferSize>127</inputBufferSize>
+            <protocol>0</protocol>
+            <okAfterResend>true</okAfterResend>
+        </serial>
+    </connection>
+    <shapes>
+        <grid color="#ffffff" spacing="10"/>
+        <rectangle xmin="0" ymin="0" xmax="95" ymax="95" color="80800"/>
+    </shapes>
+    <movement>
+        <xMin>0</xMin>
+        <xMax>95</xMax>
+        <xHome>0</xHome>
+        <yMin>0</yMin>
+        <yMax>95</yMax>
+        <yHome>0</yHome>
+        <zMin>0</zMin>
+        <zMax>95</zMax>
+        <zHome>0</zHome>
+        <xyJerk>40</xyJerk>
+        <zJerk>0.3</zJerk>
+        <xyPrintAcceleration>1500</xyPrintAcceleration>
+        <xyTravelAcceleration>2500</xyTravelAcceleration>
+        <endstops x="true" y="true" z="true" all="true"/>
+    </movement>
+    <extruders>
+        <extruder num="0">
+            <eJerk>30</eJerk>
+            <maxSpeed>12</maxSpeed>
+            <extrude>2</extrude>
+            <retract>10</retract>
+            <temperatures>
+                <temperature value="185">PLA 185°C</temperature>
+                <temperature value="190">PLA 190°C</temperature>
+                <temperature value="200">PLA 200°C</temperature>
+                <temperature value="205">PLA 205°C</temperature>
+                <temperature value="210">PLA 210°C</temperature>
+            </temperatures>
+        </extruder>
+    </extruders>
+    <scripts>
+        <script name="start">;Start script</script>
+        <script name="kill">;Stop script</script>
+        <script name="end">;End script</script>
+        <script name="pause">;Pause script</script>
+        <script name="script_1">;Script 1</script>
+        <script name="script_2">;Script 2</script>
+        <script name="script_3">;Script 3</script>
+        <script name="script_4">;Script 4</script>
+        <script name="script_5">;Script 5</script>
+    </scripts>
+</printer>
