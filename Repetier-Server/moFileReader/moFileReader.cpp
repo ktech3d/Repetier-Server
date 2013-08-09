@@ -221,7 +221,7 @@ moFileReader::eErrorCode moFileReader::ExportAsHTML(std::string infile, std::str
 
     // Beautify Output
     std::string fname;
-    unsigned int pos = infile.find_last_of(moPATHSEP);
+    unsigned int pos = (unsigned int)infile.find_last_of(moPATHSEP);
     if ( pos != std::string::npos )
     {
         fname = infile.substr( pos+1, infile.length() );

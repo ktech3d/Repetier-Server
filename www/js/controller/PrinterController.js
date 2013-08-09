@@ -3,6 +3,8 @@ PrinterConfigController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     $rootScope.selectPrinter(slug);
     window.ed = $scope;
     $scope.editor = angular.copy($rootScope.printerConfig[slug]) || {};
+    $scope.preview = new GCodePainter("shapePreview");
+    $scope.preview.connectPrinter($scope.editor);
 
     $scope.saveConfig = function() {
         WS.send("setPrinterConfig",$scope.editor);
@@ -10,11 +12,85 @@ PrinterConfigController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     $scope.resetConfig = function() {
         $scope.editor = $rootScope.printerConfig[slug];
     }
+    var enrichEditor = function() {
+        if(!$scope.editor) return;
+        bs = $scope.editor.shape.basicShape;
+        if(undefined == bs.radius) {
+            bs.radius = 100;
+            bs.x = 0;
+            bs.y = 0;
+        }
+        if(undefined == bs.xMin) {
+            bs.xMin = bs.yMin = 0;
+            bs.xMax = bs.yMax = 200;
+        }
+    }
     $rootScope.$watch('printerConfig.'+slug,function(newVal) {
-        console.log("new edit");
         $scope.editor = angular.copy(newVal);
+        enrichEditor();
+        $timeout(function () {
+            $("[data-toggle=popover]").popover({});
+            $scope.preview.connectPrinter($scope.editor);
+        });
     });
-    //$(document).foundation();
+    $('#printerTabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    })
+
+    $scope.bedTempUp = function(idx) {
+        x = $scope.editor.heatedBed.temperatures[idx-1];
+        y = $scope.editor.heatedBed.temperatures[idx];
+        $scope.editor.heatedBed.temperatures.splice(idx-1,2,y,x);
+    }
+    $scope.bedTempDown = function(idx) {
+        x = $scope.editor.heatedBed.temperatures[idx];
+        y = $scope.editor.heatedBed.temperatures[idx+1];
+        $scope.editor.heatedBed.temperatures.splice(idx,2,y,x);
+    }
+    $scope.bedTempDel = function(idx) {
+        $scope.editor.heatedBed.temperatures.splice(idx,1);
+    }
+    $scope.bedTempAdd = function() {
+        $scope.editor.heatedBed.temperatures.push({name:"",temp:"50"});
+    }
+    $scope.extTempUp = function(ex,idx) {
+        x = ex.temperatures[idx-1];
+        y = ex.temperatures[idx];
+        ex.temperatures.splice(idx-1,2,y,x);
+    }
+    $scope.extTempDown = function(ex,idx) {
+        x = ex.temperatures[idx];
+        y = ex.temperatures[idx+1];
+        ex.temperatures.splice(idx,2,y,x);
+    }
+    $scope.extTempDel = function(ex,idx) {
+        ex.temperatures.splice(idx,1);
+    }
+    $scope.extTempAdd = function(ex) {
+        ex.temperatures.push({name:"",temp:"50"});
+    }
+    $scope.addExtruder = function() {
+        $scope.editor.extruders.push({eJerk:40,maxSpeed:30,extrudeSpeed:2,extrudeDistance:10,retractSpeed:20,retractDistance:10,temperatures:[]});
+    }
+    $scope.removeExtruder = function(idx) {
+        if(confirm("Really delete this extruder?")) {
+            $scope.editor.extruders.splice(idx,1);
+        }
+    }
+    $scope.$watch('editor.shape|json',function() {
+        $scope.preview.updateShape();
+    });
+    $scope.$watch('editor.movement|json',function() {
+        $scope.preview.updateShape();
+    });
+
+    $("#printerTabs a:last").tab('show');
+    $("#printerTabs a:first").tab('show');
+    $timeout(function () {
+        $("[data-toggle=popover]").popover({});
+        enrichEditor();
+    });
 }
 PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
     slug = $routeParams.slug;
@@ -136,7 +212,13 @@ PrinterController = function($scope,$routeParams,WS,$rootScope,$timeout) {
         WS.send("send",{cmd:$scope.cmd});
         $scope.cmd = "";
     }
+    $scope.queueFileSelected = function(q) {
+        return q.id==$scope.activeQueue.id;
+    }
     responsePoller();
     fetchModels();
-    $(document).foundation();
+    $('#printerTabs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    })
 }

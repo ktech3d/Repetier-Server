@@ -30,19 +30,19 @@ routeModule.factory('WS', ['$q', '$rootScope', function ($q, $rootScope) {
             });
             deflist = [];
             $rootScope.$apply();
-            $('#connectionLost').foundation('reveal', 'close');
+            $('#connectionLost').modal('hide');
             $rootScope.$broadcast("connected");
         }
         ws.onerror = function (message) {
             console.log("websocket error");
             console.log(message);
-            //$('#connectionLost').foundation('reveal', 'open');
+            //$('#connectionLost').modal('show');
         }
         ws.onclose = function (message) {
             connected = false;
             console.log("websocket closed");
             console.log(message);
-            $('#connectionLost').foundation('reveal', 'open');
+            $('#connectionLost').modal('show');
             setTimeout(function () {
                 startConnection();
             }, 2000);
@@ -112,7 +112,6 @@ function init() {
         });
         $location.path('/')
     });
-    $(document).foundation();
 }
 
 function equalheight() {

@@ -3,12 +3,11 @@
         <name>iRapid</name>
         <slug>irapid</slug>
         <printerVariant>cartesian</printerVariant>
-        <active>false</active>
+        <active>true</active>
         <fan>false</fan>
         <tempUpdateEvery>1</tempUpdateEvery>
         <softwarePower>false</softwarePower>
         <sdcard>false</sdcard>
-    <heatedBed>false</heatedBed>
 	</general>
     <connection>
         <serial>
@@ -21,18 +20,19 @@
         </serial>
     </connection>
     <shape>
-        <grid color="ffffff" spacing="10"/>
-        <rectangle color="80800" xMax="95" xMin="0" yMax="95" yMin="0"/>
-    </shape>
+        <grid color="#000000" spacing="10"/>
+        
+    <rectangle color="#808080" xMax="95" xMin="0" yMax="95" yMin="0"/>
+	</shape>
     <movement>
         <xMin>0</xMin>
-        <xMax>95</xMax>
+        <xMax>100</xMax>
         <xHome>0</xHome>
         <yMin>0</yMin>
-        <yMax>95</yMax>
+        <yMax>100</yMax>
         <yHome>0</yHome>
         <zMin>0</zMin>
-        <zMax>95</zMax>
+        <zMax>120</zMax>
         <zHome>0</zHome>
         <xyJerk>40</xyJerk>
         <zJerk>0.3</zJerk>
@@ -43,25 +43,21 @@
         <endstops all="true" x="true" y="true" z="true"/>
     </movement>
     <extruders>
-        <extruder num="0">
-            <eJerk>30</eJerk>
-            <maxSpeed>12</maxSpeed>
-            <extrude distance="10" speed="2"/>
-            <retract distance="10" speed="20"/>
-            <temperatures>
+		<extruder lastTemp="185" num="0">
+			<temperatures>
 				<temperature value="185">PLA 185°C</temperature>
 				<temperature value="190">PLA 190°C</temperature>
 				<temperature value="200">PLA 200°C</temperature>
 				<temperature value="205">PLA 205°C</temperature>
 				<temperature value="210">PLA 210°C</temperature>
 			</temperatures>
-        </extruder>
-    </extruders>
-    <heatedBed installed="true">
+		</extruder>
+	</extruders>
+    <heatedBed installed="true" lastTemp="1">
         <temperatures>
-            <temperature value="60">PLA 60°C</temperature>
-            <temperature value="110">ABS 110°C</temperature>
-        </temperatures>
+			<temperature value="60">PLA 60°C</temperature>
+			<temperature value="110">ABS 110°C</temperature>
+		</temperatures>
     </heatedBed>
     <scripts>
         <script name="start">;Start script</script>
@@ -74,4 +70,4 @@
         <script name="script_4">;Script 4</script>
         <script name="script_5">;Script 5</script>
     </scripts>
-</printer>
+<

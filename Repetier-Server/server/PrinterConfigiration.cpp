@@ -42,7 +42,7 @@ PrimitiveShapeRectangle::PrimitiveShapeRectangle(Poco::XML::Element *node) {
         if(node->hasAttribute("xMin"))
             yMax = NumberParser::parseFloat(node->getAttribute("yMax"));
         if(node->hasAttribute("color"))
-            color = node->getAttribute("xMin");
+            color = node->getAttribute("color");
     } catch(Exception &e) {}
 }
 PrimitiveShapeRectangle::PrimitiveShapeRectangle(json_spirit::mObject &obj) {
@@ -187,7 +187,28 @@ void ShapeConfiguration::fromJSON(json_spirit::mObject &obj) {
     else if(shape == "circle")
         basicShape.reset(new PrimitiveShapeCircle(bshape));
 }
-
+void ShapeConfiguration::save(Poco::XML::Document *doc, Poco::XML::Element *parent) {
+    Element *grid = getOrCreateElement(doc,"grid");
+    grid->setAttribute("color", gridColor);
+    grid->setAttribute("spacing", NumberFormatter::format(gridSpacing));
+    basicShape->save(doc,node);
+}
+Poco::XML::Element *ShapeConfiguration::getOrCreateElement(Poco::XML::Document *doc, const std::string &path) {
+    Element *root = node;
+    vector <string> fields;
+    boost::split(fields, path,boost::is_any_of( "." ) );
+    Element *act = NULL;
+    for(vector<string>::iterator it=fields.begin();it!=fields.end();++it) {
+        act = root->getChildElement(*it);
+        if(act == NULL) {
+            act = doc->createElement(*it);
+            root->appendChild(act);
+            act->release();
+        }
+        root = act;
+    }
+    return root;
+}
 NamedTemperature::NamedTemperature() {
     node = NULL;
     temperature = 0;
@@ -238,8 +259,11 @@ ExtruderConfiguration::ExtruderConfiguration(Poco::XML::Element *node) {
     extrudeDistance = 2;
     extrudeSpeed = 2;
     num = 0;
+    lastTemp = 185;
     if(node->hasAttribute("num"))
         num = NumberParser::parse(node->getAttribute("num"));
+    if(node->hasAttribute("lastTemp"))
+        lastTemp = NumberParser::parse(node->getAttribute("lastTemp"));
     NodeList *data = node->childNodes();
     for(int i=0;i<data->length();i++) {
         Node *item = data->item(i);
@@ -273,6 +297,7 @@ ExtruderConfiguration::ExtruderConfiguration(Poco::XML::Element *node) {
 }
 ExtruderConfiguration::ExtruderConfiguration(json_spirit::mObject &obj,int pos) {
     num = pos;
+    node = NULL;
     eJerk = obj["eJerk"].get_real();
     maxSpeed = obj["maxSpeed"].get_real();
     retractSpeed = obj["retractSpeed"].get_real();
@@ -280,6 +305,7 @@ ExtruderConfiguration::ExtruderConfiguration(json_spirit::mObject &obj,int pos) 
     retractDistance = obj["retractDistance"].get_real();
     extrudeDistance = obj["extrudeDistance"].get_real();
     mArray &tempList = obj["temperatures"].get_array();
+    lastTemp = obj["lastTemp"].get_int();
     int n = (int)tempList.size();
     temperatures.clear();
     for(int i=0;i<n;i++) {
@@ -308,6 +334,8 @@ void ExtruderConfiguration::save(Poco::XML::Document *doc, Poco::XML::Element *p
         parent->appendChild(node);
         node->release();
     }
+    node->setAttribute("num", NumberFormatter::format(num));
+    node->setAttribute("lastTemp", NumberFormatter::format(lastTemp));
     Element *temps = getOrCreateElement(doc, "temperatures");
     Node *temp;
     do {
@@ -328,6 +356,7 @@ void ExtruderConfiguration::fillJSON(json_spirit::mObject &obj) {
         it->fillJSON(nt);
         obj["temperatures"].get_array().push_back(nt);
     }
+    obj["lastTemp"] = lastTemp;
     obj["eJerk"] = eJerk;
     obj["maxSpeed"] = maxSpeed;
     obj["retractSpeed"] = retractSpeed;
@@ -374,7 +403,7 @@ PrinterConfiguration::PrinterConfiguration(string filename) {
                 else if(tag == "active")
                     active = parseBool(n->innerText());
                 else if(tag == "fan")
-                    active = parseBool(n->innerText());
+                    fan = parseBool(n->innerText());
                 else if(tag == "tempUpdateEvery")
                     tempUpdateEvery = NumberParser::parse(n->innerText());
                 else if(tag == "sdcard")
@@ -390,6 +419,8 @@ PrinterConfiguration::PrinterConfiguration(string filename) {
             Element *bed = (Element*)bedNodes->item(0);
             if(bed->hasAttribute("installed"))
                 heatedBed = parseBool(bed->getAttribute("installed"));
+            if(bed->hasAttribute("lastTemp"))
+                lastBedTemp = parseBool(bed->getAttribute("lastBedTemp"));
             NodeList *bedNodes2 = bed->childNodes();
             for(int i=0;i<bedNodes2->length();i++) {
                 Node *n = bedNodes2->item(i);
@@ -531,6 +562,7 @@ void PrinterConfiguration::setDefaults() {
     active = true;
     fan = false;
     heatedBed = false;
+    lastBedTemp = 60;
     tempUpdateEvery = 1;
 }
 
@@ -573,7 +605,6 @@ void PrinterConfiguration::saveConfiguration() {
     setNodeText(getOrCreateElement("general.printerVariant"),printerVariant);
     setNodeText(getOrCreateElement("general.active"),encodeBool(active));
     setNodeText(getOrCreateElement("general.fan"),encodeBool(fan));
-    setNodeText(getOrCreateElement("general.heatedBed"),encodeBool(heatedBed));
     setNodeText(getOrCreateElement("general.tempUpdateEvery"),NumberFormatter::format(tempUpdateEvery));
     setNodeText(getOrCreateElement("general.sdcard"),encodeBool(sdcard));
     setNodeText(getOrCreateElement("general.softwarePower"),encodeBool(softwarePower));
@@ -586,14 +617,14 @@ void PrinterConfiguration::saveConfiguration() {
     setNodeText(getOrCreateElement("connection.serial.protocol"),NumberFormatter::format(serialProtocol));
     setNodeText(getOrCreateElement("connection.serial.okAfterResend"),encodeBool(serialOkAfterResend));
     
-    setNodeText(getOrCreateElement("movement.xMax"),NumberFormatter::format(xMin));
-    setNodeText(getOrCreateElement("movement.xMin"),NumberFormatter::format(xMax));
+    setNodeText(getOrCreateElement("movement.xMin"),NumberFormatter::format(xMin));
+    setNodeText(getOrCreateElement("movement.xMax"),NumberFormatter::format(xMax));
     setNodeText(getOrCreateElement("movement.xHome"),NumberFormatter::format(xHome));
-    setNodeText(getOrCreateElement("movement.yMax"),NumberFormatter::format(yMin));
-    setNodeText(getOrCreateElement("movement.yMin"),NumberFormatter::format(yMax));
+    setNodeText(getOrCreateElement("movement.yMin"),NumberFormatter::format(yMin));
+    setNodeText(getOrCreateElement("movement.yMax"),NumberFormatter::format(yMax));
     setNodeText(getOrCreateElement("movement.yHome"),NumberFormatter::format(yHome));
-    setNodeText(getOrCreateElement("movement.zMax"),NumberFormatter::format(zMin));
-    setNodeText(getOrCreateElement("movement.zMin"),NumberFormatter::format(zMax));
+    setNodeText(getOrCreateElement("movement.zMin"),NumberFormatter::format(zMin));
+    setNodeText(getOrCreateElement("movement.zMax"),NumberFormatter::format(zMax));
     setNodeText(getOrCreateElement("movement.zHome"),NumberFormatter::format(zHome));
     setNodeText(getOrCreateElement("movement.xyJerk"),NumberFormatter::format(xyJerk));
     setNodeText(getOrCreateElement("movement.zJerk"),NumberFormatter::format(zJerk));
@@ -606,10 +637,27 @@ void PrinterConfiguration::saveConfiguration() {
     e->setAttribute("y",encodeBool(hasYHome));
     e->setAttribute("z",encodeBool(hasZHome));
     e->setAttribute("all",encodeBool(hasHomeAll));
+    shape->save(config,getOrCreateElement(""));
     e = getOrCreateElement("extruders");
     for(vector<ExtruderConfigurationPtr>::iterator it = extruderList.begin();it!=extruderList.end();++it) {
         (*it)->save(config,e);
     }
+    e = getOrCreateElement("heatedBed");
+    e->setAttribute("installed",encodeBool(heatedBed));
+    e->setAttribute("lastTemp", NumberFormatter::format(lastBedTemp));
+    Element *temps = getOrCreateElement("heatedBed.temperatures");
+    Node *temp;
+    do {
+        temp = temps->firstChild();
+        if(temp)
+            temps->removeChild(temp);
+    } while(temp);
+    int i,n = (int)bedTemperatures.size();
+    for(i=0;i<n;i++) {
+        bedTemperatures[i].node = NULL;
+        bedTemperatures[i].save(config,temps);
+    }
+
     DOMWriter writer;
     ofstream out(configFilename.c_str());
     writer.setNewLine("\n");
@@ -625,13 +673,14 @@ void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
         mObject &movement = obj["movement"].get_obj();
         mObject &shape = obj["shape"].get_obj();
         mArray &extruders = obj["extruders"].get_array();
+        mObject &hbed = obj["heatedBed"].get_obj();
         
         name = general["name"].get_str();
         if(slug.length()==0)
             slug = general["slug"].get_str();
         printerVariant = general["printerVariant"].get_str();
         active = general["active"].get_bool();
-        heatedBed = general["heatedBed"].get_bool();
+        //heatedBed = general["heatedBed"].get_bool();
         fan = general["fan"].get_bool();
         tempUpdateEvery = general["tempUpdateEvery"].get_int();
         sdcard = general["sdcard"].get_bool();
@@ -643,7 +692,15 @@ void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
         serialProtocol = serial["protocol"].get_int();
         serialOkAfterResend = serial["okAfterResend"].get_bool();
         serialInputBufferSize = serial["inputBufferSize"].get_int();
-        
+
+        heatedBed = hbed["installed"].get_bool();
+        lastBedTemp = hbed["lastTemp"].get_int();
+        mArray &tempList = hbed["temperatures"].get_array();
+        int n = (int)tempList.size();
+        bedTemperatures.clear();
+        for(int i=0;i<n;i++) {
+            bedTemperatures.push_back(NamedTemperature(tempList[i].get_obj()));
+        }
         xMin = movement["xMin"].get_real();
         xMax = movement["xMax"].get_real();
         xHome = movement["xHome"].get_real();
@@ -662,7 +719,7 @@ void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
         hasXHome = movement["xEndstop"].get_bool();
         hasYHome = movement["yEndstop"].get_bool();
         hasZHome = movement["zEndstop"].get_bool();
-        hasHomeAll = movement["allEndstope"].get_bool();
+        hasHomeAll = movement["allEndstops"].get_bool();
 
         this->shape->fromJSON(shape);
         
@@ -670,9 +727,11 @@ void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
         while(ex->firstChild()) {
             ex->removeChild(ex->firstChild());
         }
+        extruderList.clear();
         for(int i=0;i<extruders.size();i++) {
             extruderList.push_back(ExtruderConfigurationPtr(new ExtruderConfiguration(extruders[i].get_obj(),i)));
         }
+        saveConfiguration();
     } catch(Exception &e) {}
 }
 void PrinterConfiguration::fillJSON(json_spirit::mObject &obj) {
@@ -687,6 +746,17 @@ void PrinterConfiguration::fillJSON(json_spirit::mObject &obj) {
     general["tempUpdateEvery"] = tempUpdateEvery;
     general["sdcard"] = sdcard;
     general["softwarePower"] = softwarePower;
+    
+    obj["heatedBed"] = mObject();
+    mObject &bed = obj["heatedBed"].get_obj();
+    bed["installed"] = heatedBed;
+    bed["lastTemp"] = lastBedTemp;
+    bed["temperatures"] = mArray();
+    for(vector<NamedTemperature>::iterator it = bedTemperatures.begin();it!=bedTemperatures.end();++it) {
+        mObject nt;
+        it->fillJSON(nt);
+        bed["temperatures"].get_array().push_back(nt);
+    }
     
     obj["connection"] = mObject();
     mObject &connection = obj["connection"].get_obj();
@@ -719,7 +789,7 @@ void PrinterConfiguration::fillJSON(json_spirit::mObject &obj) {
     movement["xEndstop"] = hasXHome;
     movement["yEndstop"] = hasYHome;
     movement["zEndstop"] = hasZHome;
-    movement["allEndstope"] = hasHomeAll;
+    movement["allEndstops"] = hasHomeAll;
     
     obj["shape"] = mObject();
     shape->fillJSON(obj["shape"].get_obj());

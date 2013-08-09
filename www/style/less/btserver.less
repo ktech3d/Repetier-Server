@@ -1,0 +1,136 @@
+/*!
+ * Bootstrap v3.0.0
+ *
+ * Copyright 2013 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world by @mdo and @fat.
+ */
+
+@hoverColor: #f8e5be;
+
+// Core variables and mixins
+@import "variables";
+@import "mixins";
+
+  // Reset
+@import "normalize";
+@import "print";
+
+  // Core CSS
+@import "scaffolding";
+@import "type";
+@import "code";
+@import "grid";
+
+@import "tables";
+@import "forms";
+@import "buttons";
+
+  // Components: common
+@import "component-animations";
+@import "input-groups";
+@import "dropdowns";
+@import "list-group";
+@import "panels";
+@import "wells";
+@import "close";
+
+  // Components: Nav
+@import "navs";
+@import "navbar";
+@import "button-groups";
+@import "breadcrumbs";
+@import "pagination";
+@import "pager";
+
+  // Components: Popovers
+@import "modals";
+@import "tooltip";
+@import "popovers";
+
+  // Components: Misc
+@import "alerts";
+@import "thumbnails";
+@import "media";
+@import "labels";
+@import "badges";
+@import "progress-bars";
+@import "accordion";
+@import "carousel";
+@import "jumbotron";
+
+  // Utility classes
+@import "utilities"; // Has to be last to override when necessary
+@import "responsive-utilities";
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+/* Set widths on the navbar form inputs since otherwise they're 100% wide */
+.navbar-form input[type="text"],
+.navbar-form input[type="password"] {
+  width: 180px;
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.body-content {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Responsive: Portrait tablets and up */
+@media screen and (min-width: 768px) {
+  /* Let the jumbotron breathe */
+  .jumbotron {
+    margin-top: 20px;
+  }
+  /* Remove padding from wrapping element since we kick in the grid classes here */
+  .body-content {
+    padding: 0;
+  }
+}
+
+.infodesc {
+  font-weight: bold;
+  span {
+    display:block;
+    font-weight: normal;
+  }
+}
+.queue {
+  padding:0.2em 0;
+  &:hover {
+    background:@hoverColor;
+  }
+}
+.queueactive {
+  font-weight: bold;
+  background: #deffd5;
+}
+.filelist {
+  border:1px solid #444444;
+  padding:0;
+  max-height:15em;
+  overflow: auto;
+  margin-bottom:10px;
+  .file {
+    padding:0.2em 1em;
+    cursor:pointer;
+  }
+  .file:hover {
+    background:@hoverColor;
+  }
+  .active {
+    font-weight: bold;
+    background: #deffd5;
+  }
+}
+.metertext {
+  text-align: center;
+}

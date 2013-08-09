@@ -159,7 +159,6 @@ int RepetierServerApplication::main(const std::vector<std::string>& args)
                                               DateTimeFormat::SORTABLE_FORMAT));
         
         PrinterConfiguration pc("/Users/littwin/Documents/Projekte/Repetier-Server/Repetier-Server/configs/irapid.xml");
-        pc.saveConfiguration();
         
         if(port == 0)
             port = Poco::NumberParser::parse(gconfig->getPorts());

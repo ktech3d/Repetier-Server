@@ -70,7 +70,7 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
         //});
     }
     $scope.closeReveal = function(id) {
-        $('#'+id).foundation('reveal', 'close');
+        $('#'+id).modal('hide');
     }
 }
 

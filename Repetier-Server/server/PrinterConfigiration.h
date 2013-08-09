@@ -49,6 +49,7 @@ public:
 };
 class ShapeConfiguration {
     Poco::XML::Element *node;
+    Poco::XML::Element *getOrCreateElement(Poco::XML::Document *doc, const std::string &path);
 public:
     std::string gridColor;
     double gridSpacing;
@@ -60,6 +61,7 @@ public:
     ~ShapeConfiguration();
     void fillJSON(json_spirit::mObject &obj);
     void fromJSON(json_spirit::mObject &obj);
+    void save(Poco::XML::Document *doc, Poco::XML::Element *parent);
 };
 class NamedTemperature {
 public:
@@ -77,6 +79,7 @@ class ExtruderConfiguration {
     Poco::XML::Element *getOrCreateElement(Poco::XML::Document *doc, const std::string &path);
 public:
     int num;
+    int lastTemp;
     double eJerk;
     double maxSpeed;
     double retractSpeed,retractDistance;
@@ -134,6 +137,7 @@ public:
     int tempUpdateEvery;
     bool sdcard;
     bool softwarePower;
+    int lastBedTemp;
     std::vector<NamedTemperature> bedTemperatures;
 };
 
