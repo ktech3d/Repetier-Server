@@ -5,6 +5,7 @@ routeModule.config(function ($routeProvider, $locationProvider) {
         .when('/about', {templateUrl: 'views/about.php', controller: AboutController})
         .when('/printer/:slug', {templateUrl: 'views/printer.php', controller: PrinterController})
         .when('/printerConfig/:slug', {templateUrl: 'views/printerConfig.php', controller: PrinterConfigController})
+        .when('/scriptConfig/:slug', {templateUrl: 'views/scripts.php', controller: ScriptConfigController})
         .otherwise({redirectTo: '/'});
     // $locationProvider.html5Mode(true);
 });
@@ -103,7 +104,7 @@ routeModule.factory('WS', ['$q', '$rootScope', function ($q, $rootScope) {
     }
     return Service;
 }])
-var app = angular.module('server', ['ngSanitize', 'RouteModule', 'Gauge', 'FoundationHelper', 'Filter', 'Widgets']);
+var app = angular.module('server', ['ngSanitize', 'RouteModule', 'Gauge', 'FoundationHelper', 'Filter', 'Widgets','Slider']);
 function init() {
     app.run(function ($location, $rootScope) {
         $rootScope.$on('$viewContentLoaded', function () {

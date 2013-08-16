@@ -2,6 +2,7 @@
 <html lang="en" ng-app="server">
 <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1, IE=edge" />
     <title>Bootstrap, from Twitter</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Repetier-Server for 3d printer">
@@ -12,6 +13,7 @@
     <link rel="stylesheet" href="/style/css/btserver.css">
     <link rel="stylesheet" href="/css/css/font-awesome.css">
     <link rel="stylesheet" href="/libs/colorpicker/css/colorpicker.css"/>
+    <link rel="stylesheet" href="/libs/slider/angular-slider.min.css"/>
     <title>Repetier-Server</title>
 </head>
 <body ng-controller="ServerController">
@@ -27,12 +29,12 @@
         <div class="nav-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
                 <li class=""><a href="#"><i class="icon-home"></i>Dashboard</a></li>
-                <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Printer</a>
+                <li class="dropdown"><a href="javascript_void()" class="dropdown-toggle" data-toggle="dropdown">Printer</a>
                     <ul class="dropdown-menu">
                         <li ng-repeat="p in printerList"><a href="#/printer/{{p.slug}}">{{p.name}}</a>
                     </ul>
                 </li>
-                <li class=""><a data-reveal-id="messageList" href="#" data-toggle="modal" data-target="#messageList">Messages <span
+                <li class=""><a data-reveal-id="messageList" href="#/" data-toggle="modal" data-target="#messageList">Messages <span
                             class="badge badge-success">{{messages.length}}</span></a>
                 </li>
             </ul>
@@ -97,10 +99,13 @@
 <script src="/js/directives/GCodePainter.js"></script>
 <script src="/libs/colorpicker/js/bootstrap-colorpicker.js"></script>
 <script src="/js/bootstrap.js"></script>
+<script src="/js/bootstrap-slider.js"></script>
 <script src="/js/gauge.js"></script>
 <script src="/js/angular.min.js"></script>
 <script src="/js/angular-resource.min.js"></script>
 <script src="/js/angular-sanitize.min.js"></script>
+<script src="/js/directives/slider.js"></script>
+<!--<script src="/libs/slider/angular-slider.min.js"></script>-->
 <script src="/js/directives/filter.js"></script>
 <script src="/js/router.js"></script>
 <script src="/js/directives/bootstrap.js"></script>

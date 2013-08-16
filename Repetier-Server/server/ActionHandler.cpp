@@ -60,6 +60,8 @@ namespace repetier {
         registerAction("removeJob",&actionRemoveJob);
         registerAction("getPrinterConfig",&actionGetPrinterConfig);
         registerAction("setPrinterConfig",&actionSetPrinterConfig);
+        registerAction("getScript",&actionGetScript);
+        registerAction("setScript",&actionSetScript);
     }
     
     void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -250,5 +252,20 @@ namespace repetier {
         printer->config->fromJSON(obj);
         printer->sendConfigEvent();
     }
+    void ActionHandler::actionGetScript(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
+        out = mObject();
+        mObject &d = out.get_obj();
+        d["name"] = obj["name"];
+        d["script"] = printer->config->getScript(obj["name"].get_str());
+    }
+    void ActionHandler::actionSetScript(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
+        out = mObject();
+        mObject &d = out.get_obj();
+        d["name"] = obj["name"];
+        printer->config->setScript(obj["name"].get_str(),obj["script"].get_str());
+        printer->config->saveConfiguration();
+    }
+
 }
-    

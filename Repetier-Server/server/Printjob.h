@@ -106,6 +106,7 @@ public:
     void finishPrintjobCreation(PrintjobPtr job,std::string namerep,size_t sz);
     /** Physically removes job from disk */
     void RemovePrintjob(PrintjobPtr job);
+    void RemovePrintjobNoLock(PrintjobPtr job);
     void startJob(int id);
     void killJob(int id);
     /** Kills the current job without removing it from queue. This

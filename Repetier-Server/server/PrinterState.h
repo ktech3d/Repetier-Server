@@ -53,6 +53,7 @@ class GCode;
  The class is thread safe.
  */
 class PrinterState {
+    bool realPrinter;
 public:
     int extruderCount;
     PrinterPtr printer;
@@ -102,6 +103,7 @@ public:
     PrinterState(PrinterPtr p,int minExtruder=1);
     ~PrinterState();
     void reset();
+    void setReal() {realPrinter = true;}
     /** Returns the extruder temperature structure. 
      @param extruderId Id of the extruder. -1 for active extruder.
      @returns Temperature state of selected extruder.

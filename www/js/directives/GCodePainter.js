@@ -1,4 +1,9 @@
 function GCodePainter(elem) {
+    var lastX = 0;
+    var lastY = 0;
+    var lastZ = 0;
+    var lastPrintZ = 0;
+
     var element = $('#' + elem);
     var stage = new Kinetic.Stage({
         container: elem,
@@ -6,16 +11,26 @@ function GCodePainter(elem) {
         height: element.height()
     });
     var that = this;
-    $(window).resize(function () {
-        stage.setWidth(element.width());
-        stage.setHeight(element.height());
+    var resizer = function () {
+        console.log("new width "+element.width());
         that.updateShape();
-    });
+    };
+    $(window).resize(resizer);
+    this.$destroy = function() {
+        $(window).off("resize",resizer);
+        stage.destroy();
+        stage = null;
+    }
     var printer = null;
     var base = new Kinetic.Layer();
     var marker = new Kinetic.Layer();
-    var lastCode = new Kinetic.Layer();
-    var currentCode = new Kinetic.Layer();
+    var codeOld = new Kinetic.Layer();
+    var code = new Kinetic.Layer();
+    var top = new Kinetic.Layer();
+    var lastLayerG = new Kinetic.Group();
+    var currentLayerG = new Kinetic.Group();
+    var lastLayer = [];
+    var currentLayer = [];
 
     var scale = 2; // Koordinate shift
     var offsetX = 0;
@@ -23,8 +38,12 @@ function GCodePainter(elem) {
 
     stage.add(base);
     stage.add(marker);
-    stage.add(lastCode);
-    stage.add(currentCode);
+    stage.add(codeOld);
+    stage.add(code);
+    stage.add(top);
+
+    codeOld.add(lastLayerG);
+    code.add(currentLayerG);
 
     this.adjustScaling = function () {
         w = stage.getWidth() - 2;
@@ -46,12 +65,25 @@ function GCodePainter(elem) {
     var convCoord = function (x, y) {
         return {x: offsetX + scale * x, y: offsetY - y * scale};
     }
+    this.disableCursor = function() {
+        top.remove();
+    }
     var smallLine = function (layer, color, x1, y1, x2, y2) {
         line = new Kinetic.Line({
             points: [x1, y1, x2, y2],
             fill: lc,
             //fillEnabled: false,
             strokeWidth: 1,
+            stroke: color
+        });
+        layer.add(line);
+    }
+    var printLine = function (layer, color, x1, y1, x2, y2) {
+        line = new Kinetic.Line({
+            points: [x1, y1, x2, y2],
+            fill: lc,
+            //fillEnabled: false,
+            strokeWidth: 2,
             stroke: color
         });
         layer.add(line);
@@ -66,6 +98,7 @@ function GCodePainter(elem) {
             strokeEnabled: false
         });
         layer.add(circ);
+        return circ;
     }
     var addShape = function (layer, shape, marker) {
         if (shape.shape == 'rectangle') {
@@ -188,6 +221,8 @@ function GCodePainter(elem) {
 
     this.updateShape = function () {
         if(!printer) return;
+        stage.setWidth(element.width());
+        stage.setHeight(element.height());
         this.adjustScaling();
         base.removeChildren();
         addShape(base, printer.shape.basicShape, false);
@@ -196,6 +231,62 @@ function GCodePainter(elem) {
                addShape(base,s,true);
             });
         }
+        repositionCursor();
         stage.draw();
     }
+
+    var newLayer = function() {
+        lastLayerG.removeChildren();
+        lastLayerG.remove();
+        lastLayerG.destroy();
+        lastLayerG = currentLayerG;
+        //codeOld.add(lastLayerG);
+        //lastLayerG.draw();
+        currentLayerG = new Kinetic.Group();
+        code.add(currentLayerG);
+        lastLayer = currentLayer;
+        currentLayer = [];
+    }
+    var repositionCursor = function() {
+        if(!cursor) return;
+        cp = convCoord(lastX,lastY);
+        cursor.setX(cp.x);
+        cursor.setY(cp.y);
+    }
+    var cursor = filledCircle(top,"#ff0000",0,0,4);
+    var codeChanged = false;
+    this.addMove = function(move) {
+        if(move.de>0.000001 && move.z>lastPrintZ) {
+            newLayer();
+        }
+        old = convCoord(lastX,lastY);
+        next = convCoord(move.x,move.y);
+        if(move.de>0.000001) {
+            lastPrintZ = move.z;
+            currentLayer.push({p:true,x1:lastX,y1:lastY,x2:move.x,x2:move.y});
+            printLine(currentLayerG,"#000080",old.x,old.y,next.x,next.y);
+        } else {
+            currentLayer.push({p:false,x1:lastX,y1:lastY,x2:move.x,x2:move.y});
+            smallLine(currentLayerG,"#A0A0A0",old.x,old.y,next.x,next.y);
+        }
+        codeChanged = true;
+        lastX = move.x;
+        lastY = move.y;
+        lastZ = move.z;
+        cursor.setX(next.x);
+        cursor.setY(next.y);
+
+        //code.draw();
+        top.draw();
+        //stage.draw();
+    }
+    var updateDrawing = function() {
+        if(stage == null) return;
+        if(codeChanged) {
+            codeChanged = false;
+            code.draw();
+        }
+        setTimeout(updateDrawing,500);
+    }
+    setTimeout(updateDrawing,500);
 }

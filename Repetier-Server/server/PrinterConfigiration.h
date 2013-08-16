@@ -22,7 +22,7 @@ class PrimitiveShapeConfiguration {
 public:
     Poco::XML::Element *node;
     std::string color;
-    
+    virtual ~PrimitiveShapeConfiguration() {}
     virtual void save(Poco::XML::Document *doc, Poco::XML::Element *parent) = 0;
     virtual void fillJSON(json_spirit::mObject &obj) = 0;
 };
@@ -113,6 +113,9 @@ public:
     void fromJSON(json_spirit::mObject &obj);
     ExtruderConfigurationPtr getExtruder(int num);
     inline int getExtruderCount() {return (int)extruderList.size();}
+    std::string getScript(std::string name);
+    void setScript(std::string name,const std::string &text);
+    
     std::map<std::string,std::string> scriptList;
     std::vector<ExtruderConfigurationPtr> extruderList;
     boost::shared_ptr<ShapeConfiguration> shape;

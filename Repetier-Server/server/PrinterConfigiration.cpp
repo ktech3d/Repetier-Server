@@ -87,10 +87,6 @@ void PrimitiveShapeRectangle::fillJSON(json_spirit::mObject &obj) {
 PrimitiveShapeCircle::PrimitiveShapeCircle(Poco::XML::Element *node) {
     this->node = node;
     setDefaults();
-}
-PrimitiveShapeCircle::PrimitiveShapeCircle() {
-    node = NULL;
-    setDefaults();
     try {
         if(node->hasAttribute("x"))
             x = NumberParser::parseFloat(node->getAttribute("x"));
@@ -101,6 +97,10 @@ PrimitiveShapeCircle::PrimitiveShapeCircle() {
         if(node->hasAttribute("color"))
             color = node->getAttribute("xMin");
     } catch(Exception &e) {}
+}
+PrimitiveShapeCircle::PrimitiveShapeCircle() {
+    node = NULL;
+    setDefaults();
 }
 PrimitiveShapeCircle::PrimitiveShapeCircle(json_spirit::mObject &obj) {
     node = NULL;
@@ -575,6 +575,7 @@ Poco::XML::Element *PrinterConfiguration::getOrCreateElement(const std::string &
         root->release();
     } else root = (Element*)rootList->item(0);
     rootList->release();
+    if(path.length()==0) return root;
     vector <string> fields;
     boost::split(fields, path,boost::is_any_of( "." ) );
     Element *act = NULL;
@@ -665,6 +666,38 @@ void PrinterConfiguration::saveConfiguration() {
     writer.writeNode(out, config);
     changed = false;
 }
+std::string PrinterConfiguration::getScript(std::string name) {
+    Element *scripts = getOrCreateElement("scripts");
+    NodeList *list = scripts->childNodes();
+    for(int i=0;i<list->length();i++) {
+        Node *t = list->item(i);
+        if(t->nodeType() != Node::ELEMENT_NODE) continue;
+        Element *script = (Element*)t;
+        if(script->hasAttribute("name") && script->getAttribute("name") == name) {
+            return script->innerText();
+        }
+    }
+    return ""; // Default answer
+}
+void PrinterConfiguration::setScript(std::string name,const std::string &text) {
+    Element *scripts = getOrCreateElement("scripts");
+    NodeList *list = scripts->childNodes();
+    for(int i=0;i<list->length();i++) {
+        Node *t = list->item(i);
+        if(t->nodeType() != Node::ELEMENT_NODE) continue;
+        Element *script = (Element*)t;
+        if(script->hasAttribute("name") && script->getAttribute("name") == name) {
+            setNodeText(script,text);
+            return;
+        }
+    }
+    // new element
+    Element *script = config->createElement("script");
+    script->setAttribute("name",name);
+    setNodeText(script, text);
+    scripts->appendChild(script);
+}
+
 void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
     try {
         mObject &general = obj["general"].get_obj();

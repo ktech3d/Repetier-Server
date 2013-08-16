@@ -1,7 +1,7 @@
 function ServerController($scope,$rootScope,$timeout,$http,WS) {
     $rootScope.printerList = [];
     $rootScope.messages = [];
-    $rootScope.setup = {printer:[{name:'Ordbot'},{name:'DeltaTower'}]};
+    $rootScope.setup = {printer:[]};
     $rootScope.active = {status:{}};
     $rootScope.activeSlug = '';
     $rootScope.serverSetup = {};
@@ -13,6 +13,7 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
         console.log("Activate "+slug);
         WS.selectPrinter(slug);
         $rootScope.activeSlug = slug;
+        $rootScope.activeConfig = $rootScope.printerConfig[slug];
         if($rootScope.printer[slug])
             $rootScope.active = $rootScope.printer[slug];
     }
@@ -30,7 +31,8 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
                     } else $rootScope.printer[p.slug].status = p;
                     if(firstPrinterPoll) {
                         WS.send("getPrinterConfig",{printer: p.slug}).then(function(c) {
-                           $rootScope.printerConfig[p.slug] = c;
+                            $rootScope.printerConfig[p.slug] = c;
+                            $rootScope.activeConfig = $rootScope.printerConfig[p.slug];
                         });
                     }
                 });
@@ -52,7 +54,8 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
     });
     // Update configuration when changed
     $scope.$on("config",function(event,data) {
-       $rootScope.printerConfig[data.data.general.slug] = data.data;
+        $rootScope.printerConfig[data.data.general.slug] = data.data;
+        $rootScope.activeConfig = $rootScope.printerConfig[slug];
     });
     $scope.$on("connected",function(event) {
        printerPoller();
@@ -72,6 +75,14 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
     $scope.closeReveal = function(id) {
         $('#'+id).modal('hide');
     }
+
+    var resizer = function () {
+        $rootScope.$broadcast("windowResized");
+    };
+    $(window).resize(resizer);
+    $scope.$on('$destroy',function() {
+        $(window).off("resize",resizer);
+    });
 }
 
 function AboutController($scope) {

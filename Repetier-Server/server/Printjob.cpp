@@ -310,6 +310,15 @@ void PrintjobManager::finishPrintjobCreation(PrintjobPtr job,string namerep,size
         job->setFilename(newname);
         job->setLength(sz);
         job->setStored();
+        if(files.size()==1 && this==printer->getJobManager()) {
+           PrintjobPtr jobOrig = printer->getModelManager()->findByName(job->getName());
+           if(jobOrig!=NULL) {
+                shared_ptr<GCodeAnalyser> gca = jobOrig->getInfo(printer);
+                gca->printed++;
+                gca->safeData();
+            }
+            startJob(job->id);
+        }
     } catch(std::exception e) {
         RLog::log("Error creating new job: @",e.what());
         string msg= static_cast<string>("Error creating new job: ")+e.what();
@@ -333,6 +342,9 @@ void PrintjobManager::signalChange() {
 }
 void PrintjobManager::RemovePrintjob(PrintjobPtr job) {
     mutex::scoped_lock l(filesMutex);
+    RemovePrintjobNoLock(job);
+}
+void PrintjobManager::RemovePrintjobNoLock(PrintjobPtr job) {
     job->removeFiles();
     files.remove(job);
     signalChange();
@@ -404,7 +416,7 @@ void PrintjobManager::manageJobs() {
     }
     if(jobin.is_open() && !jobin.good()) {
         jobin.close();
-        RemovePrintjob(runningJob);
+        RemovePrintjobNoLock(runningJob);
         runningJob->stop(printer);
         runningJob.reset();
         l.unlock();

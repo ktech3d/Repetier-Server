@@ -60,6 +60,16 @@
 @import "accordion";
 @import "carousel";
 @import "jumbotron";
+// Some definitions for slider to work from Bootstrap 2
+@baseLineHeight:        20px;
+@baseBorderRadius:      4px;
+.border-radius(@radius) {
+  -webkit-border-radius: @radius;
+  -moz-border-radius: @radius;
+  border-radius: @radius;
+}
+
+@import "slider";
 
   // Utility classes
 @import "utilities"; // Has to be last to override when necessary

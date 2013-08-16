@@ -12,7 +12,7 @@
     <connection>
         <serial>
             <baudrate>115200</baudrate>
-            <device>/dev/tty.usbmodemfa1331</device>
+            <device>/dev/tty.usbmodemfa1341</device>
             <pingPong>false</pingPong>
             <inputBufferSize>127</inputBufferSize>
             <protocol>0</protocol>
@@ -21,14 +21,16 @@
     </connection>
     <shape>
         <grid color="#000000" spacing="10"/>
-        <rectangle color="#808080" xMax="95" xMin="0" yMax="95" yMin="0"/>
-    </shape>
+        
+	
+	<rectangle color="#808080" xMax="100" xMin="0" yMax="100" yMin="0"/>
+	</shape>
     <movement>
         <xMin>0</xMin>
-        <xMax>95</xMax>
+        <xMax>100</xMax>
         <xHome>0</xHome>
         <yMin>0</yMin>
-        <yMax>95</yMax>
+        <yMax>100</yMax>
         <yHome>0</yHome>
         <zMin>0</zMin>
         <zMax>120</zMax>
@@ -42,20 +44,16 @@
         <endstops all="true" x="true" y="true" z="true"/>
     </movement>
     <extruders>
-        <extruder lastTemp="185" num="0">
-            <eJerk>30</eJerk>
-            <maxSpeed>12</maxSpeed>
-            <extrude distance="10" speed="2"/>
-            <retract distance="10" speed="20"/>
-            <temperatures>
+		<extruder lastTemp="185" num="0">
+			<temperatures>
 				<temperature value="185">PLA 185°C</temperature>
 				<temperature value="190">PLA 190°C</temperature>
 				<temperature value="200">PLA 200°C</temperature>
 				<temperature value="205">PLA 205°C</temperature>
 				<temperature value="210">PLA 210°C</temperature>
 			</temperatures>
-        </extruder>
-    </extruders>
+		</extruder>
+	</extruders>
     <heatedBed installed="true" lastTemp="1">
         <temperatures>
 			<temperature value="60">PLA 60°C</temperature>

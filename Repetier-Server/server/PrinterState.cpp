@@ -25,6 +25,7 @@
 #include "printer.h"
 #include "GCode.h"
 #include "PrinterConfigiration.h"
+#include "ServerEvents.h"
 
 using namespace std;
 using namespace boost;
@@ -44,6 +45,7 @@ void ExtruderStatus::resetPosition() {
 }
 PrinterState::PrinterState(PrinterPtr p,int minExtruder) {
     printer = p;
+    realPrinter = false;
     if(printer!=NULL) extruderCount = printer->config->getExtruderCount()+1; else extruderCount = 10;
     if(extruderCount<minExtruder) extruderCount = minExtruder;
     extruder=new ExtruderStatus[extruderCount]; // Always one more in case 0 extruder
@@ -186,6 +188,15 @@ void PrinterState::analyze(GCode &code)
                     printingTime += sqrt(dx * dx + dy * dy + dz * dz) * 60.0f / f;
                 }
                 else printingTime += de * 60.0f / f;
+                if(realPrinter) {
+                    json_spirit::mObject o;
+                    o["x"] = x;
+                    o["y"] = y;
+                    o["z"] = z;
+                    o["de"] = de;
+                    RepetierEventPtr event(new RepetierEvent(printer,"move",json_spirit::mValue(o)));
+                    RepetierEvent::fireEvent(event);
+                }
                 lastX = x;
                 lastY = y;
                 lastZ = z;
@@ -200,6 +211,16 @@ void PrinterState::analyze(GCode &code)
                 if (code.hasY() || homeAll) { yOffset = 0; y = printer->config->yHome; hasYHome = true; }
                 if (code.hasZ() || homeAll) { zOffset = 0; z = printer->config->zHome; hasZHome = true; }
                 if (code.hasE()) { activeExtruder->eOffset = 0; activeExtruder->ePos = 0; activeExtruder->eMax = 0; }
+                if(realPrinter) {
+                    json_spirit::mObject o;
+                    o["x"] = x;
+                    o["y"] = y;
+                    o["z"] = z;
+                    o["de"] = 0;
+                    RepetierEventPtr event(new RepetierEvent(printer,"move",json_spirit::mValue(o)));
+                    RepetierEvent::fireEvent(event);
+                }
+
                 break;
             }
             case 162:

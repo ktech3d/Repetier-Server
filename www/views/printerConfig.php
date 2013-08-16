@@ -1,4 +1,10 @@
 <div class="container">
+<ul class="breadcrumb">
+    <li><a href="#/">Dashboard</a></li>
+    <li><a href="#/printer/{{activeSlug}}">{{active.status.name}}</a></li>
+    <li class="active">Configuration</li>
+</ul>
+
 <div class="row">
 <div class="col-12">
 <div class="row">
@@ -16,7 +22,7 @@
 
 <form class="">
 <ul class="nav nav-tabs" id="printerTabs">
-    <li class="active"><a href="#general">General</a></li>
+    <li><a href="#general">General</a></li>
     <li><a href="#extruder">Extruder</a></li>
     <li><a href="#shape">Printer Shape</a></li>
 </ul>
@@ -390,7 +396,6 @@
                    ng-model="editor.shape.basicShape.radius">
         </div>
     </div>
-    <br><br>{{editor | json}}
 </div>
 </div>
 </form>

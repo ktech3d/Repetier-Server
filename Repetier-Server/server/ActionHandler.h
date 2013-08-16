@@ -51,6 +51,8 @@ namespace repetier {
         static void actionRemoveJob( json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
         static void actionGetPrinterConfig(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
         static void actionSetPrinterConfig(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionGetScript(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionSetScript(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
     };
 }
 #endif /* defined(__Repetier_Server__ActionHandler__) */

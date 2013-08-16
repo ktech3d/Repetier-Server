@@ -74,6 +74,7 @@ Printer::~Printer() {
 void Printer::Init(PrinterPtr ptr) {
     thisPtr = ptr;
     state = new PrinterState(ptr); // done at creation
+    state->setReal();
     jobManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"jobs",ptr);
     modelManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"models",ptr);
     scriptManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"scripts",ptr,true);
