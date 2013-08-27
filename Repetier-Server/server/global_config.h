@@ -44,6 +44,7 @@ class GlobalConfig {
     std::string wwwDir; ///< Website root
     std::string printerConfigDir; ///< Printer config directory
     std::string storageDir; ///< Data storage directory.
+    std::string databaseDir; ///< Database directory
     std::string languageDir; ///< Dir with translation text.
     std::string ports; ///< Ports the server should listen to.
     std::string defaultLanguage; ///< Default language if no language is detected
@@ -57,6 +58,7 @@ public:
     inline const std::string& getWebsiteRoot() {return wwwDir;}
     inline const std::string& getPrinterConfigDir() {return printerConfigDir;}
     inline const std::string& getStorageDirectory() {return storageDir;}
+    inline const std::string& getDatabaseDirectory() {return databaseDir;}
     inline const int getBacklogSize() {return backlogSize;}
     inline const std::string& getPorts() {return ports;}
     inline const std::string& getLanguageDir() {return languageDir;}

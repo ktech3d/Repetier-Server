@@ -5,56 +5,59 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/www/js/bootstrap-slider.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/www/views/scripts.php" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/www/js/directives/slider.js" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/www/style/less/slider.less" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/fontello-codes.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/fontello-embedded.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/fontello-ie7-codes.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/fontello-ie7.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/fontello.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/foundation.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/media.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/mixins.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/print.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/responsive.css" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/www/style/css/variables.css" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/WorkDispatcher.cpp" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/WorkDispatcher.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/sqlite/sqlite3.c" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/sqlite/sqlite3.h" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/sqlite/sqlite3ext.h" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfiguration.cpp" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfiguration.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/directives/GCodePainter.js" afterPath="$PROJECT_DIR$/www/js/directives/GCodePainter.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/controller/PrinterController.js" afterPath="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/Printjob.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/Printjob.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/Printjob.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/Printjob.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/controller/ServerController.js" afterPath="$PROJECT_DIR$/www/js/controller/ServerController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/angular-cookies.min.js" afterPath="$PROJECT_DIR$/www/js/angular-cookies.min.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/angular-loader.min.js" afterPath="$PROJECT_DIR$/www/js/angular-loader.min.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/angular-resource.min.js" afterPath="$PROJECT_DIR$/www/js/angular-resource.min.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/angular-sanitize.min.js" afterPath="$PROJECT_DIR$/www/js/angular-sanitize.min.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/angular.min.js" afterPath="$PROJECT_DIR$/www/js/angular.min.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ServerEvents.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/ServerEvents.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/bootstrap-slider.js" afterPath="$PROJECT_DIR$/www/js/bootstrap-slider.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/css/bootstrap.css" afterPath="$PROJECT_DIR$/www/style/css/bootstrap.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/directives/bootstrap.js" afterPath="$PROJECT_DIR$/www/js/directives/bootstrap.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/css/btserver.css" afterPath="$PROJECT_DIR$/www/style/css/btserver.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/less/btserver.less" afterPath="$PROJECT_DIR$/www/style/less/btserver.less" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/global_config.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/global_config.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/global_config.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/global_config.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views/home.php" afterPath="$PROJECT_DIR$/www/views/home.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/index.php" afterPath="$PROJECT_DIR$/www/index.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configs/irapid.xml.orig" afterPath="$PROJECT_DIR$/configs/irapid.xml.orig" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configs/irapid.xml" afterPath="$PROJECT_DIR$/configs/irapid.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/printer.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/printer.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/printer.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/printer.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views/printer.php" afterPath="$PROJECT_DIR$/www/views/printer.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views/printerConfig.php" afterPath="$PROJECT_DIR$/www/views/printerConfig.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server.xcodeproj/project.pbxproj" afterPath="$PROJECT_DIR$/Repetier-Server.xcodeproj/project.pbxproj" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/repetier-server.conf" afterPath="$PROJECT_DIR$/repetier-server.conf" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/router.js" afterPath="$PROJECT_DIR$/www/js/router.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/directives/slider.js" afterPath="$PROJECT_DIR$/www/js/directives/slider.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/less/slider.less" afterPath="$PROJECT_DIR$/www/style/less/slider.less" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/less/variables.less" afterPath="$PROJECT_DIR$/www/style/less/variables.less" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Repetier-Server.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373811123878" ignored="false" />
+    <file path="/Dummy.txt" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377333166943" ignored="false" />
     <file path="/README.md" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373564355779" ignored="false" />
-    <file path="/index.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376578498776" ignored="false" />
-    <file path="/ServerController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376664063356" ignored="false" />
-    <file path="/home.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375367476383" ignored="false" />
-    <file path="/router.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376662242973" ignored="false" />
+    <file path="/index.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376816737195" ignored="false" />
+    <file path="/ServerController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376812174914" ignored="false" />
+    <file path="/home.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377105278485" ignored="false" />
+    <file path="/router.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377096743370" ignored="false" />
     <file path="/HomeController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373638900324" ignored="false" />
     <file path="/gauge.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373739864544" ignored="false" />
     <file path="/server.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373648774787" ignored="false" />
@@ -66,24 +69,25 @@
     <file path="/websocket.txt" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375349533400" ignored="false" />
     <file path="/filter.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375516526703" ignored="false" />
     <file path="/about.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373732993668" ignored="false" />
-    <file path="/PrinterController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376666896122" ignored="false" />
-    <file path="/printer.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376667121670" ignored="false" />
+    <file path="/PrinterController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377621110111" ignored="false" />
+    <file path="/printer.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377621146342" ignored="false" />
     <file path="/widgets.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373818507253" ignored="false" />
-    <file path="/a.dummy" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375368073181" ignored="false" />
+    <file path="/a.dummy" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377097234866" ignored="false" />
     <file path="/irapid.xml" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376051121774" ignored="false" />
     <file path="/irapid.xml.orig" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375195881142" ignored="false" />
-    <file path="/printerConfig.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376666545861" ignored="false" />
-    <file path="/btserver.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376405921386" ignored="false" />
+    <file path="/printerConfig.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377620425740" ignored="false" />
+    <file path="/btserver.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377105923035" ignored="false" />
     <file path="/font-awesome.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375514623241" ignored="false" />
     <file path="/icons.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375976278439" ignored="false" />
-    <file path="/GCodePainter.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376666919343" ignored="false" />
-    <file path="/bootstrap.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376058049967" ignored="false" />
+    <file path="/GCodePainter.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377104460115" ignored="false" />
+    <file path="/bootstrap.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377095321503" ignored="false" />
     <file path="/colorpicker.css" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376056161777" ignored="false" />
     <file path="/dummy.xml" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376066640278" ignored="false" />
-    <file path="/slider.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376577658465" ignored="false" />
-    <file path="/slider.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376412260358" ignored="false" />
-    <file path="/bootstrap-slider.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376578062142" ignored="false" />
+    <file path="/slider.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377100910547" ignored="false" />
+    <file path="/slider.less" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376821463432" ignored="false" />
+    <file path="/bootstrap-slider.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377006987096" ignored="false" />
     <file path="/scripts.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376665271183" ignored="false" />
+    <file path="/repetier-server.conf" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377362181071" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,46 +110,7 @@
       <file leaf-file-name="PrinterController.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="0" selection-start="2289" selection-end="2289" vertical-scroll-proportion="-13.846154">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bootstrap-slider.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/js/bootstrap-slider.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="19" column="50" selection-start="892" selection-end="892" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="GCodePainter.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/js/directives/GCodePainter.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="9" selection-start="2012" selection-end="2012" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#1211#1893#0" expanded="false" />
-                <element signature="e#3014#8328#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ServerController.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/js/controller/ServerController.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="34" column="81" selection-start="1719" selection-end="1719" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="configure.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/configure.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="64" column="20" selection-start="2344" selection-end="2344" vertical-scroll-proportion="-11.25">
+            <state line="199" column="19" selection-start="7049" selection-end="7049" vertical-scroll-proportion="-23.576923">
               <folding />
             </state>
           </provider>
@@ -154,7 +119,56 @@
       <file leaf-file-name="irapid.xml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/configs/irapid.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="64" column="13" selection-start="2011" selection-end="2011" vertical-scroll-proportion="0.0">
+            <state line="5" column="16" selection-start="147" selection-end="147" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="irapid.xml.orig" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/configs/irapid.xml.orig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="78" column="0" selection-start="2734" selection-end="2734" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CMakeLists.txt" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Repetier-Server/server/CMakeLists.txt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="6" column="0" selection-start="186" selection-end="186" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="repetier-server.conf" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/repetier-server.conf">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="18" selection-start="459" selection-end="477" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="printerConfig.php" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/www/views/printerConfig.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="238" column="52" selection-start="12017" selection-end="12017" vertical-scroll-proportion="-20.875">
+              <folding>
+                <element signature="n#style#0;n#div#1;n#div#1;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#2;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="bootstrap-slider.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/www/js/bootstrap-slider.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="396" column="0" selection-start="11869" selection-end="11869" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -163,51 +177,45 @@
       <file leaf-file-name="printer.php" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/www/views/printer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="61" column="50" selection-start="3443" selection-end="3443" vertical-scroll-proportion="0.25619835">
+            <state line="221" column="62" selection-start="11540" selection-end="11540" vertical-scroll-proportion="0.53571427">
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#ul#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#span#0;n#div#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#2;n#div#2;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="tag#div#0;tag#div#0;tag#div#0;tag#div#1;tag#div#0;tag#div#0" expanded="false" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#2;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#6;n#div#0;n#div#2;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#4;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#div#0;n#div#0;n#div#4;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#h4#0;n#div#1;n#div#0;n#div#4;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#3;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#4;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#1;n#div#5;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#2;n#div#6;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#7;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#div#0;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#h4#0;n#div#1;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="filter.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/js/directives/filter.js">
+      <file leaf-file-name="buttons.less" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/www/style/less/buttons.less">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+            <state line="11" column="2" selection-start="189" selection-end="246" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="scripts.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/views/scripts.php">
+      <file leaf-file-name="variables.less" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/www/style/less/variables.less">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="0" selection-start="24" selection-end="225" vertical-scroll-proportion="-3.75">
-              <folding>
-                <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-                <element signature="n#style#0;n#textarea#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="printerConfig.php" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/www/views/printerConfig.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="398" column="0" selection-start="19670" selection-end="19670" vertical-scroll-proportion="-14.916667">
+            <state line="117" column="57" selection-start="3574" selection-end="3574" vertical-scroll-proportion="-0.6">
               <folding />
             </state>
           </provider>
@@ -231,21 +239,21 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/www/libs/colorpicker/css/colorpicker.css" />
-        <option value="$PROJECT_DIR$/www/js/directives/bootstrap.js" />
-        <option value="$PROJECT_DIR$/www/style/less/btserver.less" />
-        <option value="$PROJECT_DIR$/www/style/less/slider.less" />
         <option value="$PROJECT_DIR$/www/index.php" />
-        <option value="$PROJECT_DIR$/www/js/directives/slider.js" />
-        <option value="$PROJECT_DIR$/configs/irapid.xml.orig" />
+        <option value="$PROJECT_DIR$/www/style/less/slider.less" />
+        <option value="$PROJECT_DIR$/www/js/directives/bootstrap.js" />
         <option value="$PROJECT_DIR$/www/js/router.js" />
-        <option value="$PROJECT_DIR$/www/js/controller/ServerController.js" />
-        <option value="$PROJECT_DIR$/configs/irapid.xml" />
-        <option value="$PROJECT_DIR$/www/views/scripts.php" />
-        <option value="$PROJECT_DIR$/www/views/printerConfig.php" />
-        <option value="$PROJECT_DIR$/www/js/bootstrap-slider.js" />
-        <option value="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
+        <option value="$PROJECT_DIR$/www/js/directives/slider.js" />
         <option value="$PROJECT_DIR$/www/js/directives/GCodePainter.js" />
+        <option value="$PROJECT_DIR$/www/views/home.php" />
+        <option value="$PROJECT_DIR$/www/style/less/btserver.less" />
+        <option value="$PROJECT_DIR$/www/js/bootstrap-slider.js" />
+        <option value="$PROJECT_DIR$/www/style/less/variables.less" />
+        <option value="$PROJECT_DIR$/repetier-server.conf" />
+        <option value="$PROJECT_DIR$/www/views/printerConfig.php" />
+        <option value="$PROJECT_DIR$/configs/irapid.xml.orig" />
+        <option value="$PROJECT_DIR$/configs/irapid.xml" />
+        <option value="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
         <option value="$PROJECT_DIR$/www/views/printer.php" />
       </list>
     </option>
@@ -312,7 +320,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
+              <option name="myItemId" value="Repetier-Server" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -326,255 +334,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="views" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="Repetier-Server" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="style" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="style" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="libs" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="vendor" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="directives" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="js" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="controller" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="jquery" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="less" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="font" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="www" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="css" />
+              <option name="myItemId" value="server" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -592,6 +356,24 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cmake" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -601,8 +383,8 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="options.lastSelected" value="editor.preferences.appearance" />
     <property name="FullScreen" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
@@ -639,10 +421,9 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32905483" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24973032" sideWeight="0.67094517" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2524272" sideWeight="0.67094517" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25512406" sideWeight="0.67094517" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -651,6 +432,7 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32905483" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -717,134 +499,136 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/www/style/less/slider.less">
+    <entry file="file://$PROJECT_DIR$/www/js/router.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="10" selection-start="265" selection-end="265" vertical-scroll-proportion="-2.6470587">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/controller/HomeController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/index.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="63" selection-start="1617" selection-end="1617" vertical-scroll-proportion="-19.375">
-          <folding />
-        </state>
+        <state line="63" column="21" selection-start="2532" selection-end="2532" vertical-scroll-proportion="7.3461537" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/js/directives/slider.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="155" column="0" selection-start="5223" selection-end="5223" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configs/irapid.xml.orig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="0" selection-start="2423" selection-end="2423" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/router.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="28" selection-start="533" selection-end="545" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/configure.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="20" selection-start="2344" selection-end="2344" vertical-scroll-proportion="-11.25">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/controller/ServerController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="81" selection-start="1719" selection-end="1719" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configs/irapid.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="13" selection-start="2011" selection-end="2011" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/views/scripts.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="0" selection-start="24" selection-end="225" vertical-scroll-proportion="-3.75">
-          <folding>
-            <element signature="n#style#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#textarea#0;n#div#0;n#div#1;n#div#0;n#!!top" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/views/printerConfig.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="398" column="0" selection-start="19670" selection-end="19670" vertical-scroll-proportion="-14.916667">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/bootstrap-slider.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="50" selection-start="892" selection-end="892" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="0" selection-start="2289" selection-end="2289" vertical-scroll-proportion="-13.846154">
+        <state line="154" column="23" selection-start="5163" selection-end="5163" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/js/directives/GCodePainter.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="9" selection-start="2012" selection-end="2012" vertical-scroll-proportion="0.0">
+        <state line="283" column="0" selection-start="10500" selection-end="10500" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/views/home.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="28" column="86" selection-start="1618" selection-end="1618" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/style/sass/servermain.scss">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="0" selection-start="95" selection-end="169" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/style/less/btserver.less">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="20" selection-start="317" selection-end="317" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/bootstrap-slider.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="396" column="0" selection-start="11869" selection-end="11869" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/style/less/buttons.less">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="2" selection-start="189" selection-end="246" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/style/less/variables.less">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="117" column="57" selection-start="3574" selection-end="3574" vertical-scroll-proportion="-0.6">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Repetier-Server/server/CMakeLists.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="0" selection-start="186" selection-end="186" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/repetier-server.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="10" column="18" selection-start="459" selection-end="477" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/views/printerConfig.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="238" column="52" selection-start="12017" selection-end="12017" vertical-scroll-proportion="-20.875">
           <folding>
-            <element signature="e#1211#1893#0" expanded="false" />
-            <element signature="e#3014#8328#0" expanded="false" />
+            <element signature="n#style#0;n#div#1;n#div#1;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#2;n#div#1;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#2;n#div#0;n#form#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/directives/filter.js">
+    <entry file="file://$PROJECT_DIR$/configs/irapid.xml.orig">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="78" column="0" selection-start="2734" selection-end="2734" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configs/irapid.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="16" selection-start="147" selection-end="147" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="199" column="19" selection-start="7049" selection-end="7049" vertical-scroll-proportion="-23.576923">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/views/printer.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="61" column="50" selection-start="3443" selection-end="3443" vertical-scroll-proportion="0.25619835">
+        <state line="221" column="62" selection-start="11540" selection-end="11540" vertical-scroll-proportion="0.53571427">
           <folding>
             <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#ul#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#span#0;n#div#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#2;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#2;n#div#2;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="tag#div#0;tag#div#0;tag#div#0;tag#div#1;tag#div#0;tag#div#0" expanded="false" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#1;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#2;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#6;n#div#0;n#div#2;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#4;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#div#0;n#div#0;n#div#4;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
-            <element signature="n#style#0;n#h4#0;n#div#1;n#div#0;n#div#4;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#3;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#3;n#div#0;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#4;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#1;n#div#5;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#2;n#div#6;n#div#1;n#div#0;n#div#0;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#7;n#div#0;n#div#1;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#div#0;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#h4#0;n#div#1;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
         </state>
       </provider>

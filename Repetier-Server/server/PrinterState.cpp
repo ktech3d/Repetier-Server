@@ -24,7 +24,7 @@
 #include "PrinterState.h"
 #include "printer.h"
 #include "GCode.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
 #include "ServerEvents.h"
 
 using namespace std;
@@ -448,31 +448,43 @@ uint32_t PrinterState::decreaseLastline() {
     mutex::scoped_lock l(mutex);
     return --lastline;
 }
-std::string PrinterState::getMoveXCmd(double dx,double f) {
+std::string PrinterState::getMoveXCmd(double dx,double f,bool isRelative) {
     mutex::scoped_lock l(mutex);
     char buf[100];
-    sprintf(buf,"G1 X%.2f F%.0f",relative ? dx : x+dx,f);
+    if(isRelative)
+        sprintf(buf,"G1 X%.2f F%.0f",relative ? dx : x+dx,f);
+    else
+        sprintf(buf,"G1 X%.2f F%.0f",relative ? dx-x : dx,f);
     return string(buf);
 }
-std::string PrinterState::getMoveYCmd(double dy,double f) {
+std::string PrinterState::getMoveYCmd(double dy,double f,bool isRelative) {
     mutex::scoped_lock l(mutex);
     char buf[100];
-    sprintf(buf,"G1 Y%.2f F%.0f",relative ? dy : y+dy,f);
+    if(isRelative)
+        sprintf(buf,"G1 Y%.2f F%.0f",relative ? dy : y+dy,f);
+    else
+        sprintf(buf,"G1 Y%.2f F%.0f",relative ? dy-y : dy,f);
     return string(buf);
     
 }
-std::string PrinterState::getMoveZCmd(double dz,double f) {
+std::string PrinterState::getMoveZCmd(double dz,double f,bool isRelative) {
     mutex::scoped_lock l(mutex);
     char buf[100];
-    sprintf(buf,"G1 Z%.2f F%.0f",relative ? dz : z+dz,f);
+    if(isRelative)
+        sprintf(buf,"G1 Z%.2f F%.0f",relative ? dz : z+dz,f);
+    else
+        sprintf(buf,"G1 Z%.2f F%.0f",relative ? dz-z : dz,f);
     return string(buf);
     
 }
-std::string PrinterState::getMoveECmd(double de,double f) {
+std::string PrinterState::getMoveECmd(double de,double f,bool isRelative) {
     mutex::scoped_lock l(mutex);
     char buf[100];
-    sprintf(buf,"G1 E%.2f F%.0f",relative || eRelative ? de : activeExtruder->ePrinter+de,f);
-    return string(buf);    
+    if(isRelative)
+        sprintf(buf,"G1 E%.2f F%.0f",relative || eRelative ? de : activeExtruder->ePrinter+de,f);
+    else
+        sprintf(buf,"G1 E%.2f F%.0f",relative || eRelative ? de-activeExtruder->ePrinter : de,f);
+    return string(buf);
 }
 void PrinterState::setIsathome() {
     mutex::scoped_lock l(mutex);

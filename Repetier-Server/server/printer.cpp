@@ -31,7 +31,7 @@
 #include "json_spirit.h"
 #include "RLog.h"
 #include "ServerEvents.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -182,16 +182,16 @@ void Printer::injectJobCommand(const std::string& cmd) {
     // No need to trigger job commands early. There will most probably follow more very soon
     // and the job should already run.
 }
-void Printer::move(double x,double y,double z,double e) {
-    if(x!=0)
-        injectManualCommand(state->getMoveXCmd(x, config->xySpeed*60.0));
-    if(y!=0)
-        injectManualCommand(state->getMoveYCmd(y, config->xySpeed*60.0));
-    if(z!=0)
-        injectManualCommand(state->getMoveZCmd(z, config->zSpeed*60.0));
-    if(e!=0) {
+void Printer::move(double x,double y,double z,double e,bool relative) {
+    if(x!=999999)
+        injectManualCommand(state->getMoveXCmd(x, config->xySpeed*60.0,relative));
+    if(y!=999999)
+        injectManualCommand(state->getMoveYCmd(y, config->xySpeed*60.0,relative));
+    if(z!=999999)
+        injectManualCommand(state->getMoveZCmd(z, config->zSpeed*60.0,relative));
+    if(e!=999999) {
         ExtruderConfigurationPtr ex = config->getExtruder(state->activeExtruder->id);
-        injectManualCommand(state->getMoveECmd(e,60.0 * (e>0 ? ex->extrudeSpeed : ex->retractSpeed)));
+        injectManualCommand(state->getMoveECmd(e,60.0 * (e>0 ? ex->extrudeSpeed : ex->retractSpeed),relative));
     }
 }
 
@@ -271,7 +271,7 @@ void Printer::manageHostCommand(boost::shared_ptr<GCode> &cmd) {
         gconfig->createMessage(msg,answer);
         paused = true;
         state->storePause();
-        scriptManager->pushCompleteJobNoBlock("Pause",true);
+        scriptManager->pushCompleteJobNoBlock("pause",true);
     } else if(c=="@isathome") {
         state->setIsathome();
     } else if(c=="@kill") {
@@ -284,11 +284,23 @@ void Printer::manageHostCommand(boost::shared_ptr<GCode> &cmd) {
         RepetierEvent::fireEvent(event);
     }
 }
+
 void Printer::stopPause() {
     state->injectUnpause();
     mutex::scoped_lock l(sendMutex);
     paused = false;
 }
+
+void Printer::fireEvent(string eventName,json_spirit::mObject &data) {
+    RepetierEventPtr event(new RepetierEvent(thisPtr,eventName,json_spirit::mValue(data)));
+    RepetierEvent::fireEvent(event);
+}
+
+void Printer::fireEvent(string eventName,json_spirit::mArray &data) {
+    RepetierEventPtr event(new RepetierEvent(thisPtr,eventName,json_spirit::mValue(data)));
+    RepetierEvent::fireEvent(event);
+}
+
 bool Printer::trySendPacket(GCodeDataPacketPtr &dp,shared_ptr<GCode> &gc) {
     if((config->serialPingPong && readyForNextSend) || (!config->serialPingPong && cacheSize>receiveCacheFill+dp->length)) {
         serial->writeBytes(dp->data,dp->length);
@@ -307,6 +319,7 @@ bool Printer::trySendPacket(GCodeDataPacketPtr &dp,shared_ptr<GCode> &gc) {
     }
     return false;
 }
+
 // Extract the value following a identifier ident until the next space or line end.
 bool Printer::extract(const string& source,const string& ident,string &result)
 {
@@ -390,6 +403,7 @@ void Printer::trySendNextLine() {
         return;
     }
 }
+
 void Printer::analyseResponse(string &res) {
 #ifdef DEBUG
     //   cout << "Response:" << res << endl;

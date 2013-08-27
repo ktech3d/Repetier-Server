@@ -44,13 +44,15 @@ BootstrapDirectives.directive('boolswitch', function () {
         controller: function ($scope, $element) {
             $scope.toggle = function() {
                 $scope.value = !$scope.value;
+                if($scope.changed)
+                  $scope.changed();
             }
             $scope.name = function() {
                 if($scope.value) return $scope.on;
                 return $scope.off;
             }
         },
-        scope: {value: '=value'},
+        scope: {value: '=value',changed:'&'},
         template: '<button ng-click="toggle()" class="btn btn-block" ng-class="{\'btn-success\':value,\'btn-danger\':!value}">{{name()}}</button>',
         replace: true,
         link: function (scope, elem, attr, $timeout) {

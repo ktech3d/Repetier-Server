@@ -253,7 +253,7 @@ private:
     {
         p = (p == bufferSize-1 ? 0 : p+1);
     }
-    void calculate_move(SimulatorLine *p,float axis_diff[],uint8_t pathOptimize);
+    void calculateMove(SimulatorLine *p,float axis_diff[],uint8_t pathOptimize);
     void queueCartesianMove(float axis_diff[4],uint8_t pathOptimize);
     float safeSpeed(SimulatorLine *p);
     
@@ -262,7 +262,7 @@ private:
 class GCodeAnalyser {
 public:
     GCodeAnalyser(std::string file);
-    GCodeAnalyser(PrinterPtr printer,std::string path);
+    GCodeAnalyser(PrinterPtr printer,std::string path,bool forceRecompute = false);
     void safeData();
     void removeData();
     double printingTime;

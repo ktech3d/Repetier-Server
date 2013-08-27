@@ -41,7 +41,8 @@
 #include "global_config.h"
 #include "WebserverAPI.h"
 #include "ActionHandler.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
+#include "WorkDispatcher.h"
 
 using Poco::Net::ServerSocket;
 using Poco::Net::HTTPRequestHandler;
@@ -174,12 +175,14 @@ int RepetierServerApplication::main(const std::vector<std::string>& args)
                        socket,params);
         gconfig->readPrinterConfigs();
         gconfig->startPrinterThreads();
+        WorkDispatcher::init();
         srv.start();
         waitForTerminationRequest();
         srv.stop();
         ShutdownManager::waitForShutdown();
         cout << "Closing server" << endl;
         gconfig->stopPrinterThreads();
+        WorkDispatcher::shutdown();
     }
     return Application::EXIT_OK;
 }

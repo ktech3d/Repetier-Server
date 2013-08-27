@@ -8,16 +8,18 @@
 <div class="row">
 <div class="col-12">
 <div class="row">
-<div class="col-sm-9 col-12">
-    <h1>
-        Configure {{editor.general.name}}
-    </h1>
-</div>
-<div class="col-sm-3 col-12" style="vertical-align: middle">
-    <h1>
-        <button class="btn btn-success btn-block" ng-click="saveConfig()"><i class="icon-save"></i> Save Configuration</button>
-    </h1>
-</div>
+    <div class="col-sm-9 col-12">
+        <h1>
+            Configure {{editor.general.name}}
+        </h1>
+    </div>
+    <div class="col-sm-3 col-12" style="vertical-align: middle">
+        <h1>
+            <button class="btn btn-success btn-block" ng-click="saveConfig()"><i class="icon-save"></i> Save
+                Configuration
+            </button>
+        </h1>
+    </div>
 </div>
 
 <form class="">
@@ -188,10 +190,34 @@
                    data-content="Speed for manual moves in x-y-plane." data-original-title data-trigger="focus">
         </div>
         <div class="col-lg-4 col-6 form-group">
+            <label>Max. XY Speed [mm/s]</label>
+            <input class="form-control" type="number" step="any" min="1" placeholder=""
+                   ng-model="editor.movement.maxXYSpeed" data-toggle="popover" data-placement="bottom"
+                   data-content="Maximum speed for moves in x-y-plane." data-original-title data-trigger="focus">
+        </div>
+        <div class="col-lg-4 col-6 form-group">
+            <label>XY Jerk [mm/s]</label>
+            <input class="form-control" type="number" step="any" min="0" placeholder=""
+                   ng-model="editor.movement.xyJerk" data-toggle="popover" data-placement="bottom"
+                   data-content="Max. allowed jerk for moves in x-y-plane." data-original-title data-trigger="focus">
+        </div>
+        <div class="col-lg-4 col-6 form-group">
             <label>Z Speed [mm/s]</label>
             <input class="form-control" type="number" step="any" min="1" placeholder=""
                    ng-model="editor.movement.zSpeed" data-toggle="popover" data-placement="bottom"
                    data-content="Speed for manual moves in z-direction." data-original-title data-trigger="focus">
+        </div>
+        <div class="col-lg-4 col-6 form-group">
+            <label>Max. Z Speed [mm/s]</label>
+            <input class="form-control" type="number" step="any" min="1" placeholder=""
+                   ng-model="editor.movement.zSpeed" data-toggle="popover" data-placement="bottom"
+                   data-content="Maximum speed for moves in z-direction." data-original-title data-trigger="focus">
+        </div>
+        <div class="col-lg-4 col-6 form-group">
+            <label>Z Jerk [mm/s]</label>
+            <input class="form-control" type="number" step="any" min="0" placeholder=""
+                   ng-model="editor.movement.zJerk" data-toggle="popover" data-placement="bottom"
+                   data-content="Max. allowed jerk for moves in z-direction." data-original-title data-trigger="focus">
         </div>
         <div class="col-lg-4 col-6 form-group">
             <label>XY Print Acceleration [mm/s²]</label>
@@ -208,16 +234,16 @@
                    data-trigger="focus">
         </div>
         <div class="col-lg-4 col-6 form-group">
-            <label>XY Jerk [mm/s]</label>
-            <input class="form-control" type="number" step="any" min="0" placeholder=""
-                   ng-model="editor.movement.xyJerk" data-toggle="popover" data-placement="bottom"
-                   data-content="Max. allowed jerk for moves in x-y-plane." data-original-title data-trigger="focus">
+            <label>Move buffer size</label>
+            <input class="form-control" type="number" step="any" min="1" placeholder=""
+                   ng-model="editor.movement.movebuffer" data-toggle="popover" data-placement="bottom"
+                   data-content="Size of the path planner buffer in your firmware. 16 is a typical value. Used for printing time prediction." data-original-title data-trigger="focus">
         </div>
         <div class="col-lg-4 col-6 form-group">
-            <label>Z Jerk [mm/s]</label>
-            <input class="form-control" type="number" step="any" min="0" placeholder=""
-                   ng-model="editor.movement.zJerk" data-toggle="popover" data-placement="bottom"
-                   data-content="Max. allowed jerk for moves in z-direction." data-original-title data-trigger="focus">
+            <label>Printing time multiplier</label>
+            <input class="form-control" type="number" step="any" min="0.1" placeholder=""
+                   ng-model="editor.movement.timeMultiplier" data-toggle="popover" data-placement="bottom"
+                   data-content="Computed printing time gets multiplied by this value. If you configured relevant parameter correctly, the multiplier should be near 1." data-original-title data-trigger="focus">
         </div>
 
     </div>
@@ -237,6 +263,22 @@
     <div ng-show="editor.heatedBed.installed">
         <h4>Predefined temperatures</h4>
 
+        <div class="row">
+            <div class="col-lg-4 col-6 form-group">
+                <label>Heatup per Second</label>
+                <input class="form-control" type="text" placeholder=""
+                       ng-model="editor.heatedBed.heatupPerSecond" data-toggle="popover" data-placement="bottom"
+                       data-content="Time to raise temperature by one degree celsius in seconds." data-original-title
+                       data-trigger="focus">
+            </div>
+            <div class="col-lg-4 col-6 form-group">
+                <label>Cooldown per Second</label>
+                <input class="form-control" type="text" placeholder=""
+                       ng-model="editor.heatedBed.cooldownPerSecond" data-toggle="popover" data-placement="bottom"
+                       data-content="Time to reduce temperature by one degree celsius in seconds." data-original-title
+                       data-trigger="focus">
+            </div>
+        </div>
         <div class="row" ng-repeat="r in editor.heatedBed.temperatures" style="margin-bottom:0.3em">
             <div class="col-2">Name</div>
             <div class="col-3"><input type="text" ng-model="r.name" class="form-control"></div>
@@ -295,6 +337,20 @@
                 <input class="form-control" type="text" placeholder=""
                        ng-model="ex.retractSpeed" data-toggle="popover" data-placement="bottom"
                        data-content="Retract distance if you click on extrude in manual controls." data-original-title
+                       data-trigger="focus">
+            </div>
+            <div class="col-lg-4 col-6 form-group">
+                <label>Heatup per Second</label>
+                <input class="form-control" type="text" placeholder=""
+                       ng-model="ex.heatupPerSecond" data-toggle="popover" data-placement="bottom"
+                       data-content="Time to raise temperature by one degree celsius in seconds." data-original-title
+                       data-trigger="focus">
+            </div>
+            <div class="col-lg-4 col-6 form-group">
+                <label>Cooldown per Second</label>
+                <input class="form-control" type="text" placeholder=""
+                       ng-model="ex.cooldownPerSecond" data-toggle="popover" data-placement="bottom"
+                       data-content="Time to reduce temperature by one degree celsius in seconds." data-original-title
                        data-trigger="focus">
             </div>
         </div>

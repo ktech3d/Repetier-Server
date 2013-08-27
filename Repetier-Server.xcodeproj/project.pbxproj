@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FD104F5317C910B30017E14B /* WorkDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD104F5117C910B30017E14B /* WorkDispatcher.cpp */; };
+		FD104F6117C913160017E14B /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = FD104F5D17C913160017E14B /* sqlite3.c */; };
 		FD57C187161B5608000C4A45 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD57C186161B5608000C4A45 /* main.cpp */; };
 		FD57C189161B5608000C4A45 /* Repetier_Server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD57C188161B5608000C4A45 /* Repetier_Server.1 */; };
 		FDA1DBDE178C4CB200E40F36 /* libPocoFoundationd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBCE178C4CB200E40F36 /* libPocoFoundationd.16.dylib */; };
@@ -32,7 +34,7 @@
 		FDAC19511695F1A600479AA4 /* RLog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDAC194F1695F1A600479AA4 /* RLog.cpp */; };
 		FDD5B716179457E900DCBBF9 /* GCodeAnalyser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B714179457E800DCBBF9 /* GCodeAnalyser.cpp */; };
 		FDD5B852179ED77A00DCBBF9 /* ServerEvents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B850179ED77900DCBBF9 /* ServerEvents.cpp */; };
-		FDD5B85517A3D54C00DCBBF9 /* PrinterConfigiration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B85317A3D54B00DCBBF9 /* PrinterConfigiration.cpp */; };
+		FDD5B85517A3D54C00DCBBF9 /* PrinterConfiguration.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDD5B85317A3D54B00DCBBF9 /* PrinterConfiguration.cpp */; };
 		FDED505D1673BAD8001F0450 /* grammar.c in Sources */ = {isa = PBXBuildFile; fileRef = FDED504D1673BAD8001F0450 /* grammar.c */; };
 		FDED505E1673BAD8001F0450 /* libconfig.c in Sources */ = {isa = PBXBuildFile; fileRef = FDED504F1673BAD8001F0450 /* libconfig.c */; };
 		FDED505F1673BAD8001F0450 /* libconfigcpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FDED50531673BAD8001F0450 /* libconfigcpp.cpp */; };
@@ -60,6 +62,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		FD104F5117C910B30017E14B /* WorkDispatcher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WorkDispatcher.cpp; sourceTree = "<group>"; };
+		FD104F5217C910B30017E14B /* WorkDispatcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorkDispatcher.h; sourceTree = "<group>"; };
+		FD104F5D17C913160017E14B /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sqlite3.c; sourceTree = "<group>"; };
+		FD104F5E17C913160017E14B /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3.h; sourceTree = "<group>"; };
+		FD104F5F17C913160017E14B /* sqlite3ext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3ext.h; sourceTree = "<group>"; };
 		FD57C182161B5608000C4A45 /* Repetier-Server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Repetier-Server"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD57C186161B5608000C4A45 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FD57C188161B5608000C4A45 /* Repetier_Server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Repetier_Server.1; sourceTree = "<group>"; };
@@ -116,8 +123,8 @@
 		FDD5B715179457E900DCBBF9 /* GCodeAnalyser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCodeAnalyser.h; sourceTree = "<group>"; };
 		FDD5B850179ED77900DCBBF9 /* ServerEvents.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServerEvents.cpp; sourceTree = "<group>"; };
 		FDD5B851179ED77A00DCBBF9 /* ServerEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ServerEvents.h; sourceTree = "<group>"; };
-		FDD5B85317A3D54B00DCBBF9 /* PrinterConfigiration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrinterConfigiration.cpp; sourceTree = "<group>"; };
-		FDD5B85417A3D54B00DCBBF9 /* PrinterConfigiration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterConfigiration.h; sourceTree = "<group>"; };
+		FDD5B85317A3D54B00DCBBF9 /* PrinterConfiguration.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PrinterConfiguration.cpp; sourceTree = "<group>"; };
+		FDD5B85417A3D54B00DCBBF9 /* PrinterConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterConfiguration.h; sourceTree = "<group>"; };
 		FDED504D1673BAD8001F0450 /* grammar.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = grammar.c; sourceTree = "<group>"; };
 		FDED504E1673BAD8001F0450 /* grammar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = grammar.h; sourceTree = "<group>"; };
 		FDED504F1673BAD8001F0450 /* libconfig.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = libconfig.c; sourceTree = "<group>"; };
@@ -170,6 +177,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FD104F5417C912790017E14B /* sqlite */ = {
+			isa = PBXGroup;
+			children = (
+				FD104F5D17C913160017E14B /* sqlite3.c */,
+				FD104F5E17C913160017E14B /* sqlite3.h */,
+				FD104F5F17C913160017E14B /* sqlite3ext.h */,
+			);
+			path = sqlite;
+			sourceTree = "<group>";
+		};
 		FD57C177161B5607000C4A45 = {
 			isa = PBXGroup;
 			children = (
@@ -212,6 +229,7 @@
 		FD57C185161B5608000C4A45 /* Repetier-Server */ = {
 			isa = PBXGroup;
 			children = (
+				FD104F5417C912790017E14B /* sqlite */,
 				FDABA26B1686FC92005522A4 /* moFileReader */,
 				FDABA25916861EC2005522A4 /* json_spirit */,
 				FDED50641673BAEA001F0450 /* server */,
@@ -303,8 +321,10 @@
 				FDD5B715179457E900DCBBF9 /* GCodeAnalyser.h */,
 				FDD5B850179ED77900DCBBF9 /* ServerEvents.cpp */,
 				FDD5B851179ED77A00DCBBF9 /* ServerEvents.h */,
-				FDD5B85317A3D54B00DCBBF9 /* PrinterConfigiration.cpp */,
-				FDD5B85417A3D54B00DCBBF9 /* PrinterConfigiration.h */,
+				FDD5B85317A3D54B00DCBBF9 /* PrinterConfiguration.cpp */,
+				FDD5B85417A3D54B00DCBBF9 /* PrinterConfiguration.h */,
+				FD104F5117C910B30017E14B /* WorkDispatcher.cpp */,
+				FD104F5217C910B30017E14B /* WorkDispatcher.h */,
 			);
 			path = server;
 			sourceTree = "<group>";
@@ -382,7 +402,9 @@
 				FDA1DBF1179159C600E40F36 /* ActionHandler.cpp in Sources */,
 				FDD5B716179457E900DCBBF9 /* GCodeAnalyser.cpp in Sources */,
 				FDD5B852179ED77A00DCBBF9 /* ServerEvents.cpp in Sources */,
-				FDD5B85517A3D54C00DCBBF9 /* PrinterConfigiration.cpp in Sources */,
+				FDD5B85517A3D54C00DCBBF9 /* PrinterConfiguration.cpp in Sources */,
+				FD104F5317C910B30017E14B /* WorkDispatcher.cpp in Sources */,
+				FD104F6117C913160017E14B /* sqlite3.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,4 +1,4 @@
-function ServerController($scope,$rootScope,$timeout,$http,WS) {
+function ServerController($scope,$rootScope,$timeout,$http,WS,$q) {
     $rootScope.printerList = [];
     $rootScope.messages = [];
     $rootScope.setup = {printer:[]};
@@ -8,6 +8,7 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
     $rootScope.printerSetup = {};
     $rootScope.printerConfig = {};
     $rootScope.printer = {};
+    $scope.question = {};
     window.rs = $rootScope; // for debugging
     $rootScope.selectPrinter = function(slug) {
         console.log("Activate "+slug);
@@ -46,6 +47,8 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
     var messagesPoller = function() {
         WS.send("messages",{}).then(function(r) {
             $rootScope.messages = r;
+            if($rootScope.messages.length == 0)
+                $('#messageList').modal('hide');
         });
     }
     $scope.$on("messagesChanged",function(event,data) {
@@ -83,6 +86,23 @@ function ServerController($scope,$rootScope,$timeout,$http,WS) {
     $scope.$on('$destroy',function() {
         $(window).off("resize",resizer);
     });
+    $scope.confirm = function(head,body,yes,no) {
+        $scope.question.header = head;
+        $scope.question.question = body;
+        $scope.question.no = no;
+        $scope.question.yes = yes;
+        $scope.question.deferred = $q.defer();
+        $('#question').modal('show');
+        return $scope.question.deferred.promise;
+    }
+    $scope.questionYes = function() {
+        $('#question').modal('hide');
+        $scope.question.deferred.resolve();
+    }
+    $scope.questionNo = function() {
+        $('#question').modal('hide');
+        $scope.question.deferred.reject();
+    }
 }
 
 function AboutController($scope) {

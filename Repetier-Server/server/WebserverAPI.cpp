@@ -46,7 +46,7 @@
 #include "Poco/Net/NetException.h"
 #include "Poco/Util/ServerApplication.h"
 #include "ActionHandler.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
 
 using namespace std;
 using namespace json_spirit;
@@ -316,20 +316,31 @@ namespace repetier {
                 }
                 }
                 catch(TimeoutException &to) {} // Expected timeout
-                while(eventQueue.hasMessageForPrinter(printer)) {
-                    RepetierEventPtr event = eventQueue.popEvent();
+                if(eventQueue.hasMessageForPrinter(printer)) {
                     mObject wsResponse;
-                    if(event->type=="log") {
-                        if((event->event.get_obj()["type"].get_int() & logFilter)==0) continue;
-                    }
-                    wsResponse["data"] = event->event;
                     wsResponse["callback_id"] = -1;
-                    wsResponse["event"] = event->type;
-                    if(event->printer!=NULL)
-                        wsResponse["printer"] = event->printer->config->slug;
-                    string ret = write(wsResponse,json_spirit::raw_utf8);
-                    mutex::scoped_lock l(sendMutex);
-                    ws.sendFrame(ret.c_str(), (int)ret.length(), flags);
+                    wsResponse["eventList"] = true;
+                    wsResponse["data"] = mArray();
+                    mArray &eventArray = wsResponse["data"].get_array();
+                    int eventCount = 0;
+                    while(eventQueue.hasMessageForPrinter(printer)) {
+                        RepetierEventPtr event = eventQueue.popEvent();
+                        if(event->type=="log") {
+                            if((event->event.get_obj()["type"].get_int() & logFilter)==0) continue;
+                        }
+                        mObject ev;
+                        ev["data"] = event->event;
+                        ev["event"] = event->type;
+                        if(event->printer!=NULL)
+                            ev["printer"] = event->printer->config->slug;
+                        eventArray.push_back(ev);
+                        eventCount++;
+                    }
+                    if(eventCount>0) {
+                        string ret = write(wsResponse,json_spirit::raw_utf8);
+                        mutex::scoped_lock l(sendMutex);
+                        ws.sendFrame(ret.c_str(), (int)ret.length(), flags);
+                    }
                 }
             }
             while (n > 0 || (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE);
@@ -443,7 +454,7 @@ namespace repetier {
                     PrintjobPtr job = printer->getJobManager()->findById(id);
                     if(job.get()) {
                         printer->getJobManager()->killJob(id);
-                        printer->getScriptManager()->pushCompleteJob("Kill");
+                        printer->getScriptManager()->pushCompleteJob("kill");
                     }
                 }
                 printer->getJobManager()->fillSJONObject("data",ret);

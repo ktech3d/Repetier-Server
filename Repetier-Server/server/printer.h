@@ -183,7 +183,7 @@ public:
     /** Number of job commands stored */
     size_t jobCommandsStored();
     void fillJSONConfig(json_spirit::mObject &obj);
-    void move(double x,double y,double z,double e);
+    void move(double x,double y,double z,double e,bool relative); // cordinate 999999 = do not move!
     int getOnlineStatus();
     bool getActive();
     void setActive(bool v);
@@ -200,6 +200,8 @@ public:
     // Public interthread communication methods
     void startThread();
     void stopThread();
+    void fireEvent(std::string event,json_spirit::mObject &data);
+    void fireEvent(std::string event,json_spirit::mArray &data);
 };
 
 #endif /* defined(__Repetier_Server__printer__) */

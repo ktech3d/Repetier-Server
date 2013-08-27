@@ -31,7 +31,9 @@
 #include "Poco/File.h"
 #include "Poco/Path.h"
 #include "ServerEvents.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
+#include "WorkDispatcher.h"
+#include <sstream>
 
 using namespace std;
 using namespace boost;
@@ -232,6 +234,7 @@ void PrintjobManager::fillSJONObject(std::string name,json_spirit::mObject &o) {
         shared_ptr<GCodeAnalyser> info = job->getInfo(printer);
         j["printTime"] = info->printingTime;
         j["lines"] = info->lines;
+        j["layer"] = info->layer;
         j["filamentTotal"] = info->totalFilamentUsed;
         mArray extruderUsage;
         for(vector<double>::iterator it2=info->filamentUsed.begin();it2!=info->filamentUsed.end();++it2)
@@ -283,10 +286,27 @@ PrintjobPtr PrintjobManager::findByName(string name) {
     }
     return shared_ptr<Printjob>();
 }
+PrintjobPtr PrintjobManager::findByFilename(string name) {
+    mutex::scoped_lock l(filesMutex);
+    pjlist::iterator it = files.begin(),ie=files.end();
+    for(;it!=ie;it++) {
+        if((*it)->getFilename()==name)
+            return *it;
+    }
+    return shared_ptr<Printjob>();
+}
 PrintjobPtr PrintjobManager::findById(int id) {
     mutex::scoped_lock l(filesMutex);
     return findByIdInternal(id);
 }
+void PrintjobManager::recomputeInfoLazy() {
+    mutex::scoped_lock l(filesMutex);
+    pjlist::iterator it = files.begin(),ie=files.end();
+    for(;it!=ie;it++) {
+        (*it)->recomputeInfoLazy(printer);
+    }
+}
+
 PrintjobPtr PrintjobManager::createNewPrintjob(std::string name) {
     mutex::scoped_lock l(filesMutex);
     lastid++;
@@ -296,13 +316,15 @@ PrintjobPtr PrintjobManager::createNewPrintjob(std::string name) {
 }
 void PrintjobManager::finishPrintjobCreation(PrintjobPtr job,string namerep,size_t sz)
 {
-    mutex::scoped_lock l(filesMutex);
-    if(job->getName().length()>0)
-        namerep = job->getName();
-    if(namerep.length()==0) {
-        char buf[50];
-        sprintf(buf,"Job %d",job->getId());
-        namerep = static_cast<string>(buf);
+    {
+        mutex::scoped_lock l(filesMutex);
+        if(job->getName().length()>0)
+            namerep = job->getName();
+        if(namerep.length()==0) {
+            char buf[50];
+            sprintf(buf,"Job %d",job->getId());
+            namerep = static_cast<string>(buf);
+        }
     }
     string newname = encodeName(job->getId(),namerep,"g", true);
     try {
@@ -356,7 +378,7 @@ void PrintjobManager::startJob(int id) {
     if(!runningJob.get()) return; // unknown job
     runningJob->setRunning();
     runningJob->start();
-    printer->getScriptManager()->pushCompleteJob("Start");
+    printer->getScriptManager()->pushCompleteJob("start");
     if(jobin.is_open()) jobin.close();
     jobin.open(runningJob->getFilename().c_str(),ifstream::in);
     if(!jobin.good()) {
@@ -372,6 +394,7 @@ void PrintjobManager::killJob(int id) {
     if(jobin.is_open() && jobin.eof()) {
         jobin.close();
     }
+    l.unlock();
     try {
         RemovePrintjob(runningJob);
     } catch(std::exception &e) {
@@ -383,7 +406,7 @@ void PrintjobManager::killJob(int id) {
     mutex::scoped_lock l2(printer->sendMutex); // Remove buffered commands
     printer->jobCommands.clear();
     l2.unlock();
-    printer->getScriptManager()->pushCompleteJob("End");
+    printer->getScriptManager()->pushCompleteJob("end");
 }
 void PrintjobManager::undoCurrentJob() {
     mutex::scoped_lock l(filesMutex);
@@ -420,18 +443,16 @@ void PrintjobManager::manageJobs() {
         runningJob->stop(printer);
         runningJob.reset();
         l.unlock();
-        printer->scriptManager->pushCompleteJobNoBlock("End");
+        printer->scriptManager->pushCompleteJobNoBlock("end");
     }
 }
 void PrintjobManager::pushCompleteJob(std::string name,bool beginning) {
-    PrintjobPtr pj = findByName(name);
-    if(!pj.get()) return;
+    string pj = printer->config->getScript(name);
     mutex::scoped_lock l(filesMutex);
-    ifstream in;
+    stringstream in(pj);
     mutex::scoped_lock l2(printer->sendMutex);
-    std::deque<std::string> &list = ((*pj).getName()=="Pause" ? printer->manualCommands : printer->jobCommands);
+    std::deque<std::string> &list = (name != "start" && name!="end" && name!="kill" ? printer->manualCommands : printer->jobCommands);
     try {
-        in.open(pj->getFilename().c_str(),ifstream::in);
         char buf[200];
         size_t line = 0;
         
@@ -452,17 +473,14 @@ void PrintjobManager::pushCompleteJob(std::string name,bool beginning) {
         if(beginning) { // Reverse lines at beginning
             reverse(printer->jobCommands.begin(),printer->jobCommands.begin()+line);
         }
-        in.close();
     } catch(std::exception) {}
 }
 void PrintjobManager::pushCompleteJobNoBlock(std::string name,bool beginning) {
-    PrintjobPtr pj = findByName(name);
-    if(!pj.get()) return;
+    string pj = printer->config->getScript(name);
     mutex::scoped_lock l(filesMutex);
-    ifstream in;
-    std::deque<std::string> &list = ((*pj).getName()=="Pause" ? printer->manualCommands : printer->jobCommands);
+    stringstream in(pj);
+    std::deque<std::string> &list = (name != "start" && name!="end" && name!="kill" ? printer->manualCommands : printer->jobCommands);
     try {
-        in.open(pj->getFilename().c_str(),ifstream::in);
         char buf[200];
         size_t line = 0;
         
@@ -483,7 +501,6 @@ void PrintjobManager::pushCompleteJobNoBlock(std::string name,bool beginning) {
         if(beginning) { // Reverse lines at beginning
             reverse(printer->jobCommands.begin(),printer->jobCommands.begin()+line);
         }
-        in.close();
     } catch(std::exception) {}
 }
 // ============= Printjob =============================
@@ -522,7 +539,7 @@ shared_ptr<GCodeAnalyser> Printjob::getInfo(PrinterPtr printer) {
     mutex::scoped_lock l(InfoMutex);
     if(info == NULL) {
         if(printer!=NULL)
-            info.reset(new GCodeAnalyser(printer,file));
+            info.reset(new GCodeAnalyser(printer,file,false));
         else
             info.reset(new GCodeAnalyser(file));
     }
@@ -560,4 +577,11 @@ void Printjob::removeFiles() {
         gconfig->createMessage(msg,answer);
     }
 
+}
+void Printjob::recomputeInfoLazy(PrinterPtr printer) {
+    WorkDispatcherData wd("gcodeInfo","",0);
+    wd.addParameter(printer->config->slug);
+    wd.addParameter(file);
+    WorkDispatcher::addJob(wd);
+ 
 }

@@ -34,7 +34,7 @@
                         <li ng-repeat="p in printerList"><a href="#/printer/{{p.slug}}">{{p.name}}</a>
                     </ul>
                 </li>
-                <li class=""><a data-reveal-id="messageList" href="#/" data-toggle="modal" data-target="#messageList">Messages <span
+                <li class=""><a data-reveal-id="messageList" href="javascript:void(0);" data-toggle="modal" data-target="#messageList">Messages <span
                             class="badge badge-success">{{messages.length}}</span></a>
                 </li>
             </ul>
@@ -69,10 +69,10 @@
             <div class="modal-body">
                 <div style="max-height:300px;overflow:scroll">
                     <div class="row" ng-repeat="m in messages">
-                        <div class="small-9 columns">
+                        <div class="alert alert-info alert-dismissable">
+                            <button type="button" ng-click="removeMessage($index)" class="close" aria-hidden="true">&times;</button>
                             {{m.msg}}
                         </div>
-                        <div class="small-3 button" ng-click="removeMessage($index)">Remove</div>
                     </div>
                 </div>
             </div>
@@ -91,11 +91,27 @@
         </div>
     </div>
 </div>
-
+<div id="question" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">{{question.header}}</h4>
+            </div>
+            <div class="modal-body">
+                <p>{{question.question}}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" ng-click="questionNo()">{{question.no}}</button>
+                <button type="button" class="btn btn-primary" ng-click="questionYes()">{{question.yes}}</button>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Placed at the end of the document so the pages load faster -->
+<script src="/js/modernizr.js"></script>
 <script src="/jquery/jquery.min.js"></script>
 <script src="/jquery/jquery.form.js"></script>
-<script src="/js/kinetic-v4.5.5.min.js"></script>
+<script src="/js/kinetic-v4.6.0.min.js"></script>
 <script src="/js/directives/GCodePainter.js"></script>
 <script src="/libs/colorpicker/js/bootstrap-colorpicker.js"></script>
 <script src="/js/bootstrap.js"></script>

@@ -21,7 +21,7 @@
 #include <boost/filesystem.hpp>
 #include "PrinterState.h"
 #include "ServerEvents.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -41,6 +41,7 @@ GlobalConfig::GlobalConfig(string filename) {
     bool ok = true;
     ok &= config.lookupValue("printer_config_directory",printerConfigDir);
     ok &= config.lookupValue("data_storage_directory",storageDir);
+    ok &= config.lookupValue("database_directory",databaseDir);
     ok &= config.lookupValue("website_directory", wwwDir);
     ok &= config.lookupValue("languages_directory", languageDir);
     ok &= config.lookupValue("default_language", defaultLanguage);

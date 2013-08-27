@@ -4,11 +4,11 @@
         <slug>irapid</slug>
         <printerVariant>cartesian</printerVariant>
         <active>true</active>
-        <fan>false</fan>
+        <fan>true</fan>
         <tempUpdateEvery>1</tempUpdateEvery>
         <softwarePower>false</softwarePower>
         <sdcard>false</sdcard>
-	</general>
+    </general>
     <connection>
         <serial>
             <baudrate>115200</baudrate>
@@ -21,7 +21,6 @@
     </connection>
     <shape>
         <grid color="#000000" spacing="10"/>
-        
 	
 	<rectangle color="#808080" xMax="100" xMin="0" yMax="100" yMin="0"/>
 	</shape>
@@ -35,16 +34,22 @@
         <zMin>0</zMin>
         <zMax>120</zMax>
         <zHome>0</zHome>
-        <xyJerk>40</xyJerk>
+        <xyJerk>20</xyJerk>
         <zJerk>0.3</zJerk>
-        <xyPrintAcceleration>1500</xyPrintAcceleration>
+        <xyPrintAcceleration>1501</xyPrintAcceleration>
         <xyTravelAcceleration>2500</xyTravelAcceleration>
-        <xySpeed>100</xySpeed>
-        <zSpeed>2</zSpeed>
+        <xySpeed max="250">100</xySpeed>
+        <zSpeed max="4">30</zSpeed>
         <endstops all="true" x="true" y="true" z="true"/>
-    </movement>
+    <timeMultiplier>1</timeMultiplier>
+		<movebuffer>2</movebuffer>
+	</movement>
     <extruders>
 		<extruder lastTemp="185" num="0">
+			<maxSpeed acceleration="6000" jerk="40" max="20"/>
+			<extrude distance="2" speed="2"/>
+			<retract distance="20" speed="20"/>
+			<tempChange cooldownPerSecond="0.5" heatupPerSecond="1.5"/>
 			<temperatures>
 				<temperature value="185">PLA 185°C</temperature>
 				<temperature value="190">PLA 190°C</temperature>
@@ -54,22 +59,20 @@
 			</temperatures>
 		</extruder>
 	</extruders>
-    <heatedBed installed="true" lastTemp="1">
+    <heatedBed cooldownPerSecond="1" heatupPerSecond="1" installed="true" lastTemp="1">
         <temperatures>
 			<temperature value="60">PLA 60°C</temperature>
 			<temperature value="110">ABS 110°C</temperature>
 		</temperatures>
     </heatedBed>
     <scripts>
-        <script name="start">;Start script jgjhj</script>
+        <script name="start">;Start script</script>
         <script name="kill">;Stop script</script>
         <script name="end">;End script</script>
         <script name="pause">;Pause script</script>
-        <script name="script_1">;Script 1
-; kdhfgklfdsg</script>
+        <script name="script_1">;Script 1</script>
         <script name="script_2">;Script 2</script>
-        <script name="script_3">;Script 3
-G28</script>
+        <script name="script_3">;Script 3</script>
         <script name="script_4">;Script 4</script>
         <script name="script_5">;Script 5</script>
     </scripts>

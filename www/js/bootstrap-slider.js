@@ -27,7 +27,7 @@
 		this.picker = $('<div class="slider">'+
 							'<div class="slider-track">'+
 								'<div class="slider-selection"></div>'+
-								'<div class="slider-handle"></div>'+
+								'<div class="slider-handle">'+options.letter+'</div>'+
 								'<div class="slider-handle"></div>'+
 							'</div>'+
 							'<div class="tooltip"><div class="tooltip-arrow"></div><div class="tooltip-inner"></div></div>'+
@@ -51,6 +51,7 @@
 		this.orientation = this.element.data('slider-orientation')||options.orientation;
 		switch(this.orientation) {
 			case 'vertical':
+                this.vertical = true;
 				this.picker.addClass('slider-vertical');
 				this.stylePos = 'top';
 				this.mousePos = 'pageY';
@@ -58,6 +59,7 @@
 				this.tooltip.addClass('right')[0].style.left = '100%';
 				break;
 			default:
+                this.vertical = false;
 				this.picker
 					.addClass('slider-horizontal')
 					.css('width', options.size /*this.element.outerWidth()*/);
@@ -69,6 +71,7 @@
 				break;
 		}
 
+        this.flip = this.element.data('slider-flip')||options.flip;
 		this.min = this.element.data('slider-min')||options.min;
 		this.max = this.element.data('slider-max')||options.max;
 		this.step = this.element.data('slider-step')||options.step;
@@ -170,11 +173,19 @@
 		},
 
 		layout: function(){
-			this.handle1Stype[this.stylePos] = this.percentage[0]+'%';
+            if(this.flip)
+                this.handle1Stype[this.stylePos] = 100-this.percentage[0]+'%';
+            else
+			    this.handle1Stype[this.stylePos] = this.percentage[0]+'%';
 			this.handle2Stype[this.stylePos] = this.percentage[1]+'%';
 			if (this.orientation == 'vertical') {
-				this.selectionElStyle.top = Math.min(this.percentage[0], this.percentage[1]) +'%';
-				this.selectionElStyle.height = Math.abs(this.percentage[0] - this.percentage[1]) +'%';
+                if(this.flip) {
+                    this.selectionElStyle.bottom = 100-Math.min(this.percentage[0], this.percentage[1]) +'%';
+                    this.selectionElStyle.height = 100-Math.abs(this.percentage[0] - this.percentage[1]) +'%';
+                } else {
+                    this.selectionElStyle.top = Math.min(this.percentage[0], this.percentage[1]) +'%';
+                    this.selectionElStyle.height = Math.abs(this.percentage[0] - this.percentage[1]) +'%';
+                }
 			} else {
 				this.selectionElStyle.left = Math.min(this.percentage[0], this.percentage[1]) +'%';
 				this.selectionElStyle.width = Math.abs(this.percentage[0] - this.percentage[1]) +'%';
@@ -190,7 +201,10 @@
 				this.tooltipInner.text(
 					this.formater(this.value[0])
 				);
-				this.tooltip[0].style[this.stylePos] = this.size * this.percentage[0]/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
+                if(this.flip)
+                    this.tooltip[0].style[this.stylePos] = this.size * (100-this.percentage[0])/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
+                else
+				    this.tooltip[0].style[this.stylePos] = this.size * this.percentage[0]/100 - (this.orientation === 'vertical' ? this.tooltip.outerHeight()/2 : this.tooltip.outerWidth()/2) +'px';
 			}
 		},
 
@@ -323,6 +337,7 @@
 			}
 			var percentage = (ev[this.mousePos] - this.offset[this.stylePos])*100/this.size;
 			percentage = Math.round(percentage/this.percentage[2])*this.percentage[2];
+            if(this.flip) percentage = 100-percentage;
 			return Math.max(0, Math.min(100, percentage));
 		},
 
@@ -369,12 +384,19 @@
             this.setValue(v);
         },
         setStep: function(val) {
+            this.calculateValue();
+            v = this.value;
             this.step = val;
-            this.layout();
+            this.setValue(v);
         },
         setSize: function(val) {
+            this.calculateValue();
+            v = this.value;
             this.picker.width( val);
-            this.layout();
+            this.setValue(v);
+        },
+        setEnabled: function(val) {
+            this.enabled = val;
         }
 	};
 
@@ -399,6 +421,8 @@
         size: 210,
 		orientation: 'horizontal',
 		value: 5,
+        letter: '',
+        flip: false,
 		selection: 'before',
 		tooltip: 'show',
 		handle: 'round',

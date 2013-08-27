@@ -113,7 +113,7 @@ WidgetsDirectives = angular.module('Slider', []);
     };
 });*/
 
-WidgetsDirectives.directive('slider', function(){
+WidgetsDirectives.directive('slider', function($timeout){
     return {
         scope: {
             model:'=ngModel',
@@ -121,39 +121,64 @@ WidgetsDirectives.directive('slider', function(){
             max:'@max',
             step:'@step',
             precision:'@precision',
-            size:'@'
+            size:'@',
+            enabled:'@',
+            moved:'&'
         },
         restrict: 'A',
         replace:false,
         link: function(scope, elem, attrs, ctrls){
+            flip = false;
+            var letter = '';
+            if(attrs.flip)
+              flip = Boolean(attrs.flip);
+            if(attrs.letter)
+              letter = attrs.letter;
             slider = $(elem).slider({
                 orientation:attrs.orientation,
                 step:attrs.step,
                 min:0,
                 max:100,
+                flip:flip,
+                letter:letter,
                 formater:function(x) {
                     return scope.$eval(x+" | number:precision");
                 }
             });
             slider.on('slideStop',function(ev) {
                 scope.$apply(function() {
-                    scope.model = ev.value;
+                    scope.model = parseFloat(ev.value);
+                    if(scope.moved)
+                        scope.moved({value:parseFloat(ev.value)});
                 })
             });
             scope.$watch('model',function() {
-                $(elem).slider('setValue',scope.model);
+                //console.log("model "+letter+" "+typeof(attrs.enabled)+" / "+scope.enabled+ " / v= "+scope.model+" min "+scope.min+" max "+scope.max);
+                if(typeof(attrs.enabled) === "undefined" || Boolean(scope.enabled)) {
+                    //console.log("set "+scope.model+ " / "+scope.enabled);
+                    $(elem).slider('setValue',scope.model);
+                }
+            });
+            scope.$watch('enabled',function() {
+                $(elem).slider('setEnabled',Boolean(scope.enabled));
+                if(scope.enabled)
+                    $(elem).slider('setValue',scope.model);
             });
             scope.$watch('min',function() {
-                $(elem).slider("setMin",scope.min);
+                $(elem).slider("setMin",parseFloat(scope.min));
+                $(elem).slider('setValue',scope.model);
             });
             scope.$watch('max',function() {
-                $(elem).slider("setMax",scope.max);
+                $(elem).slider("setMax",parseFloat(scope.max));
+                $(elem).slider('setValue',scope.model);
             });
             scope.$watch('step',function() {
-                $(elem).slider("setStep",scope.step);
+                $(elem).slider("setStep",parseFloat(scope.step));
+                $(elem).slider('setValue',scope.model);
             });
             scope.$watch('size',function() {
-                $(elem).slider("setSize",scope.size);
+                $(elem).slider("setSize",parseFloat(scope.size));
+                $(elem).slider('setValue',scope.model);
             });
         }
     };

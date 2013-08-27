@@ -24,7 +24,7 @@
 #include <vector>
 #include "Poco/StreamCopier.h"
 #include "GCodeAnalyser.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -41,7 +41,10 @@ namespace repetier {
         if(func == NULL) {
             return;
         }
-        func(obj,out,printer);
+        try {
+            func(obj,out,printer);
+        }
+        catch(std::exception &e) {}
     }
     
     void ActionHandler::registerStandardActions() {
@@ -62,6 +65,8 @@ namespace repetier {
         registerAction("setPrinterConfig",&actionSetPrinterConfig);
         registerAction("getScript",&actionGetScript);
         registerAction("setScript",&actionSetScript);
+        registerAction("activate",&actionActivate);
+        registerAction("deactivate",&actionDeactivate);
     }
     
     void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -119,7 +124,7 @@ namespace repetier {
     
     void ActionHandler::actionMove(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         if(printer==NULL) return;
-        double x=0,y=0,z=0,e=0;
+        double x=999999,y=999999,z=999999,e=999999;
         if(obj.find("x")!=obj.end())
             x = obj["x"].get_real();
         if(obj.find("y")!=obj.end())
@@ -128,7 +133,10 @@ namespace repetier {
             z = obj["z"].get_real();
         if(obj.find("e")!=obj.end())
             e = obj["e"].get_real();
-        printer->move(x, y, z, e);
+        bool rel = true;
+        if(obj.find("relative")!=obj.end())
+            rel = obj["relative"].get_bool();
+        printer->move(x, y, z, e,rel);
         mObject o;
         out = o;
     }
@@ -223,7 +231,7 @@ namespace repetier {
         PrintjobPtr job = printer->getJobManager()->findById(id);
         if(job.get()) {
             printer->getJobManager()->killJob(id);
-            printer->getScriptManager()->pushCompleteJob("Kill");
+            printer->getScriptManager()->pushCompleteJob("kill");
         }
         //printer->getJobManager()->fillSJONObject("data",ret);
         //out = ret;
@@ -266,6 +274,16 @@ namespace repetier {
         d["name"] = obj["name"];
         printer->config->setScript(obj["name"].get_str(),obj["script"].get_str());
         printer->config->saveConfiguration();
+    }
+    void ActionHandler::actionActivate(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        printer = gconfig->findPrinterSlug(obj["printer"].get_str());
+        if(printer == NULL) return;
+        printer->setActive(true);
+    }
+    void ActionHandler::actionDeactivate(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        printer = gconfig->findPrinterSlug(obj["printer"].get_str());
+        if(printer == NULL) return;
+        printer->setActive(false);
     }
 
 }

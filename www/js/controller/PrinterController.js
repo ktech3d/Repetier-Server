@@ -78,7 +78,7 @@ PrinterConfigController = function ($scope, $routeParams, WS, $rootScope, $timeo
             bs.xMax = bs.yMax = 200;
         }
     }
-    $rootScope.$watch('printerConfig.' + slug, function (newVal) {
+    $scope.$watch('printerConfig.' + slug, function (newVal) {
         $scope.editor = angular.copy(newVal);
         enrichEditor();
         $timeout(function () {
@@ -146,7 +146,7 @@ PrinterConfigController = function ($scope, $routeParams, WS, $rootScope, $timeo
     });
 }
 PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
-    slug = $routeParams.slug;
+    var slug = $routeParams.slug;
     $rootScope.selectPrinter(slug);
     $scope.logCommands = 0;
     $scope.logACK = 0;
@@ -159,7 +159,9 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
     $scope.activeQueue = false;
     $scope.movoToXPos = 20;
     $scope.movoToYPos = 50;
+    $scope.moveToZPos = 0;
     $scope.hsliderSize = 300;
+    $scope.fanPercent = 100;
     var preview = new GCodePainter("control-view");
     preview.connectPrinter($rootScope.activeConfig);
 
@@ -178,8 +180,27 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
     }
     $scope.$on("move", function (event, pos) {
         preview.addMove(pos.data);
+        $scope.movoToXPos = pos.data.x;
+        $scope.movoToYPos = pos.data.y;
+        $scope.movoToZPos = pos.data.z;
     });
+    $scope.xMoveTo = function(x) {
+        WS.send("move",{x:x,relative:false});
+    }
+    $scope.yMoveTo = function(x) {
+        WS.send("move",{y:x,relative:false});
+    }
+    $scope.zMoveTo = function(x) {
+        WS.send("move",{z:x,relative:false});
+    }
+    $scope.activate = function() {
+        WS.send("activate",{printer:slug});
+    }
+    $scope.deactivate = function() {
+        WS.send("deactivate",{printer:slug});
+    }
     var responsePoller = function () {
+        if(!WS.connected) return;
         filter = 12 + ($scope.logCommands > 0 ? 1 : 0) + ($scope.logACK > 0 ? 2 : 0);
         WS.send("response", {filter: filter, start: lastLogStart}).then(function (r) {
             /*lastLogStart = r['lastid'];
@@ -188,6 +209,12 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
              });
              */
             $rootScope.active.state = r.state;
+            $scope.movoToXPos = r.state.x;
+            $scope.movoToYPos = r.state.y;
+            $scope.movoToZPos = r.state.z;
+            preview.setCursor($scope.movoToXPos,$scope.movoToYPos);
+            $scope.fanPercent = $rootScope.active.state.fanVoltage/2.55;
+            $scope.isJobActive = $rootScope.active.status.job != 'none' ? true : false;
             $timeout(responsePoller, 3000);
         });
     };
@@ -197,8 +224,13 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
         });
     }
     var fetchModels = function () {
+        oldid = $scope.activeGCode ? $scope.activeGCode.id : 0;
         WS.send("listModels", {}).then(function (r) {
             $scope.models = r.data;
+            angular.forEach($scope.models,function(val) {
+               if(val.id == oldid)
+                $scope.activeGCode = val;
+            });
         });
     }
     $scope.$watch('logACK', function () {
@@ -208,13 +240,12 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
         WS.send("setLoglevel", {level: getLoglevel()});
     });
     $scope.$on("connected", function (event) {
+        responsePoller();
         fetchPrintqueue();
         fetchModels();
         WS.send("setLoglevel", {level: getLoglevel()});
     });
-    $rootScope.$watch("activeConfig", function () {
-        console.log("activeConfig");
-        console.log($rootScope.activeConfig);
+    $scope.$watch("activeConfig", function () {
         preview.connectPrinter($rootScope.activeConfig);
         resizeContols();
     });
@@ -225,7 +256,13 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
         fetchModels();
     });
     $scope.$on("log", function (event, data) {
+        if(!$scope.logPause) {
         addLogLine(data.data);
+        $timeout(function() {
+            var elem = document.getElementById('logpanel');
+            elem.scrollTop = elem.scrollHeight;
+        });
+        }
         //$scope.$apply()
     });
     $scope.test = function (v) {
@@ -233,14 +270,12 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
         console.log(v);
     }
     $scope.selectQueue = function (gc) {
-        console.log("select queue");
         $scope.activeQueue = gc;
     }
     $scope.selectGCode = function (gc) {
         $scope.activeGCode = gc;
     }
     $scope.dequeActive = function () {
-        console.log("dequeu");
         WS.send("removeJob", {id: $scope.activeQueue.id}).then(function (r) {
             //$scope.queue = r.data;
             $scope.activeQueue = false;
@@ -259,45 +294,68 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
     $scope.uploadGCode = function () {
         $('#formuploadgcode').ajaxSubmit(function (r) {
             r = jQuery.parseJSON(r);
-            $('#uploadGCode').foundation('reveal', 'close');
-            //$scope.models = r.data;
+            $('#uploadGCode').modal('hide');
         });
     }
     $scope.printGCode = function () {
-        WS.send("copyModel", {id: $scope.activeGCode.id}).then(function (r) {
-            /*    $scope.queue = r.data;
-             if($scope.queue.length == 1) {
-             WS.send("startJob",{id:$scope.queue[0].id}).then(function(r) {
-             // $scope.queue = r.data;
-             });
-             }*/
-        });
+        WS.send("copyModel", {id: $scope.activeGCode.id});
     }
-    $scope.isJobActive = function () {
-        return $rootScope.active.status.job != 'none';
-    }
+
     $scope.sendCmd = function () {
         WS.send("send", {cmd: $scope.cmd});
+        $scope.cmd = "";
+    }
+    $scope.sendGCode = function (code) {
+        WS.send("send", {cmd: code});
         $scope.cmd = "";
     }
     $scope.queueFileSelected = function (q) {
         return q.id == $scope.activeQueue.id;
     }
-
+    $scope.speedChange = function(diff) {
+        $scope.active.state.speedMultiply += diff;
+        WS.send("send",{cmd: "M220 S"+$scope.active.state.speedMultiply});
+    }
+    $scope.flowChange = function(diff) {
+        $scope.active.state.flowMultiply += diff;
+        WS.send("send",{cmd: "M221 S"+$scope.active.state.flowMultiply});
+    }
+    $scope.fanEnabledChanged = function() {
+        if($scope.active.state.fanOn) {
+            WS.send("send",{cmd:"M106 S"+Math.round($scope.fanPercent*2.55)});
+        } else {
+            WS.send("send",{cmd:"M107"});
+        }
+    }
+    $scope.fanSpeedChanged = function(val) {
+        $scope.fanPercent = val;
+        WS.send("send",{cmd:"M106 S"+Math.round(val*2.55)});
+    }
+    $scope.stopPrint = function() {
+        $scope.confirm("Confirmation required","Really stop current print?","Yes","No").then(function() {
+            if($scope.active.status.jobid)
+                WS.send("stopJob",{id:$scope.active.status.jobid});
+        });
+    }
+    $scope.pausePrint = function() {
+        WS.send("send",{cmd:'@pause User requested pause.'});
+    }
     var resizeContols = function () {
         w = $('#control-row').width();
         p = $rootScope.activeConfig;
         if (!p) return;
-        console.log("resizeControls");
+        //console.log("resizeControls");
         dimx = p.movement.xMax - p.movement.xMin;
         dimy = p.movement.yMax - p.movement.yMin;
         aspectP = dimx / dimy;
-        pw = ph = 302;
+        pw = ph = 372;
         if (aspectP > 1) ph = pw / aspectP; else pw = ph * aspectP;
-        console.log("w=" + w + " dimx " + dimx + " dimy " + dimy + " pw " + pw + " ph " + ph);
+        //console.log("w=" + w + " dimx " + dimx + " dimy " + dimy + " pw " + pw + " ph " + ph);
         $('#control-view').width(pw).height(ph);
         $scope.hsliderSize = pw;
         $('#control-vscoll-container').height(ph);
+        $('#control-vscoll-container2').height(ph);
+
         preview.updateShape();
     }
     $scope.$on('windowResized', function () {

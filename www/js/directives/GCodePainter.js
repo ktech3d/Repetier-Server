@@ -3,7 +3,6 @@ function GCodePainter(elem) {
     var lastY = 0;
     var lastZ = 0;
     var lastPrintZ = 0;
-
     var element = $('#' + elem);
     var stage = new Kinetic.Stage({
         container: elem,
@@ -12,7 +11,6 @@ function GCodePainter(elem) {
     });
     var that = this;
     var resizer = function () {
-        console.log("new width "+element.width());
         that.updateShape();
     };
     $(window).resize(resizer);
@@ -24,7 +22,7 @@ function GCodePainter(elem) {
     var printer = null;
     var base = new Kinetic.Layer();
     var marker = new Kinetic.Layer();
-    var codeOld = new Kinetic.Layer();
+    var codeOld = new Kinetic.Layer({opacity:0.3});
     var code = new Kinetic.Layer();
     var top = new Kinetic.Layer();
     var lastLayerG = new Kinetic.Group();
@@ -71,7 +69,7 @@ function GCodePainter(elem) {
     var smallLine = function (layer, color, x1, y1, x2, y2) {
         line = new Kinetic.Line({
             points: [x1, y1, x2, y2],
-            fill: lc,
+            fill: color,
             //fillEnabled: false,
             strokeWidth: 1,
             stroke: color
@@ -81,7 +79,7 @@ function GCodePainter(elem) {
     var printLine = function (layer, color, x1, y1, x2, y2) {
         line = new Kinetic.Line({
             points: [x1, y1, x2, y2],
-            fill: lc,
+            //fill: color,
             //fillEnabled: false,
             strokeWidth: 2,
             stroke: color
@@ -236,13 +234,16 @@ function GCodePainter(elem) {
     }
 
     var newLayer = function() {
+        codeOld.clear();
         lastLayerG.removeChildren();
         lastLayerG.remove();
         lastLayerG.destroy();
         lastLayerG = currentLayerG;
-        //codeOld.add(lastLayerG);
-        //lastLayerG.draw();
+        lastLayerG.remove();
+        codeOld.add(lastLayerG);
+        lastLayerG.draw();
         currentLayerG = new Kinetic.Group();
+        code.clear();
         code.add(currentLayerG);
         lastLayer = currentLayer;
         currentLayer = [];
@@ -264,7 +265,7 @@ function GCodePainter(elem) {
         if(move.de>0.000001) {
             lastPrintZ = move.z;
             currentLayer.push({p:true,x1:lastX,y1:lastY,x2:move.x,x2:move.y});
-            printLine(currentLayerG,"#000080",old.x,old.y,next.x,next.y);
+            smallLine(currentLayerG,"#000080",old.x,old.y,next.x,next.y);
         } else {
             currentLayer.push({p:false,x1:lastX,y1:lastY,x2:move.x,x2:move.y});
             smallLine(currentLayerG,"#A0A0A0",old.x,old.y,next.x,next.y);
@@ -277,16 +278,29 @@ function GCodePainter(elem) {
         cursor.setY(next.y);
 
         //code.draw();
-        top.draw();
         //stage.draw();
     }
+    this.setCursor = function(x,y) {
+        next = convCoord(x,y);
+        cursor.setX(next.x);
+        cursor.setY(next.y);
+        codeChanged = true;
+    }
     var updateDrawing = function() {
+        //console.log("upd "+stage);
         if(stage == null) return;
+        try {
         if(codeChanged) {
             codeChanged = false;
             code.draw();
+            top.draw();
+            //stage.draw();
         }
-        setTimeout(updateDrawing,500);
+        } catch(e){
+            console.log("Error catched:");
+            console.log(e);
+        }
+        setTimeout(updateDrawing,200);
     }
     setTimeout(updateDrawing,500);
 }

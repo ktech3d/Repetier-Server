@@ -43,7 +43,7 @@ void RepetierEventQueue::handleEvent(RepetierEventNotification *note) {
 bool RepetierEventQueue::hasMessageForPrinter(PrinterPtr &p) {
     boost::mutex::scoped_lock(mutex);
     while(!events.empty()) {
-        RepetierEventPtr event = events.back();
+        RepetierEventPtr event(events.back());
         Printer *pptr = event->printer.get();
         if(pptr == NULL || pptr == p.get())
             break;

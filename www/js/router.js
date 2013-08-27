@@ -18,14 +18,14 @@ routeModule.factory('WS', ['$q', '$rootScope', function ($q, $rootScope) {
     var currentCallbackId = 0;
     // Create our websocket object with the address to the websocket
     var ws;
-    var connected = false;
+    Service.connected = false;
     var deflist = [];
     var printerSlug = '';
 
     var startConnection = function () {
         ws = new WebSocket("ws://" + window.location.host + "/socket/");
         ws.onopen = function () {
-            connected = true;
+            Service.connected = true;
             $.each(deflist, function (idx, val) {
                 val.resolve(ws);
             });
@@ -40,9 +40,7 @@ routeModule.factory('WS', ['$q', '$rootScope', function ($q, $rootScope) {
             //$('#connectionLost').modal('show');
         }
         ws.onclose = function (message) {
-            connected = false;
-            console.log("websocket closed");
-            console.log(message);
+            Service.connected = false;
             $('#connectionLost').modal('show');
             setTimeout(function () {
                 startConnection();
@@ -63,7 +61,7 @@ routeModule.factory('WS', ['$q', '$rootScope', function ($q, $rootScope) {
             cb: defer
         };
         request.callback_id = callbackId;
-        if (!connected) {
+        if (!Service.connected) {
             d = $q.defer();
             deflist.push(d);
             d.promise.then(function () {
@@ -80,7 +78,9 @@ routeModule.factory('WS', ['$q', '$rootScope', function ($q, $rootScope) {
         var messageObj = data;
         // If an object exists with callback_id in our callbacks object, resolve it
         if (messageObj.callback_id < 0) { // event
-            $rootScope.$broadcast(messageObj.event, messageObj);
+            angular.forEach(messageObj.data,function(evt) {
+                $rootScope.$broadcast(evt.event, evt);
+            });
         } else if (callbacks.hasOwnProperty(messageObj.callback_id)) {
             $rootScope.$apply(callbacks[messageObj.callback_id].cb.resolve(messageObj.data));
             delete callbacks[messageObj.callbackID];

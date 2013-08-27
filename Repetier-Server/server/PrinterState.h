@@ -122,10 +122,10 @@ public:
     uint32_t getLastline() {boost::mutex::scoped_lock l(mutex);return lastline;}
     void fillJSONObject(json_spirit::Object &obj);
     void fillJSONObject(json_spirit::mObject &obj);
-    std::string getMoveXCmd(double dx,double f);
-    std::string getMoveYCmd(double dy,double f);
-    std::string getMoveZCmd(double dz,double f);
-    std::string getMoveECmd(double de,double f);
+    std::string getMoveXCmd(double dx,double f,bool relative=true);
+    std::string getMoveYCmd(double dy,double f,bool relative=true);
+    std::string getMoveZCmd(double dz,double f,bool relative=true);
+    std::string getMoveECmd(double de,double f,bool relative=true);
     void storePause();
     void injectUnpause();
 };

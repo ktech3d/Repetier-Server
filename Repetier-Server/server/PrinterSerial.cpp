@@ -23,7 +23,7 @@
 
 #include "PrinterSerial.h"
 #include "printer.h"
-#include "PrinterConfigiration.h"
+#include "PrinterConfiguration.h"
 #ifdef __APPLE__
 #include <sys/ioctl.h>
 #include <termios.h>

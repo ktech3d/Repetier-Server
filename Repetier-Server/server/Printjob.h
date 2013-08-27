@@ -58,6 +58,8 @@ public:
     void start();
     void stop(PrinterPtr p);
     shared_ptr<GCodeAnalyser> getInfo(PrinterPtr printer);
+    void setInfo(shared_ptr<GCodeAnalyser> _info) {info = _info;}
+    void recomputeInfoLazy(PrinterPtr printer);
 private:
     static mutex InfoMutex;
     bool script;
@@ -102,11 +104,13 @@ public:
     void fillSJONObject(std::string name,json_spirit::mObject &o);
     PrintjobPtr findById(int id);
     PrintjobPtr findByName(std::string name);
+    PrintjobPtr findByFilename(std::string name);
     PrintjobPtr createNewPrintjob(std::string name);
     void finishPrintjobCreation(PrintjobPtr job,std::string namerep,size_t sz);
     /** Physically removes job from disk */
     void RemovePrintjob(PrintjobPtr job);
     void RemovePrintjobNoLock(PrintjobPtr job);
+    void recomputeInfoLazy();
     void startJob(int id);
     void killJob(int id);
     /** Kills the current job without removing it from queue. This

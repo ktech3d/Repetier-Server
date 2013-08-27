@@ -27,6 +27,8 @@
 #include "Poco/String.h"
 #include "Poco/NumberFormatter.h"
 #include "Poco/AutoPtr.h"
+#include "WorkDispatcher.h"
+#include "PrinterConfiguration.h"
 
 using namespace std;
 using namespace boost;
@@ -58,7 +60,7 @@ double SimulatorLine::realMoveTime() {
     double t1 = (sqrt(vStart*vStart+2*accelerationPrim*accelSteps)-vStart)/accelerationPrim;
     double vm = accelerationPrim*t1+vStart;
     double t2 = (stepsRemaining-accelSteps-decelSteps)/vm;
-    double t3 = (sqrt(vEnd*vEnd+2*accelerationPrim*accelSteps)-vEnd)/accelerationPrim;
+    double t3 = (sqrt(vEnd*vEnd+2*accelerationPrim*decelSteps)-vEnd)/accelerationPrim;
     return t1+t2+t3;
 }
 
@@ -66,23 +68,29 @@ double SimulatorLine::realMoveTime() {
 
 PrinterSimulator::PrinterSimulator(PrinterPtr printer) {
     this->printer = printer;
-    bufferSize = 16;
-    xyJerk = 20;
-    zJerk = 0.3;
-    eJerk = 25.0;
-    printAcceleration[0] = 1500;
-    printAcceleration[1] = 1500;
-    printAcceleration[2] = 100;
-    printAcceleration[3] = 5000;
-    travelAcceleration[0] = 2500;
-    travelAcceleration[1] = 2500;
-    travelAcceleration[2] = 100;
-    travelAcceleration[3] = 5000;
-    timeMultiplier = 1;
-    maxXYFeedrate = 200;
-    maxZFeedrate = 3;
+    PrinterConfigurationPtr c = printer->config;
+    bufferSize = c->movebuffer;
+    xyJerk = c->xyJerk;
+    zJerk = c->zJerk;
+    eJerk = 40.0;
+    printAcceleration[0] = c->printAcceleration;
+    printAcceleration[1] = c->printAcceleration;
+    printAcceleration[2] = c->printAcceleration;
+    printAcceleration[3] = 10000;
+    travelAcceleration[0] = c->travelAcceleration;
+    travelAcceleration[1] = c->travelAcceleration;
+    travelAcceleration[2] = c->travelAcceleration;
+    travelAcceleration[3] = 10000;
+    timeMultiplier = c->timeMultiplier;
+    maxXYFeedrate = c->maxXYSpeed;
+    maxZFeedrate = c->maxZSpeed;
     maxEFeedrate = 30;
     driveSystem = Cartesian;
+    if(c->extruderList.size()>0) {
+        printAcceleration[3] = c->extruderList[0]->acceleration;
+        eJerk = c->extruderList[0]->eJerk;
+        maxEFeedrate = c->extruderList[0]->eJerk;
+    }
     buffer = NULL;
 }
 
@@ -308,9 +316,9 @@ void PrinterSimulator::queueCartesianMove(float axis_diff[4],uint8_t pathOptimiz
     }
     else
         p->distance = fabs(axis_diff[3]);
-    calculate_move(p,axis_diff,pathOptimize);
+    calculateMove(p,axis_diff,pathOptimize);
 }
-void PrinterSimulator::calculate_move(SimulatorLine *p,float axis_diff[],uint8_t pathOptimize)
+void PrinterSimulator::calculateMove(SimulatorLine *p,float axis_diff[],uint8_t pathOptimize)
 {
     float axis_interval[4];
     float time_for_move = p->distance / (state->f/60.0); // time is in ticks
@@ -329,7 +337,7 @@ void PrinterSimulator::calculate_move(SimulatorLine *p,float axis_diff[],uint8_t
     else axis_interval[Z_AXIS] = 0;
     axis_interval[E_AXIS] = fabs(axis_diff[E_AXIS])/(maxEFeedrate*p->stepsRemaining);
     limitInterval = max(axis_interval[E_AXIS],limitInterval);
-    p->fullInterval = limitInterval;
+    p->fullInterval = limitInterval; // commanded or max. allowed interval = 1/v
     time_for_move = (float)limitInterval*(float)p->stepsRemaining; // for large z-distance this overflows with long computation
     float inv_time_s = 1.0f/time_for_move;
     if(p->isXMove())
@@ -355,14 +363,14 @@ void PrinterSimulator::calculate_move(SimulatorLine *p,float axis_diff[],uint8_t
         axis_interval[E_AXIS] = time_for_move/p->delta[E_AXIS];
         p->speedE = fabs(axis_diff[E_AXIS]*inv_time_s);
     }
-    p->fullSpeed = p->distance*inv_time_s;
+    p->fullSpeed = p->distance*inv_time_s; // mm/s in 3d direction
     //long interval = axis_interval[primary_axis]; // time for every step in ticks with full speed
     uint8_t is_print_move = p->isEPositiveMove(); // are we printing
                                             //If acceleration is enabled, do some Bresenham calculations depending on which axis will lead it.
     
     // slowest time to accelerate from v0 to limitInterval determines used acceleration
     // t = (v_end-v_start)/a
-    float slowest_axis_plateau_time_repro = 1e8; // repro to reduce division Unit: 1/s
+    float slowest_axis_plateau_time_repro = 1e20; // repro to reduce division Unit: 1/s
     for(int i=0; i < 4 ; i++)
     {
         // Errors for delta move are initialized in timer
@@ -417,7 +425,6 @@ void GCodeAnalyser::analyseFile(PrinterPtr printer,std::string file) {
     std::ifstream data(file.c_str());
     string line;
     lines = 0;
-    printed = 0;
     shared_ptr<PrinterSimulator> simulator(new PrinterSimulator(printer));
     simulator->start();
     while(std::getline(data,line)) {
@@ -447,12 +454,18 @@ GCodeAnalyser::GCodeAnalyser(std::string path) {
     printed = config->getInt("printed",0);
     layer = config->getInt("layer",0);
 }
-GCodeAnalyser::GCodeAnalyser(PrinterPtr printer,std::string path) {
+GCodeAnalyser::GCodeAnalyser(PrinterPtr printer,std::string path,bool forceRecompute) {
     setSourceFile(path);
+    printed = 0;
     File f(this->path);
     if(!f.exists()) {
-        analyseFile(printer, path);
-    }
+        if(!forceRecompute) {
+            WorkDispatcherData wd("gcodeInfo","",0);
+            wd.addParameter(printer->config->slug);
+            wd.addParameter(path);
+            WorkDispatcher::addJob(wd);
+        }
+    } else {
     Poco::AutoPtr<PropertyFileConfiguration> config(new PropertyFileConfiguration(this->path));
     lines = config->getInt("lines",0);
     printingTime = config->getDouble("printingTime");
@@ -463,6 +476,9 @@ GCodeAnalyser::GCodeAnalyser(PrinterPtr printer,std::string path) {
     fileSize = config->getInt("fileSize", 0);
     printed = config->getInt("printed",0);
     layer = config->getInt("layer",0);
+    }
+    if(forceRecompute)
+        analyseFile(printer, path);
 }
 void GCodeAnalyser::removeData() {
     File f(this->path);
