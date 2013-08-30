@@ -12,6 +12,8 @@
                         <ul class="dropdown-menu" style="right:0;left:auto">
                             <li ng-hide="active.status.active"><a ng-click="activate()" href="javascript:void(0)">Activate</a></li>
                             <li ng-show="active.status.active"><a ng-click="deactivate()" href="javascript:void(0)">Deactivate</a></li>
+                            <li ng-show="active.status.active"><a ng-click="showCommunication()" href="javascript:void(0)">Connection Informations</a></li>
+                            <li ng-show="active.status.active"><a ng-click="editEeprom()" href="javascript:void(0)">EEPROM Settings</a></li>
                             <li><a href="#/scriptConfig/{{activeSlug}}">Scripts</a></li>
                             <li><a href="#/printerConfig/{{activeSlug}}">Configuration</a></li>
                         </ul>
@@ -367,6 +369,65 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" ng-click="uploadGCode()"><i class="icon-upload-cloud"></i>Upload
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialogConnectionData" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Connection Informations</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <tr>
+                        <td>Data send:</td>
+                        <td>{{comData.bytesSend| byte}}</td>
+                    </tr>
+                    <tr>
+                        <td>Data received:</td>
+                        <td>{{comData.bytesReceived| byte}}</td>
+                    </tr>
+                    <tr>
+                        <td>Lines send:</td>
+                        <td>{{comData.linesSend}}</td>
+                    </tr>
+                    <tr>
+                        <td>Errors:</td>
+                        <td>{{comData.resendErrors}}</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialogEeprom" class="modal fade">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">EEPROM Settings</h4>
+            </div>
+            <div class="modal-body" style="overflow:auto;height:300px">
+                <table class="table">
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Value</th>
+                    </tr>
+                    <tr ng-repeat="e in eeprom">
+                        <td>{{e.text}}</td>
+                        <td><input type="text" ng-model="e.value"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" ng-click="saveEeprom()"><i class="icon-save"></i> Save</button>
+                <button type="button" class="btn" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

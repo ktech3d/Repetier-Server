@@ -35,9 +35,12 @@
 #include <vector>
 #include "GCodeAnalyser.h"
 #include "Printjob.h"
+#include <boost/filesystem.hpp>
 
 using namespace std;
 using namespace Poco;
+using namespace boost;
+using namespace boost::filesystem;
 
 sqlite3 *WorkDispatcher::db = NULL;
 WorkDispatcher *WorkDispatcher::dispatcher = NULL;
@@ -127,8 +130,14 @@ static int callbackData(void *dataPtr, int argc, char **argv, char **azColName){
 
 void WorkDispatcher::init() {
     if(db!=NULL) return;
-    const string &databaseDir = gconfig->getDatabaseDirectory();
-    string databasePath = databaseDir+"workdispatcher.sql";
+    const string &databaseDir = gconfig->getStorageDirectory()+"/database";
+    if(!exists(databaseDir)) { // First call - create directory
+        if(!create_directories(databaseDir)) {
+            cerr << "error: Unable to create database directory " << databaseDir << "." << endl;
+            exit(-1);
+        }
+    }
+    string databasePath = databaseDir+"/workdispatcher.sql";
     int rc;
     char *zErrMsg = 0;
     rc = sqlite3_open(databasePath.c_str(), &db);

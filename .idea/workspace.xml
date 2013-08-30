@@ -5,50 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/WorkDispatcher.cpp" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/server/WorkDispatcher.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/sqlite/sqlite3.c" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/sqlite/sqlite3.h" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Repetier-Server/sqlite/sqlite3ext.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfiguration.cpp" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfigiration.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterConfiguration.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/ActionHandler.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/GCodeAnalyser.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/directives/GCodePainter.js" afterPath="$PROJECT_DIR$/www/js/directives/GCodePainter.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/controller/PrinterController.js" afterPath="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterSerial.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/PrinterState.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/Printjob.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/Printjob.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/Printjob.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/Printjob.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/RepetierServerApplication.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/controller/ServerController.js" afterPath="$PROJECT_DIR$/www/js/controller/ServerController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/ServerEvents.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/ServerEvents.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/WebserverAPI.cpp" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/bootstrap-slider.js" afterPath="$PROJECT_DIR$/www/js/bootstrap-slider.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/css/bootstrap.css" afterPath="$PROJECT_DIR$/www/style/css/bootstrap.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/directives/bootstrap.js" afterPath="$PROJECT_DIR$/www/js/directives/bootstrap.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/css/btserver.css" afterPath="$PROJECT_DIR$/www/style/css/btserver.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/less/btserver.less" afterPath="$PROJECT_DIR$/www/style/less/btserver.less" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/WorkDispatcher.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/WorkDispatcher.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/global_config.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/global_config.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/global_config.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/global_config.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views/home.php" afterPath="$PROJECT_DIR$/www/views/home.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/index.php" afterPath="$PROJECT_DIR$/www/index.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configs/irapid.xml.orig" afterPath="$PROJECT_DIR$/configs/irapid.xml.orig" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configs/irapid.xml" afterPath="$PROJECT_DIR$/configs/irapid.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/json_spirit/json_spirit_reader_template.h" afterPath="$PROJECT_DIR$/Repetier-Server/json_spirit/json_spirit_reader_template.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/printer.cpp" afterPath="$PROJECT_DIR$/Repetier-Server/server/printer.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server/server/printer.h" afterPath="$PROJECT_DIR$/Repetier-Server/server/printer.h" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views/printer.php" afterPath="$PROJECT_DIR$/www/views/printer.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/views/printerConfig.php" afterPath="$PROJECT_DIR$/www/views/printerConfig.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Repetier-Server.xcodeproj/project.pbxproj" afterPath="$PROJECT_DIR$/Repetier-Server.xcodeproj/project.pbxproj" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/repetier-server.conf" afterPath="$PROJECT_DIR$/repetier-server.conf" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/router.js" afterPath="$PROJECT_DIR$/www/js/router.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/js/directives/slider.js" afterPath="$PROJECT_DIR$/www/js/directives/slider.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/less/slider.less" afterPath="$PROJECT_DIR$/www/style/less/slider.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/www/style/less/variables.less" afterPath="$PROJECT_DIR$/www/style/less/variables.less" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="Repetier-Server.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -69,8 +40,8 @@
     <file path="/websocket.txt" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375349533400" ignored="false" />
     <file path="/filter.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1375516526703" ignored="false" />
     <file path="/about.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373732993668" ignored="false" />
-    <file path="/PrinterController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377621110111" ignored="false" />
-    <file path="/printer.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377621146342" ignored="false" />
+    <file path="/PrinterController.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377796925538" ignored="false" />
+    <file path="/printer.php" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377797178241" ignored="false" />
     <file path="/widgets.js" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1373818507253" ignored="false" />
     <file path="/a.dummy" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1377097234866" ignored="false" />
     <file path="/irapid.xml" changelist="8b7f0ca9-eb66-4bc2-b71c-a30031ca5b50" time="1376051121774" ignored="false" />
@@ -110,7 +81,7 @@
       <file leaf-file-name="PrinterController.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="199" column="19" selection-start="7049" selection-end="7049" vertical-scroll-proportion="-23.576923">
+            <state line="4" column="21" selection-start="193" selection-end="198" vertical-scroll-proportion="-2.3076923">
               <folding />
             </state>
           </provider>
@@ -120,7 +91,18 @@
         <entry file="file://$PROJECT_DIR$/configs/irapid.xml">
           <provider selected="true" editor-type-id="text-editor">
             <state line="5" column="16" selection-start="147" selection-end="147" vertical-scroll-proportion="0.0">
-              <folding />
+              <folding>
+                <marker date="1377620732000" expanded="true" signature="8:2733" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="336:655" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="353:637" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="667:794" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="809:1413" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="1429:1988" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="1465:1974" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="1676:1960" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="2076:2236" placeholder="..." />
+                <marker date="1377620732000" expanded="true" signature="2099:2219" placeholder="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -143,10 +125,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="repetier-server.conf" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="repetier-server.conf" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/repetier-server.conf">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="18" selection-start="459" selection-end="477" vertical-scroll-proportion="0.0">
+            <state line="9" column="0" selection-start="414" selection-end="414" vertical-scroll-proportion="0.16707921">
               <folding />
             </state>
           </provider>
@@ -174,10 +156,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="printer.php" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="printer.php" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/www/views/printer.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="221" column="62" selection-start="11540" selection-end="11540" vertical-scroll-proportion="0.53571427">
+            <state line="415" column="56" selection-start="20780" selection-end="20780" vertical-scroll-proportion="-17.666666">
               <folding>
                 <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
@@ -249,12 +231,12 @@
         <option value="$PROJECT_DIR$/www/style/less/btserver.less" />
         <option value="$PROJECT_DIR$/www/js/bootstrap-slider.js" />
         <option value="$PROJECT_DIR$/www/style/less/variables.less" />
-        <option value="$PROJECT_DIR$/repetier-server.conf" />
         <option value="$PROJECT_DIR$/www/views/printerConfig.php" />
         <option value="$PROJECT_DIR$/configs/irapid.xml.orig" />
         <option value="$PROJECT_DIR$/configs/irapid.xml" />
         <option value="$PROJECT_DIR$/www/js/controller/PrinterController.js" />
         <option value="$PROJECT_DIR$/www/views/printer.php" />
+        <option value="$PROJECT_DIR$/repetier-server.conf" />
       </list>
     </option>
   </component>
@@ -320,7 +302,65 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
               <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Repetier-Server" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="www" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="js" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="controller" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -335,10 +375,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="Repetier-Server" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="server" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -567,13 +603,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/repetier-server.conf">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="18" selection-start="459" selection-end="477" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/www/views/printerConfig.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="238" column="52" selection-start="12017" selection-end="12017" vertical-scroll-proportion="-20.875">
@@ -595,20 +624,24 @@
     <entry file="file://$PROJECT_DIR$/configs/irapid.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5" column="16" selection-start="147" selection-end="147" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="199" column="19" selection-start="7049" selection-end="7049" vertical-scroll-proportion="-23.576923">
-          <folding />
+          <folding>
+            <marker date="1377620732000" expanded="true" signature="8:2733" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="336:655" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="353:637" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="667:794" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="809:1413" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="1429:1988" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="1465:1974" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="1676:1960" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="2076:2236" placeholder="..." />
+            <marker date="1377620732000" expanded="true" signature="2099:2219" placeholder="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/www/views/printer.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="221" column="62" selection-start="11540" selection-end="11540" vertical-scroll-proportion="0.53571427">
+        <state line="415" column="56" selection-start="20780" selection-end="20780" vertical-scroll-proportion="-17.666666">
           <folding>
             <element signature="n#style#0;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#div#0;n#!!top" expanded="true" />
@@ -630,6 +663,20 @@
             <element signature="n#style#0;n#div#0;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#h4#0;n#div#1;n#div#0;n#div#3;n#div#0;n#div#1;n#div#0;n#div#0;n#!!top" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/www/js/controller/PrinterController.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="21" selection-start="193" selection-end="198" vertical-scroll-proportion="-2.3076923">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/repetier-server.conf">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="0" selection-start="414" selection-end="414" vertical-scroll-proportion="0.16707921">
+          <folding />
         </state>
       </provider>
     </entry>

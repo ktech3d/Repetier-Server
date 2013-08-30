@@ -73,7 +73,7 @@ PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts) {
         pvec v;
         copy(directory_iterator(p), directory_iterator(), back_inserter(v));
         sort(v.begin(), v.end());
-        if(scripts) {
+       /* if(scripts) {
             bool hasStart = false,hasEnd = false,hasPause=false,hasKill=false;
             bool hasScript1=false,hasScript2=false,hasScript3=false,hasScript4=false,hasScript5=false;
             for (pvec::const_iterator it (v.begin()); it != v.end(); ++it)
@@ -101,7 +101,7 @@ PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts) {
             if(!hasScript3) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 3.g",true,true)));}
             if(!hasScript4) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 4.g",true,true)));}
             if(!hasScript5) {files.push_back(PrintjobPtr(new Printjob(this,directory+"/Script 5.g",true,true)));}
-        } else {
+        } else */{
             for (pvec::const_iterator it (v.begin()); it != v.end(); ++it)
             {
                 string name = it->string();
@@ -376,9 +376,10 @@ void PrintjobManager::startJob(int id) {
     if(runningJob.get()) return; // Can't start if old job is running
     runningJob = findByIdInternal(id);
     if(!runningJob.get()) return; // unknown job
+    printer->rotateLogTo(runningJob->getName());
     runningJob->setRunning();
     runningJob->start();
-    printer->getScriptManager()->pushCompleteJob("start");
+    pushCompleteJobNoBlock("start");
     if(jobin.is_open()) jobin.close();
     jobin.open(runningJob->getFilename().c_str(),ifstream::in);
     if(!jobin.good()) {
@@ -406,7 +407,7 @@ void PrintjobManager::killJob(int id) {
     mutex::scoped_lock l2(printer->sendMutex); // Remove buffered commands
     printer->jobCommands.clear();
     l2.unlock();
-    printer->getScriptManager()->pushCompleteJob("end");
+    pushCompleteJob("end");
 }
 void PrintjobManager::undoCurrentJob() {
     mutex::scoped_lock l(filesMutex);
@@ -443,7 +444,7 @@ void PrintjobManager::manageJobs() {
         runningJob->stop(printer);
         runningJob.reset();
         l.unlock();
-        printer->scriptManager->pushCompleteJobNoBlock("end");
+        pushCompleteJobNoBlock("end");
     }
 }
 void PrintjobManager::pushCompleteJob(std::string name,bool beginning) {
@@ -477,8 +478,8 @@ void PrintjobManager::pushCompleteJob(std::string name,bool beginning) {
 }
 void PrintjobManager::pushCompleteJobNoBlock(std::string name,bool beginning) {
     string pj = printer->config->getScript(name);
-    mutex::scoped_lock l(filesMutex);
     stringstream in(pj);
+    mutex::scoped_lock l2(printer->sendMutex);
     std::deque<std::string> &list = (name != "start" && name!="end" && name!="kill" ? printer->manualCommands : printer->jobCommands);
     try {
         char buf[200];

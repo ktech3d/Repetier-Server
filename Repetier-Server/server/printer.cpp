@@ -32,6 +32,7 @@
 #include "RLog.h"
 #include "ServerEvents.h"
 #include "PrinterConfiguration.h"
+#include "utils/FileUtils.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -58,27 +59,58 @@ Printer::Printer(string conf):config(new PrinterConfiguration(conf)) {
     serial = new PrinterSerial(*this);
     resendError = 0;
     errorsReceived = 0;
+    bytesReceived = 0;
     linesSend = 0;
     bytesSend = 0;
     paused = false;
 }
 Printer::~Printer() {
     serial->close();
+    rotateLogTo("");
     if(state!=NULL)
         delete state;
     delete serial;
     delete modelManager;
     delete jobManager;
-    delete scriptManager;
+    // delete scriptManager;
 }
 void Printer::Init(PrinterPtr ptr) {
     thisPtr = ptr;
     state = new PrinterState(ptr); // done at creation
     state->setReal();
-    jobManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"jobs",ptr);
-    modelManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"models",ptr);
-    scriptManager = new PrintjobManager(gconfig->getStorageDirectory()+config->slug+"/"+"scripts",ptr,true);
+    jobManager = new PrintjobManager(gconfig->getStorageDirectory()+"printer/"+config->slug+"/jobs",ptr);
+    modelManager = new PrintjobManager(gconfig->getStorageDirectory()+"printer/"+config->slug+"/models",ptr);
+    //scriptManager = new PrintjobManager(gconfig->getStorageDirectory()+"printer/"+config->slug+"/scripts",ptr,true);
+    logDirectory = gconfig->getStorageDirectory()+"printer/"+config->slug+"/logs";
+    if(!exists(logDirectory)) { // First call - create directory
+        if(!create_directories(logDirectory)) {
+            cerr << "error: Unable to create log directory " << logDirectory << "." << endl;
+            exit(-1);
+        }
+    }
+    logStream = NULL;
+    rotateLogTo("connected");
+}
 
+void Printer::rotateLogTo(std::string name) {
+    mutex::scoped_lock l(logMutex);
+    if(logStream!=NULL) {
+        logStream->close();
+        delete logStream;
+    }
+    if(name.size()==0) {
+        logStream = NULL;
+        return;
+    }
+    RepetierServer::keepNewestFilesInDirectory(logDirectory, 5);
+    string filename = logDirectory+"/"+name+".log";
+    logStream = new ofstream();
+    logStream->open(filename.c_str());
+}
+void Printer::logLine(std::string line) {
+    mutex::scoped_lock l(logMutex);
+    if(logStream != NULL)
+        *logStream << line << endl;
 }
 
 void Printer::startThread() {
@@ -148,6 +180,7 @@ void Printer::addResponse(const std::string& msg,uint8_t rtype) {
     if(responses.size()>(size_t)gconfig->getBacklogSize())
         responses.pop_front();
     l.unlock();
+    logLine((rtype == 1? "< " : "> ")+newres->getTimeString()+": "+newres->message);
     json_spirit::mObject o;
     o["id"] = (int)newres->responseId;
     o["time"] = newres->getTimeString();
@@ -271,7 +304,7 @@ void Printer::manageHostCommand(boost::shared_ptr<GCode> &cmd) {
         gconfig->createMessage(msg,answer);
         paused = true;
         state->storePause();
-        scriptManager->pushCompleteJobNoBlock("pause",true);
+        jobManager->pushCompleteJobNoBlock("pause",true);
     } else if(c=="@isathome") {
         state->setIsathome();
     } else if(c=="@kill") {
@@ -314,7 +347,7 @@ bool Printer::trySendPacket(GCodeDataPacketPtr &dp,shared_ptr<GCode> &gc) {
         lastCommandSend = boost::posix_time::microsec_clock::local_time();
         bytesSend+=dp->length;
         linesSend++;
-        addResponse(gc->getOriginal(), 1);
+        addResponse(gc->getOriginal(), 1);        
         return true;
     }
     return false;
@@ -475,6 +508,26 @@ void Printer::analyseResponse(string &res) {
             }
         }
         resendError = 0;
+    } else if(extract(res,"EPR:",h)) { // EPR:3 39 20.00 Max. jerk [mm/s]
+        cout << res << endl;
+        size_t p1 = res.find(' ',0);
+        if(p1!=string::npos) {
+            size_t p2 = res.find(' ',p1+1);
+            if(p2!=string::npos) {
+                size_t p3 = res.find(' ',p2+1);
+                if(p3!=string::npos) {
+                    json_spirit::mArray list;
+                    json_spirit::mObject epr;
+                    epr["type"] = res.substr(4,p1-4);
+                    epr["pos"] = res.substr(p1+1,p2-p1-1);
+                    epr["value"] = res.substr(p2+1,p3-p2-1);
+                    epr["valueOrig"] = res.substr(p2+1,p3-p2-1);
+                    epr["text"] = res.substr(p3+1);
+                    list.push_back(epr);
+                    fireEvent("eepromData", list);
+                }
+            }
+        }
     }
     addResponse(res,rtype);
     trySendNextLine();
@@ -513,4 +566,9 @@ void Printer::sendConfigEvent() {
 void Printer::fillJSONConfig(json_spirit::mObject &obj) {
     config->fillJSON(obj);
 }
-
+void Printer::fillTransferData(json_spirit::mObject &obj) {
+    obj["bytesSend"] = bytesSend;
+    obj["bytesReceived"] = bytesReceived;
+    obj["resendErrors"] = errorsReceived;
+    obj["linesSend"] = linesSend;
+}

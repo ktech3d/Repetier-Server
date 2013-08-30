@@ -76,15 +76,19 @@ public:
 
 class Printer {
     friend class PrintjobManager;
+    friend class PrinterSerial;
     PrinterPtr thisPtr;
     PrintjobManager *jobManager;
     PrintjobManager *modelManager;
-    PrintjobManager *scriptManager;
+    std::string logDirectory;
+    //PrintjobManager *scriptManager;
     volatile bool stopRequested;
     boost::shared_ptr<boost::thread> thread;
     boost::mutex mutex;
     boost::mutex responseMutex;
     boost::mutex sendMutex;
+    boost::mutex logMutex;
+    std::ofstream *logStream;
     std::deque<boost::shared_ptr<PrinterResponse> > responses;
     PrinterSerial *serial;
     uint32_t lastResponseId;
@@ -105,9 +109,10 @@ class Printer {
     int resendError;
     int errorsReceived;
     boost::posix_time::ptime lastCommandSend;
-    int linesSend;
-    std::size_t bytesSend;
+    uint64_t linesSend;
+    uint64_t bytesSend;
     bool paused;
+    uint64_t bytesReceived;
     //int updateTempEvery;
     
     /** Resend all lines starting with line. Removes all commands stored in
@@ -131,6 +136,7 @@ class Printer {
      */
     void manageHostCommand(boost::shared_ptr<GCode> &cmd);
 public:
+    
     Poco::BasicEvent<json_spirit::Object> printerEvent;
     //    double xmin,xmax;
     //    double ymin,ymax;
@@ -183,6 +189,7 @@ public:
     /** Number of job commands stored */
     size_t jobCommandsStored();
     void fillJSONConfig(json_spirit::mObject &obj);
+    void fillTransferData(json_spirit::mObject &obj);
     void move(double x,double y,double z,double e,bool relative); // cordinate 999999 = do not move!
     int getOnlineStatus();
     bool getActive();
@@ -194,7 +201,7 @@ public:
     void connectionClosed();
     inline PrintjobManager *getJobManager() {return jobManager;}
     inline PrintjobManager *getModelManager() {return modelManager;}
-    inline PrintjobManager *getScriptManager() {return scriptManager;}
+    //inline PrintjobManager *getScriptManager() {return scriptManager;}
     /** Stop previous pause command */
     void stopPause();
     // Public interthread communication methods
@@ -202,6 +209,9 @@ public:
     void stopThread();
     void fireEvent(std::string event,json_spirit::mObject &data);
     void fireEvent(std::string event,json_spirit::mArray &data);
+    
+    void rotateLogTo(std::string name);
+    void logLine(std::string line);
 };
 
 #endif /* defined(__Repetier_Server__printer__) */

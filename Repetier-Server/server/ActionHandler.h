@@ -55,6 +55,9 @@ namespace repetier {
         static void actionSetScript(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
         static void actionActivate(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
         static void actionDeactivate(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionCommunicationData(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionGetEeprom(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionSetEeprom(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
     };
 }
 #endif /* defined(__Repetier_Server__ActionHandler__) */

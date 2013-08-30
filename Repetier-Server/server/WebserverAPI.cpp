@@ -454,7 +454,7 @@ namespace repetier {
                     PrintjobPtr job = printer->getJobManager()->findById(id);
                     if(job.get()) {
                         printer->getJobManager()->killJob(id);
-                        printer->getScriptManager()->pushCompleteJob("kill");
+                        printer->getJobManager()->pushCompleteJob("kill");
                     }
                 }
                 printer->getJobManager()->fillSJONObject("data",ret);
@@ -511,7 +511,7 @@ namespace repetier {
                 }
                 printer->getJobManager()->fillSJONObject("data",ret);
             }
-        } else if(cmdgroup=="script") {
+        } /*else if(cmdgroup=="script") {
             string a(form.get("a",""));
             if(a=="list") {
                 printer->getScriptManager()->fillSJONObject("data",ret);
@@ -541,7 +541,7 @@ namespace repetier {
                 }
                 return;
             }
-        } else if(cmdgroup=="msg") {
+        }*/ else if(cmdgroup=="msg") {
             string a(form.get("a",""));
             DynamicAny sid(form.get("id",""));
             int id = 0;

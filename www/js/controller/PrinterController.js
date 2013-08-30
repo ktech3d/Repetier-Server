@@ -162,6 +162,7 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
     $scope.moveToZPos = 0;
     $scope.hsliderSize = 300;
     $scope.fanPercent = 100;
+    $scope.eeprom = [];
     var preview = new GCodePainter("control-view");
     preview.connectPrinter($rootScope.activeConfig);
 
@@ -184,6 +185,20 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
         $scope.movoToYPos = pos.data.y;
         $scope.movoToZPos = pos.data.z;
     });
+    $scope.$on("eepromClear",function(event) {
+        $scope.eeprom = [];
+    });
+    $scope.$on("eepromData",function(event,data) {
+        $scope.eeprom = $scope.eeprom.concat(data.data);
+    });
+    $scope.editEeprom = function() {
+        WS.send("getEeprom",{});
+        $('#dialogEeprom').modal('show');
+    }
+    $scope.saveEeprom = function() {
+        WS.send("setEeprom",{eeprom:$scope.eeprom});
+        $('#dialogEeprom').modal('hide');
+    }
     $scope.xMoveTo = function(x) {
         WS.send("move",{x:x,relative:false});
     }
@@ -198,6 +213,12 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
     }
     $scope.deactivate = function() {
         WS.send("deactivate",{printer:slug});
+    }
+    $scope.showCommunication = function() {
+        WS.send("communicationData",{}).then(function(data) {
+            $scope.comData = data;
+            $('#dialogConnectionData').modal('show');
+        });
     }
     var responsePoller = function () {
         if(!WS.connected) return;

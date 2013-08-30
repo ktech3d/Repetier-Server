@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		FD104F5317C910B30017E14B /* WorkDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD104F5117C910B30017E14B /* WorkDispatcher.cpp */; };
 		FD104F6117C913160017E14B /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = FD104F5D17C913160017E14B /* sqlite3.c */; };
+		FD104F6517D0F44B0017E14B /* FileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD104F6317D0F44B0017E14B /* FileUtils.cpp */; };
 		FD57C187161B5608000C4A45 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD57C186161B5608000C4A45 /* main.cpp */; };
 		FD57C189161B5608000C4A45 /* Repetier_Server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD57C188161B5608000C4A45 /* Repetier_Server.1 */; };
 		FDA1DBDE178C4CB200E40F36 /* libPocoFoundationd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBCE178C4CB200E40F36 /* libPocoFoundationd.16.dylib */; };
@@ -67,6 +68,8 @@
 		FD104F5D17C913160017E14B /* sqlite3.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sqlite3.c; sourceTree = "<group>"; };
 		FD104F5E17C913160017E14B /* sqlite3.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3.h; sourceTree = "<group>"; };
 		FD104F5F17C913160017E14B /* sqlite3ext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3ext.h; sourceTree = "<group>"; };
+		FD104F6317D0F44B0017E14B /* FileUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileUtils.cpp; sourceTree = "<group>"; };
+		FD104F6417D0F44B0017E14B /* FileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
 		FD57C182161B5608000C4A45 /* Repetier-Server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Repetier-Server"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD57C186161B5608000C4A45 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FD57C188161B5608000C4A45 /* Repetier_Server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Repetier_Server.1; sourceTree = "<group>"; };
@@ -187,6 +190,15 @@
 			path = sqlite;
 			sourceTree = "<group>";
 		};
+		FD104F6217D0F3D10017E14B /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				FD104F6317D0F44B0017E14B /* FileUtils.cpp */,
+				FD104F6417D0F44B0017E14B /* FileUtils.h */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
 		FD57C177161B5607000C4A45 = {
 			isa = PBXGroup;
 			children = (
@@ -297,6 +309,7 @@
 		FDED50641673BAEA001F0450 /* server */ = {
 			isa = PBXGroup;
 			children = (
+				FD104F6217D0F3D10017E14B /* utils */,
 				FDED50651673BB26001F0450 /* printer.cpp */,
 				FDED50661673BB26001F0450 /* printer.h */,
 				FDED5074167494AC001F0450 /* global_config.cpp */,
@@ -405,6 +418,7 @@
 				FDD5B85517A3D54C00DCBBF9 /* PrinterConfiguration.cpp in Sources */,
 				FD104F5317C910B30017E14B /* WorkDispatcher.cpp in Sources */,
 				FD104F6117C913160017E14B /* sqlite3.c in Sources */,
+				FD104F6517D0F44B0017E14B /* FileUtils.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

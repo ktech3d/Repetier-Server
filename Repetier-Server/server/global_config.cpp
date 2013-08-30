@@ -41,7 +41,6 @@ GlobalConfig::GlobalConfig(string filename) {
     bool ok = true;
     ok &= config.lookupValue("printer_config_directory",printerConfigDir);
     ok &= config.lookupValue("data_storage_directory",storageDir);
-    ok &= config.lookupValue("database_directory",databaseDir);
     ok &= config.lookupValue("website_directory", wwwDir);
     ok &= config.lookupValue("languages_directory", languageDir);
     ok &= config.lookupValue("default_language", defaultLanguage);
@@ -52,6 +51,10 @@ GlobalConfig::GlobalConfig(string filename) {
         cerr << "error: Global configuration is missing options!" << endl;
         exit(3);
     }
+    ensureEndsWIthSlash(printerConfigDir);
+    ensureEndsWIthSlash(storageDir);
+    ensureEndsWIthSlash(wwwDir);
+    ensureEndsWIthSlash(languageDir);    
 #ifdef DEBUG
     cout << "Global configuration:" << endl;
     cout << "Web directory: " << wwwDir << endl;
@@ -59,7 +62,15 @@ GlobalConfig::GlobalConfig(string filename) {
     cout << "Storage directory: " << storageDir << endl;
 #endif
 }
-
+void GlobalConfig::ensureEndsWIthSlash(std::string &path) {
+    if(path.size()==0) {
+        path = "/";
+        return;
+    }
+    char c = path[path.size()-1];
+    if(c=='/' || c=='\\') return;
+    path+="/";
+}
 void GlobalConfig::readPrinterConfigs() {
     printers.clear();
     if ( !exists( printerConfigDir ) ) return;

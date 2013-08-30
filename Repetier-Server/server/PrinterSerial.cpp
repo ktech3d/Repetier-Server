@@ -155,6 +155,10 @@ bool PrinterSerial::isConnected() {
 // Tries to connect to printer
 bool PrinterSerial::tryConnect() {
     try {
+        printer->bytesReceived = 0;
+        printer->bytesSend = 0;
+        printer->errorsReceived = 0;
+        printer->linesSend = 0;
         if(port.is_open()) port.close();
         if(io.stopped()) {
             io.reset();
@@ -247,6 +251,7 @@ void PrinterSerial::doRead() {
 void PrinterSerial::readEnd(const boost::system::error_code& error,
                           size_t bytes_transferred)
 {
+    printer->bytesReceived += bytes_transferred;
     if(error)
     {
 #ifdef __APPLE__

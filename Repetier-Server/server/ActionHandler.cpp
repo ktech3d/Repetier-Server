@@ -67,6 +67,9 @@ namespace repetier {
         registerAction("setScript",&actionSetScript);
         registerAction("activate",&actionActivate);
         registerAction("deactivate",&actionDeactivate);
+        registerAction("communicationData",&actionCommunicationData);
+        registerAction("getEeprom",&actionGetEeprom);
+        registerAction("setEeprom",&actionSetEeprom);
     }
     
     void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -231,7 +234,7 @@ namespace repetier {
         PrintjobPtr job = printer->getJobManager()->findById(id);
         if(job.get()) {
             printer->getJobManager()->killJob(id);
-            printer->getScriptManager()->pushCompleteJob("kill");
+            printer->getJobManager()->pushCompleteJob("kill");
         }
         //printer->getJobManager()->fillSJONObject("data",ret);
         //out = ret;
@@ -284,6 +287,28 @@ namespace repetier {
         printer = gconfig->findPrinterSlug(obj["printer"].get_str());
         if(printer == NULL) return;
         printer->setActive(false);
+    }
+    void ActionHandler::actionCommunicationData(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
+        out = mObject();
+        printer->fillTransferData(out.get_obj());
+    }
+    void ActionHandler::actionGetEeprom(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
+        mObject o;
+        printer->fireEvent("eepromClear", o);
+        printer->injectManualCommand("M205");
+    }
+    void ActionHandler::actionSetEeprom(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(printer == NULL) return;
+        mArray &a = obj["eeprom"].get_array();
+        mArray::iterator it(a.begin()),ie(a.end());
+        for(;it!=ie;++it) {
+            mObject &test = (*it).get_obj();
+            if(test["value"].get_str()!=test["valueOrig"].get_str()) {
+                printer->injectManualCommand("M206 T"+test["type"].get_str()+" P"+test["pos"].get_str()+" X"+test["value"].get_str());
+            }
+        }
     }
 
 }
