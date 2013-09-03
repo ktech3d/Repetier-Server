@@ -145,7 +145,7 @@ PrinterConfigController = function ($scope, $routeParams, WS, $rootScope, $timeo
         enrichEditor();
     });
 }
-PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
+PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$filter,$http) {
     var slug = $routeParams.slug;
     $rootScope.selectPrinter(slug);
     $scope.logCommands = 0;
@@ -290,8 +290,13 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
         console.log("test");
         console.log(v);
     }
-    $scope.selectQueue = function (gc) {
+    $scope.selectQueue = function (gc,event) {
+        elem = event.target;
         $scope.activeQueue = gc;
+        console.log(elem);
+        $(elem).tooltip({title:'<div style="width:200px;text-align:left"><h4>Job Informations</h4>Printing time: '+$filter('hms')(gc.printTime)+
+            '<br>Extrusion: '+Math.ceil(gc.filamentTotal)+' mm</div>',html:true,placement:'right',trigger:'hover click'});
+        //$(elem).tooltip('show');
     }
     $scope.selectGCode = function (gc) {
         $scope.activeGCode = gc;
@@ -360,6 +365,25 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout) {
     }
     $scope.pausePrint = function() {
         WS.send("send",{cmd:'@pause User requested pause.'});
+    }
+    fit_modal_body = function(modal) {
+        var body, bodypaddings, header, headerheight, height, modalheight,footer,footerheight;
+        header = $(".modal-header", modal);
+        footer = $(".modal-footer", modal);
+        body = $(".modal-body", modal);
+        modalheight = $(window).height(); //parseInt(modal.css("height"));
+        headerheight = header.outerHeight();
+        footerheight = footer.outerHeight(); //parseInt(footer.css("height")) + parseInt(footer.css("padding-top")) + parseInt(footer.css("padding-bottom"));
+        bodypaddings = parseInt(body.css("padding-top")) + parseInt(body.css("padding-bottom"));
+        height = modalheight - headerheight - bodypaddings - 5;
+        $(body).height(height-140);
+        //return body.css("max-height", "" + height + "px");
+    };
+    $scope.previewData = 0;
+    $scope.previewGCode = function(id) {
+        fit_modal_body($('#dialogPreview'));
+        $('#dialogPreview').modal('show');
+        $scope.previewData = id;
     }
     var resizeContols = function () {
         w = $('#control-row').width();

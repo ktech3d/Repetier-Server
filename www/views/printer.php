@@ -55,6 +55,10 @@
                     <div class="col-7">{{active.status.job}}</div>
                 </div>
                 <div class="row">
+                    <div class="col-5">ETA:</div>
+                    <div class="col-7">{{active.status.printTime-active.status.printedTimeComp | hms}}</div>
+                </div>
+                <div class="row">
                     <div class="col-12">
                         <div class="progress progress-striped">
                             <div class="metertext">{{active.status.done | number:2}}%</div>
@@ -77,7 +81,7 @@
                  ng-show="active.status.online && (queue.length>1 || (queue.length==1 && queue[0].id!=active.status.jobid))">
                 <div class="panel-heading">Print queue</div>
 
-                <div class="row queue" ng-repeat="q in queue" ng-click="selectQueue(q);"
+                <div class="row queue" ng-repeat="q in queue" ng-click="selectQueue(q,$event);"
                      ng-hide="q.id==active.status.jobid" ng-class="{queueactive:queueFileSelected(q)}">
                     <div class="col-12">
                         {{q.name}}
@@ -85,12 +89,12 @@
                 </div>
                 <div class="row" ng-show="activeQueue" style="margin-top:10px">
                     <div class="col-6">
-                        <button class="btn btn-block" ng-click="dequeActive()"><i class="icon-minus"></i>
+                        <button class="btn btn-block btn-danger" ng-click="dequeActive()"><i class="icon-minus"></i>
                             Deque
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-block" ng-hide="isJobActive" ng-click="printActiveQueue()"><i
+                        <button class="btn btn-block btn-primary" ng-hide="isJobActive" ng-click="printActiveQueue()"><i
                                 class="icon-print"></i> Print
                         </button>
                     </div>
@@ -321,14 +325,15 @@
             <div class="infodesc">Layer:<span>{{activeGCode.layer}}</span></div>
             <div class="infodesc">Filament
                 usage:<span>{{activeGCode.filamentTotal | number:0}} mm</span></div>
-            <div class="btn-group">
                 <div class="btn btn-primary" ng-click="printGCode()"><i class="icon-print"></i>
                     Print
                 </div>
+            <div class="btn btn-primary" ng-click="previewGCode(activeGCode.id)"><i class="icon-eye-open"></i>
+                Preview
+            </div>
                 <div class="btn btn-danger" data-reveal-id="deleteGCodeQuestion"><i
                         class="icon-trash"></i> Delete
                 </div>
-            </div>
         </div>
     </div>
 </div>
@@ -337,7 +342,6 @@
 </div>
 </div>
 
-<!-- Reveals -->
 <div id="deleteGCodeQuestion" class="modal fade">
     <h2>Security question</h2>
 
@@ -368,7 +372,23 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" ng-click="uploadGCode()"><i class="icon-upload-cloud"></i>Upload
+                <button type="button" class="btn btn-primary" ng-click="uploadGCode()"><i class="icon-upload-cloud"></i>Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dialogPreview" class="modal fade">
+    <div class="modal-dialog" style="width:95%;padding:0">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Preview G-Code {{activeSlug}}/{{previewData}}</h4>
+            </div>
+            <div class="modal-body" style="padding:0">
+                <div gcodepreview data="{{previewData}}" slug="{{activeSlug}}" style="width:100%;height:100%"></div>
+            </div>
+            <div class="modal-footer" style="margin-top:0">
+                <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -414,12 +434,12 @@
                 <h4 class="modal-title">EEPROM Settings</h4>
             </div>
             <div class="modal-body" style="overflow:auto;height:300px">
-                <table class="table">
+                <table class="table table-condensed">
                     <tr>
                         <th>Parameter</th>
                         <th>Value</th>
                     </tr>
-                    <tr ng-repeat="e in eeprom">
+                    <tr ng-repeat="e in eeprom" ng-class="{warning:e.value!=e.valueOrig}">
                         <td>{{e.text}}</td>
                         <td><input type="text" ng-model="e.value"></td>
                     </tr>

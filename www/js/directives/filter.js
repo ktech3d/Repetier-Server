@@ -44,6 +44,7 @@ function two_digits(a) {
 }
 FilterModule.filter('hms', function () {
     return function (input) {
+        if(input<0) return "Computing...";
         hours = Math.floor(input/3600);
         input-=3600*hours;
         min = Math.floor(input/60);

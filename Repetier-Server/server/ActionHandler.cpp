@@ -25,6 +25,7 @@
 #include "Poco/StreamCopier.h"
 #include "GCodeAnalyser.h"
 #include "PrinterConfiguration.h"
+#include "WorkDispatcher.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -194,6 +195,11 @@ namespace repetier {
                     dst.close();
                     src.close();
                     printer->getJobManager()->finishPrintjobCreation(job, model->getName(), model->getLength());
+                    WorkDispatcherData wd("gcodeInfo","",1000);
+                    wd.addParameter(printer->config->slug);
+                    wd.addParameter(job->getFilename());
+                    WorkDispatcher::addJob(wd);
+
             } catch(const std::exception& ex) {
                     cerr << "error: Unable to create job file " << job->getFilename() << ":" << ex.what() << endl;
             }

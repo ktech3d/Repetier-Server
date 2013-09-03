@@ -320,6 +320,10 @@ void WorkDispatcher::generateGCodeStatsDispatcher(std::string data) {
     if(model.get() != NULL) {
         model->setInfo(gc);
     }
+    model = p->getJobManager()->findByFilename(args[1]);
+    if(model.get() != NULL) {
+        model->setInfo(gc);
+    }
     json_spirit::mObject obj;
     p->fireEvent("jobsChanged", obj);
 }

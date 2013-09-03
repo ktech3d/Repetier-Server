@@ -33,6 +33,7 @@
 #include "ServerEvents.h"
 #include "PrinterConfiguration.h"
 #include "utils/FileUtils.h"
+#include "GCodeAnalyser.h"
 
 using namespace std;
 using namespace boost::filesystem;
@@ -430,6 +431,7 @@ void Printer::trySendNextLine() {
         else
             dp = gc->getBinary();
         if(trySendPacket(dp,gc)) {
+            jobManager->simulator->sendCommand(gc.get());
             jobCommands.pop_front();
             state->analyze(*gc);
         } else if(gc->hasN() && !(gc->hasM() && gc->getM()==110)) state->decreaseLastline();

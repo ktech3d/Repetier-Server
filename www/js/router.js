@@ -104,7 +104,7 @@ routeModule.factory('WS', ['$q', '$rootScope', function ($q, $rootScope) {
     }
     return Service;
 }])
-var app = angular.module('server', ['ngSanitize', 'RouteModule', 'Gauge', 'FoundationHelper', 'Filter', 'Widgets','Slider']);
+var app = angular.module('server', ['ngSanitize', 'RouteModule', 'Gauge', 'FoundationHelper', 'Filter', 'Widgets','Slider','Preview']);
 function init() {
     app.run(function ($location, $rootScope) {
         $rootScope.$on('$viewContentLoaded', function () {

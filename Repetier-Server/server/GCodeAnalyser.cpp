@@ -68,6 +68,15 @@ double SimulatorLine::realMoveTime() {
 
 PrinterSimulator::PrinterSimulator(PrinterPtr printer) {
     this->printer = printer;
+    updateConfig();
+    start();
+}
+
+PrinterSimulator::~PrinterSimulator() {
+    if(buffer!=NULL) delete buffer;
+}
+
+void PrinterSimulator::updateConfig() {
     PrinterConfigurationPtr c = printer->config;
     bufferSize = c->movebuffer;
     xyJerk = c->xyJerk;
@@ -90,14 +99,12 @@ PrinterSimulator::PrinterSimulator(PrinterPtr printer) {
         printAcceleration[3] = c->extruderList[0]->acceleration;
         eJerk = c->extruderList[0]->eJerk;
         maxEFeedrate = c->extruderList[0]->eJerk;
-    }
+    }    
     buffer = NULL;
 }
 
-PrinterSimulator::~PrinterSimulator() {
-    if(buffer!=NULL) delete buffer;
-}
 void PrinterSimulator::start() {
+    updateConfig();
     if(buffer!=NULL) delete buffer;
     buffer = new SimulatorLine[bufferSize];
     bufferReadPos = 0;
@@ -445,8 +452,8 @@ GCodeAnalyser::GCodeAnalyser(std::string path) {
     setSourceFile(path);
     Poco::AutoPtr<PropertyFileConfiguration> config(new PropertyFileConfiguration(this->path));
     lines = config->getInt("lines",0);
-    printingTime = config->getDouble("printingTime");
-    totalFilamentUsed = config->getDouble("totalFilament");
+    printingTime = config->getDouble("printingTime",0);
+    totalFilamentUsed = config->getDouble("totalFilament",0);
     for(int i=0;i<10;i++) {
         filamentUsed.push_back(config->getDouble(Poco::cat(string("extruder"),NumberFormatter::format(i)),0));
     }
@@ -480,6 +487,7 @@ GCodeAnalyser::GCodeAnalyser(PrinterPtr printer,std::string path,bool forceRecom
     if(forceRecompute)
         analyseFile(printer, path);
 }
+
 void GCodeAnalyser::removeData() {
     File f(this->path);
     if(f.exists() && f.isFile())

@@ -1,4 +1,4 @@
-/*
+		/*
  Copyright 2012-2013 Hot-World GmbH & Co. KG
  Author: Roland Littwin (repetier) repetierdev@gmail.com
  Homepage: http://www.repetier.com
@@ -46,10 +46,10 @@ using namespace Poco;
 typedef vector<path> pvec;             // store paths
 typedef list<shared_ptr<Printjob> > pjlist;
 
-PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts) {
+PrintjobManager::PrintjobManager(string dir,PrinterPtr _prt,bool _scripts):simulator(new PrinterSimulator(_prt)) {
     scripts = _scripts;
     printer = _prt;
-    char lc = dir[dir.length()-1];
+     char lc = dir[dir.length()-1];
     if(lc=='/' || lc=='\\')
        dir = dir.substr(0,dir.length()-1);
     directory = dir;
@@ -232,6 +232,7 @@ void PrintjobManager::fillSJONObject(std::string name,json_spirit::mObject &o) {
                 break;
         }
         shared_ptr<GCodeAnalyser> info = job->getInfo(printer);
+        
         j["printTime"] = info->printingTime;
         j["lines"] = info->lines;
         j["layer"] = info->layer;
@@ -241,6 +242,9 @@ void PrintjobManager::fillSJONObject(std::string name,json_spirit::mObject &o) {
             extruderUsage.push_back(*it2);
         j["extruderUsage"] = extruderUsage;
         j["printed"] = info->printed;
+        if(printer->jobManager == this) {
+            j["printedTimeComp"] = simulator->time;
+        }
         a.push_back(j);
     }
     o[name] = a;
@@ -264,9 +268,13 @@ void PrintjobManager::getJobStatus(json_spirit::mObject &obj) {
     if(job==NULL) {
         obj["job"] = "none";
     } else {
+        shared_ptr<GCodeAnalyser> info = job->getInfo(printer);
+        obj["printTime"] = info->printingTime;
         obj["job"] = job->getName();
         obj["jobid"] = job->id;
         obj["done"] = job->percentDone();
+        obj["printedTimeComp"] = simulator->time;
+
     }
 }
 PrintjobPtr PrintjobManager::findByIdInternal(int id) {
@@ -377,6 +385,7 @@ void PrintjobManager::startJob(int id) {
     runningJob = findByIdInternal(id);
     if(!runningJob.get()) return; // unknown job
     printer->rotateLogTo(runningJob->getName());
+    simulator->start();
     runningJob->setRunning();
     runningJob->start();
     pushCompleteJobNoBlock("start");
@@ -479,7 +488,6 @@ void PrintjobManager::pushCompleteJob(std::string name,bool beginning) {
 void PrintjobManager::pushCompleteJobNoBlock(std::string name,bool beginning) {
     string pj = printer->config->getScript(name);
     stringstream in(pj);
-    mutex::scoped_lock l2(printer->sendMutex);
     std::deque<std::string> &list = (name != "start" && name!="end" && name!="kill" ? printer->manualCommands : printer->jobCommands);
     try {
         char buf[200];

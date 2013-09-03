@@ -234,7 +234,7 @@ public:
     void start();
     void sendCommand(GCode *code);
     void finishPrint();
-    
+    void updateConfig();
     static inline float min(float a,float b) {if(a<b) return a;return b;}
     static inline float max(float a,float b) {if(a>b) return a;return b;}
     boost::shared_ptr<PrinterState> state;

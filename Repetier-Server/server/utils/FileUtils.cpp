@@ -13,31 +13,31 @@ using namespace std;
 using namespace boost::filesystem;
 
 namespace RepetierServer {
-void filesInDirectory(std::string directory,vector<FileInfo> &list) {
-    path fs_path(directory);
-    if (!exists(fs_path) || !is_directory(fs_path))
-    {
-        return ;
-    }
-    
-    directory_iterator end_iter;
-    for (directory_iterator dir_itr(fs_path);
-         dir_itr != end_iter;
-         ++dir_itr )
-    {
-        try
+    void filesInDirectory(std::string directory,vector<FileInfo> &list) {
+        path fs_path(directory);
+        if (!exists(fs_path) || !is_directory(fs_path))
         {
-            if ( is_regular_file( dir_itr->status() ) )
+            return ;
+        }
+        
+        directory_iterator end_iter;
+        for (directory_iterator dir_itr(fs_path);
+             dir_itr != end_iter;
+             ++dir_itr )
+        {
+            try
             {
-                list.push_back(FileInfo(dir_itr->path().string(),boost::filesystem::last_write_time(dir_itr->path())));
+                if ( is_regular_file( dir_itr->status() ) )
+                {
+                    list.push_back(FileInfo(dir_itr->path().string(),boost::filesystem::last_write_time(dir_itr->path())));
+                }
+            }
+            catch ( const std::exception & ex )
+            {
             }
         }
-        catch ( const std::exception & ex )
-        {
-        }
+        
     }
-
-}
     void keepNewestFilesInDirectory(std::string directory,int keep) {
         vector<FileInfo> list;
         filesInDirectory(directory, list);

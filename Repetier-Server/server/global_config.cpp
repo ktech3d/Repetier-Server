@@ -45,6 +45,7 @@ GlobalConfig::GlobalConfig(string filename) {
     ok &= config.lookupValue("languages_directory", languageDir);
     ok &= config.lookupValue("default_language", defaultLanguage);
     ok &= config.lookupValue("ports",ports);
+    ok &= config.lookupValue("logging",logging);
     backlogSize = 1000;
     config.lookupValue("backlogSize", backlogSize);
     if(!ok) {

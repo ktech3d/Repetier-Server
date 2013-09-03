@@ -22,6 +22,7 @@
     <shape>
         <grid color="#000000" spacing="10"/>
 	
+	
 	<rectangle color="#808080" xMax="100" xMin="0" yMax="100" yMin="0"/>
 	</shape>
     <movement>
@@ -35,14 +36,14 @@
         <zMax>120</zMax>
         <zHome>0</zHome>
         <xyJerk>20</xyJerk>
-        <zJerk>0.3</zJerk>
+        <zJerk>20</zJerk>
         <xyPrintAcceleration>1501</xyPrintAcceleration>
         <xyTravelAcceleration>2500</xyTravelAcceleration>
         <xySpeed max="250">100</xySpeed>
-        <zSpeed max="4">30</zSpeed>
+        <zSpeed max="100">100</zSpeed>
         <endstops all="true" x="true" y="true" z="true"/>
     <timeMultiplier>1</timeMultiplier>
-		<movebuffer>2</movebuffer>
+		<movebuffer>16</movebuffer>
 	</movement>
     <extruders>
 		<extruder lastTemp="185" num="0">

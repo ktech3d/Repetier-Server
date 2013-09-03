@@ -210,7 +210,7 @@
         <div class="col-lg-4 col-6 form-group">
             <label>Max. Z Speed [mm/s]</label>
             <input class="form-control" type="number" step="any" min="1" placeholder=""
-                   ng-model="editor.movement.zSpeed" data-toggle="popover" data-placement="bottom"
+                   ng-model="editor.movement.maxZSpeed" data-toggle="popover" data-placement="bottom"
                    data-content="Maximum speed for moves in z-direction." data-original-title data-trigger="focus">
         </div>
         <div class="col-lg-4 col-6 form-group">

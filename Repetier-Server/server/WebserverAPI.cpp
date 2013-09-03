@@ -47,6 +47,7 @@
 #include "Poco/Util/ServerApplication.h"
 #include "ActionHandler.h"
 #include "PrinterConfiguration.h"
+#include "utils/GCodeToJSON.h"
 
 using namespace std;
 using namespace json_spirit;
@@ -387,10 +388,6 @@ namespace repetier {
     void PrinterRequestHandler::handleRequest(HTTPServerRequest &req, HTTPServerResponse &resp) {
         MyPartHandler partHandler;
         HTMLForm form(req,req.stream(),partHandler);
-        resp.setStatus(HTTPResponse::HTTP_OK);
-        resp.setContentType("Content-Type: text/html; charset=utf-8");
-        resp.set("Cache-Control", "public, max-age=0");
-        ostream& out = resp.send();
         Poco::URI uri(req.getURI());
         vector<string> segments;
         uri.getPathSegments(segments);
@@ -403,10 +400,32 @@ namespace repetier {
             printer = gconfig->findPrinterSlug(segments[2]);
         }
         mObject ret;
+        resp.setStatus(HTTPResponse::HTTP_OK);
+        if(cmdgroup=="parsedgcode") {
+            resp.setContentType("Content-Type: application/json");            
+        } else {
+            resp.setContentType("Content-Type: text/html; charset=utf-8");
+            resp.set("Cache-Control", "public, max-age=0");
+        }
+        ostream& out = resp.send();
         if(cmdgroup=="list") {
             listPrinter(ret);
         } else if(printer==NULL) {
             error = "Unknown printer";
+        } else if(cmdgroup=="parsedgcode") {
+            shared_ptr<GCodeToJSON> conv(new GCodeToJSON(printer));
+            DynamicAny sid(form.get("id",""));
+            if(!sid.isNumeric()) {
+                int id = sid.convert<int>();
+                PrintjobPtr job = printer->getModelManager()->findById(id);
+                if(job!=NULL) {
+                    conv->convert(job->getFilename(), out);
+                    return;
+                }
+            }
+            out << "[]";
+            out.flush();
+            return;
         } else if(cmdgroup=="job") {
             string a = form.get("a","");
             if(a=="list") {
@@ -476,6 +495,7 @@ namespace repetier {
                 long size=partHandler.length();
                 printer->getModelManager()->finishPrintjobCreation(job,name,size);
                 printer->getModelManager()->fillSJONObject("data",ret);
+                job->recomputeInfoLazy(printer);
 #ifdef DEBUG
                 cout << "Name:" << name << " Size:" << size << endl;
 #endif

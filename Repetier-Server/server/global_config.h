@@ -52,6 +52,7 @@ class GlobalConfig {
     mutex msgMutex; ///< Mutex for thread safety of message system.
     int msgCounter; ///< Last used message id.
     std::list<RepetierMsgPtr> msgList; ///< List with active messages.
+    bool logging;
 public:
     bool daemon;
     inline const std::string& getWebsiteRoot() {return wwwDir;}
@@ -61,6 +62,7 @@ public:
     inline const std::string& getPorts() {return ports;}
     inline const std::string& getLanguageDir() {return languageDir;}
     inline const std::string& getDefaultLanguage() {return defaultLanguage;}
+    inline const bool getLogging() {return logging;}
     /** Load the global configuration file ans set variables accordingly. */
     GlobalConfig(std::string filename);
     /** Walk through all printer configuration files and load them. */

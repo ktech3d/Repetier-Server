@@ -32,6 +32,7 @@ using namespace boost;
 class Printer;
 class PrintjobManager;
 class GCodeAnalyser;
+class PrinterSimulator;
 
 class Printjob {
     friend class PrintjobManager;
@@ -84,6 +85,7 @@ typedef boost::shared_ptr<Printjob> PrintjobPtr;
  */
 class PrintjobManager {
     friend class Printjob;
+    friend class Printer;
     std::string directory;
     std::list<PrintjobPtr> files;
     int lastid;
@@ -94,6 +96,7 @@ class PrintjobManager {
     bool scripts;
     PrinterPtr printer;
     void signalChange();
+    shared_ptr<PrinterSimulator> simulator;
 public:
     PrintjobManager(std::string dir,PrinterPtr p,bool _scripts=false);
     void cleanupUnfinsihed();

@@ -10,6 +10,7 @@
 		FD104F5317C910B30017E14B /* WorkDispatcher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD104F5117C910B30017E14B /* WorkDispatcher.cpp */; };
 		FD104F6117C913160017E14B /* sqlite3.c in Sources */ = {isa = PBXBuildFile; fileRef = FD104F5D17C913160017E14B /* sqlite3.c */; };
 		FD104F6517D0F44B0017E14B /* FileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD104F6317D0F44B0017E14B /* FileUtils.cpp */; };
+		FD104F6817D1FFA30017E14B /* GCodeToJSON.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD104F6617D1FFA30017E14B /* GCodeToJSON.cpp */; };
 		FD57C187161B5608000C4A45 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FD57C186161B5608000C4A45 /* main.cpp */; };
 		FD57C189161B5608000C4A45 /* Repetier_Server.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = FD57C188161B5608000C4A45 /* Repetier_Server.1 */; };
 		FDA1DBDE178C4CB200E40F36 /* libPocoFoundationd.16.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FDA1DBCE178C4CB200E40F36 /* libPocoFoundationd.16.dylib */; };
@@ -70,6 +71,8 @@
 		FD104F5F17C913160017E14B /* sqlite3ext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3ext.h; sourceTree = "<group>"; };
 		FD104F6317D0F44B0017E14B /* FileUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileUtils.cpp; sourceTree = "<group>"; };
 		FD104F6417D0F44B0017E14B /* FileUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileUtils.h; sourceTree = "<group>"; };
+		FD104F6617D1FFA30017E14B /* GCodeToJSON.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GCodeToJSON.cpp; sourceTree = "<group>"; };
+		FD104F6717D1FFA30017E14B /* GCodeToJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GCodeToJSON.h; sourceTree = "<group>"; };
 		FD57C182161B5608000C4A45 /* Repetier-Server */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "Repetier-Server"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FD57C186161B5608000C4A45 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		FD57C188161B5608000C4A45 /* Repetier_Server.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = Repetier_Server.1; sourceTree = "<group>"; };
@@ -195,6 +198,8 @@
 			children = (
 				FD104F6317D0F44B0017E14B /* FileUtils.cpp */,
 				FD104F6417D0F44B0017E14B /* FileUtils.h */,
+				FD104F6617D1FFA30017E14B /* GCodeToJSON.cpp */,
+				FD104F6717D1FFA30017E14B /* GCodeToJSON.h */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -419,6 +424,7 @@
 				FD104F5317C910B30017E14B /* WorkDispatcher.cpp in Sources */,
 				FD104F6117C913160017E14B /* sqlite3.c in Sources */,
 				FD104F6517D0F44B0017E14B /* FileUtils.cpp in Sources */,
+				FD104F6817D1FFA30017E14B /* GCodeToJSON.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

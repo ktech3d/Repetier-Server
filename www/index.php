@@ -112,6 +112,7 @@
 <script src="/jquery/jquery.min.js"></script>
 <script src="/jquery/jquery.form.js"></script>
 <script src="/js/kinetic-v4.6.0.min.js"></script>
+<script src="/js/vendor/three.min.js"></script>
 <script src="/js/directives/GCodePainter.js"></script>
 <script src="/libs/colorpicker/js/bootstrap-colorpicker.js"></script>
 <script src="/js/bootstrap.js"></script>
@@ -126,6 +127,7 @@
 <script src="/js/router.js"></script>
 <script src="/js/directives/bootstrap.js"></script>
 <script src="/js/directives/widgets.js"></script>
+<script src="/js/directives/gcodepreview.js"></script>
 <script src="/js/controller/ServerController.js"></script>
 <script src="/js/controller/HomeController.js"></script>
 <script src="/js/controller/PrinterController.js"></script>
