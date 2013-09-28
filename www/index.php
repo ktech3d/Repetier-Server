@@ -14,9 +14,11 @@
     <link rel="stylesheet" href="/css/css/font-awesome.css">
     <link rel="stylesheet" href="/libs/colorpicker/css/colorpicker.css"/>
     <link rel="stylesheet" href="/libs/slider/angular-slider.min.css"/>
+    <link rel="stylesheet" href="fupload/css/jquery.fileupload-ui.css"/>
     <title>Repetier-Server</title>
 </head>
 <body ng-controller="ServerController">
+<div id="loading" class="loading" ng-show="loading"><i class="icon-spin icon-spinner"></i> Loading ...</div>
 <div class="navbar navbar-fixed-top">
     <div class="container">
         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
@@ -29,13 +31,22 @@
         <div class="nav-collapse collapse navbar-responsive-collapse">
             <ul class="nav navbar-nav">
                 <li class=""><a href="#"><i class="icon-home"></i>Dashboard</a></li>
-                <li class="dropdown"><a href="javascript_void()" class="dropdown-toggle" data-toggle="dropdown">Printer</a>
+                <li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Printer</a>
                     <ul class="dropdown-menu">
                         <li ng-repeat="p in printerList"><a href="#/printer/{{p.slug}}">{{p.name}}</a>
                     </ul>
                 </li>
                 <li class=""><a data-reveal-id="messageList" href="javascript:void(0);" data-toggle="modal" data-target="#messageList">Messages <span
                             class="badge badge-success">{{messages.length}}</span></a>
+                </li>
+                <li class="dropdown"><a href="javascript_void()" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-cog"></i></a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-submenu" ng-hide="externalCommands.length==0"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Start server command</a>
+                            <ul class="dropdown-menu">
+                                <li ng-repeat="c in externalCommands"><a ng-click="runExternalCommand(c.id)" href="javascript:void(0);">{{c.name}}</a>
+                            </ul>
+                        </li>
+                    </ul>
                 </li>
             </ul>
         </div>

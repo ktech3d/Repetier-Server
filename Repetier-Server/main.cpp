@@ -26,7 +26,8 @@ To reister as windows service call with /registerService
  
  On unix use --daemon to start as daemon.
  
- 
+ Debug parameter:
+ --config=/Users/littwin/Documents/Projekte/Repetier-Server/Repetier-Server/repetier-server.xml
 */
 
 

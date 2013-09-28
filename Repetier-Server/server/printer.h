@@ -22,7 +22,6 @@
 #define __Repetier_Server__printer__
 
 #include <iostream>
-#include "libconfig.h++"
 #include <deque>
 #include <list>
 #include <boost/shared_ptr.hpp>
@@ -71,7 +70,7 @@ class PrinterHistoryLine {
 public:
     uint32_t line;
     std::string command;
-    PrinterHistoryLine(const std::string& com,int l):command(com),line(l) {}
+    PrinterHistoryLine(const std::string& com,int l):line(l),command(com) {}
 };
 
 class Printer {

@@ -27,6 +27,7 @@
 #include "printer.h"
 #include <vector>
 #include <list>
+#include "Poco/Util/XMLConfiguration.h"
 
 class RepetierMessage {
 public:
@@ -35,12 +36,23 @@ public:
     int mesgId;  ///< Message id
 };
 typedef shared_ptr<RepetierMessage> RepetierMsgPtr;
+
+class ExternalProgram {
+public:
+    int id;
+    std::string name;
+    std::string execute;
+    static void breakParameter(std::string command,std::vector<std::string> &params);
+    void runCommand();
+};
+typedef shared_ptr<ExternalProgram> ExternalProgramPtr;
+
 /**
 This class contains in first instance the variables from repetier-server.con.
 All variables can be read threadsafe through the getter functions.
 */
 class GlobalConfig {
-    libconfig::Config config;
+    Poco::AutoPtr<Poco::Util::XMLConfiguration> conf;
     std::string wwwDir; ///< Website root
     std::string printerConfigDir; ///< Printer config directory
     std::string storageDir; ///< Data storage directory.
@@ -48,6 +60,7 @@ class GlobalConfig {
     std::string ports; ///< Ports the server should listen to.
     std::string defaultLanguage; ///< Default language if no language is detected
     std::vector<PrinterPtr> printers;
+    std::vector<ExternalProgramPtr> externalCommands;
     int backlogSize;
     mutex msgMutex; ///< Mutex for thread safety of message system.
     int msgCounter; ///< Last used message id.
@@ -88,7 +101,10 @@ public:
     /** Remove a message from the messages list. Threadsafe.
      @param id Message id. */
     void removeMessage(int id);
-    void ensureEndsWIthSlash(std::string &path);
+    void ensureEndsWithSlash(std::string &path);
+    std::vector<ExternalProgramPtr> &getExternalCommands() {return externalCommands;}
+    PrinterPtr addPrinterFromConfig(std::string configfile);
+    void removePrinter(PrinterPtr printer);
 };
 extern GlobalConfig *gconfig;
 extern std::string intToString(int number);

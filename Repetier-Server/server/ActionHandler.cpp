@@ -38,6 +38,7 @@ namespace repetier {
         actionMap[action] = func;
     }
     void ActionHandler::dispatch(std::string &action, json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        out = mObject();
         actionFunction func = actionMap[action];
         if(func == NULL) {
             return;
@@ -71,6 +72,10 @@ namespace repetier {
         registerAction("communicationData",&actionCommunicationData);
         registerAction("getEeprom",&actionGetEeprom);
         registerAction("setEeprom",&actionSetEeprom);
+        registerAction("listExternalCommands",&actionListExternalCommands);
+        registerAction("runExternalCommand",&actionRunExternalCommand);
+        registerAction("createConfiguration",&actionCreateConfiguration);
+        registerAction("removeConfiguration",&actionRemoveConfiguration);
     }
     
     void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
@@ -316,5 +321,32 @@ namespace repetier {
             }
         }
     }
-
+    void ActionHandler::actionListExternalCommands(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        out = mArray();
+        mArray &a = out.get_array();
+        vector<ExternalProgramPtr>::iterator it(gconfig->getExternalCommands().begin()),ie(gconfig->getExternalCommands().end());
+        while(it!=ie) {
+            ExternalProgramPtr ptr = *it;
+            mObject o;
+            o["id"] = ptr->id;
+            o["name"] = ptr->name;
+            a.push_back(o);
+            it++;
+        }
+    }
+    void ActionHandler::actionRunExternalCommand(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        vector<ExternalProgramPtr> &l = gconfig->getExternalCommands();
+        int id = obj["id"].get_int();
+        if(id>=0 && id<l.size())
+            l[id]->runCommand();
+    }
+    void ActionHandler::actionCreateConfiguration(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        PrinterConfigurationPtr conf(new PrinterConfiguration);
+        conf->createConfiguration(obj["name"].get_str(),obj["slug"].get_str());
+    }
+    void ActionHandler::actionRemoveConfiguration(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        PrinterPtr p(gconfig->findPrinterSlug(obj["slug"].get_str()));
+        if(p!=NULL)
+            gconfig->removePrinter(p);
+    }
 }

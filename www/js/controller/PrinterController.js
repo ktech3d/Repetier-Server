@@ -60,6 +60,8 @@ PrinterConfigController = function ($scope, $routeParams, WS, $rootScope, $timeo
     });
 
     $scope.saveConfig = function () {
+        console.log("saveConfig");
+        console.log($scope.editor);
         WS.send("setPrinterConfig", $scope.editor);
     }
     $scope.resetConfig = function () {

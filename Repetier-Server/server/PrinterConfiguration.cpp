@@ -20,11 +20,14 @@
 #include "Poco/NumberFormatter.h"
 #include "Poco/DOM/NamedNodeMap.h"
 #include "Poco/DOM/Attr.h"
+#include "Poco/File.h"
+#include "Poco/Path.h"
 #include <boost/algorithm/string.hpp>
 #include <fstream.h>
 #include "Printjob.h"
 #include "printer.h"
 #include "global_config.h"
+#include "ServerEvents.h"
 
 using namespace Poco;
 using namespace Poco::XML;
@@ -311,6 +314,7 @@ ExtruderConfiguration::ExtruderConfiguration(Poco::XML::Element *node) {
         }
     }
 }
+
 ExtruderConfiguration::ExtruderConfiguration(json_spirit::mObject &obj,int pos) {
     num = pos;
     node = NULL;
@@ -570,23 +574,40 @@ PrinterConfiguration::PrinterConfiguration(string filename) {
     }
     //root = config->getN
 }
+
 PrinterConfiguration::PrinterConfiguration() {
     config = new Document();
     setDefaults();
 }
+
 PrinterConfiguration::~PrinterConfiguration() {
-    config->release();
+    if(config!=NULL)
+        config->release();
 }
+
+void PrinterConfiguration::createConfiguration(std::string name,std::string slug) {
+    this->name = name;
+    this->slug = slug;
+    configFilename = gconfig->getPrinterConfigDir()+slug+".xml";
+    if(shape==NULL)
+        shape.reset(new ShapeConfiguration(getOrCreateElement("shape")));
+    saveConfiguration();
+    PrinterPtr p = gconfig->addPrinterFromConfig(configFilename);
+    p->startThread();
+}
+
 ExtruderConfigurationPtr PrinterConfiguration::getExtruder(int num) {
     if(extruderList.size()==0) return ExtruderConfigurationPtr((ExtruderConfiguration*)NULL);
     if(num<0) num = 0;
     if(num>=extruderList.size()) num = (int)extruderList.size()-1;
     return extruderList[num];
 }
+
 bool PrinterConfiguration::parseBool(const std::string& text) {
     if(text == "false" || text == "0") return false;
     return true;
 }
+
 std::string PrinterConfiguration::encodeBool(bool b) {
     if(b) return "true";
     return "false";
@@ -610,6 +631,7 @@ void PrinterConfiguration::setDefaults() {
     serialProtocol = 0;
     name="unknown";
     slug="unknown";
+    printerVariant="cartesian";
     active = true;
     fan = false;
     heatedBed = false;
@@ -650,6 +672,7 @@ Poco::XML::Element *PrinterConfiguration::getOrCreateElement(const std::string &
     }
     return root;
 }
+
 void PrinterConfiguration::setNodeText(Element* node,string text) {
     NodeList *list = node->childNodes();
     if(list->length()==0) {
@@ -659,6 +682,7 @@ void PrinterConfiguration::setNodeText(Element* node,string text) {
     }
     list->item(0)->setNodeValue(text);
 }
+
 void PrinterConfiguration::saveConfiguration() {
     Element *e;
     
@@ -741,6 +765,7 @@ void PrinterConfiguration::saveConfiguration() {
         timingChanged = false;
     }
 }
+
 std::string PrinterConfiguration::getScript(std::string name) {
     Element *scripts = getOrCreateElement("scripts");
     NodeList *list = scripts->childNodes();
@@ -754,6 +779,7 @@ std::string PrinterConfiguration::getScript(std::string name) {
     }
     return ""; // Default answer
 }
+
 void PrinterConfiguration::setScript(std::string name,const std::string &text) {
     Element *scripts = getOrCreateElement("scripts");
     NodeList *list = scripts->childNodes();
@@ -794,10 +820,10 @@ void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
         sdcard = general["sdcard"].get_bool();
         softwarePower = general["softwarePower"].get_bool();
         
-        serialBaudrate = serial["baudrate"].get_int();
+        serialBaudrate = (serial["baudrate"].type()==json_spirit::int_type ? serial["baudrate"].get_int() : NumberParser::parse(serial["baudrate"].get_str()));
         serialPort = serial["device"].get_str();
         serialPingPong = serial["pingPong"].get_bool();
-        serialProtocol = serial["protocol"].get_int();
+        serialProtocol = (serial["protocol"].type()==json_spirit::int_type ? serial["protocol"].get_int() :  NumberParser::parse(serial["protocol"].get_str()));
         serialOkAfterResend = serial["okAfterResend"].get_bool();
         serialInputBufferSize = serial["inputBufferSize"].get_int();
 
@@ -869,6 +895,7 @@ void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
         saveConfiguration();
     } catch(Exception &e) {}
 }
+
 void PrinterConfiguration::fillJSON(json_spirit::mObject &obj) {
     obj["general"] = mObject();
     mObject &general = obj["general"].get_obj();
@@ -942,3 +969,13 @@ void PrinterConfiguration::fillJSON(json_spirit::mObject &obj) {
         obj["extruders"].get_array().push_back(ex);
     }
 }
+
+void PrinterConfiguration::remove() {
+    File storageDir(gconfig->getStorageDirectory()+"printer"+Poco::Path::separator()+slug);
+    if(storageDir.exists())
+        storageDir.remove(true);
+    File confFile(configFilename);
+    if(confFile.exists())
+        confFile.remove();
+}
+

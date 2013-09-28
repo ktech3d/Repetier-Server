@@ -23,47 +23,104 @@
 #include "ServerEvents.h"
 #include "PrinterConfiguration.h"
 
+#include "Poco/NumberFormatter.h"
+#include "Poco/Process.h"
+#include <ctype.h>
+
 using namespace std;
 using namespace boost::filesystem;
-
+using Poco::AutoPtr;
+using Poco::Util::XMLConfiguration;
+using namespace Poco;
 
 GlobalConfig *gconfig;
+
+void ExternalProgram::breakParameter(std::string command,vector<std::string> &params) {
+    size_t pos=0;
+    char c;
+    bool escape = false,quoted = false;
+    string param = "";
+    while(pos<command.size()) {
+        c = command[pos++];
+        if(escape) {
+            param+=c;
+            escape = false;
+        } else if(c=='\\') {
+            escape = true;
+        } else if(c=='"') {
+            if(quoted) {
+                params.push_back(param);
+            }
+            quoted=!quoted;
+        } else if(!quoted && isspace(c)) {
+            if(param.size()>0)
+                params.push_back(param);
+            param="";
+        } else param+=c;
+    }
+    if(param.size()>0)
+        params.push_back(param);
+}
+
+void ExternalProgram::runCommand() {
+    vector<string> all,args;
+    breakParameter(execute, all);
+    if(all.size()==0) return;
+    string prg = all.front().data();
+    if(prg.size()==0) return;
+    vector<string>::iterator it = all.begin()++;
+    while(it!=all.end()) {
+        args.push_back(*it);
+        it++;
+    }
+    ProcessHandle handle = Process::launch(prg,args);
+    //handle.wait(); // Wait for the job to finish execution
+}
 
 GlobalConfig::GlobalConfig(string filename) {
     daemon = false;
     msgCounter = 0;
-	try {
-		config.readFile(filename.c_str());
-	} catch(libconfig::ParseException &pe) {
-		cerr << "error: " << pe.getError() << " line:" << pe.getLine() << " file:" << pe.getFile() << endl;
+    if(!exists(filename)) {
+        cerr << "error: configuration file " << filename << " not found." << endl;
 		exit(-1);
-	}
-    bool ok = true;
-    ok &= config.lookupValue("printer_config_directory",printerConfigDir);
-    ok &= config.lookupValue("data_storage_directory",storageDir);
-    ok &= config.lookupValue("website_directory", wwwDir);
-    ok &= config.lookupValue("languages_directory", languageDir);
-    ok &= config.lookupValue("default_language", defaultLanguage);
-    ok &= config.lookupValue("ports",ports);
-    ok &= config.lookupValue("logging",logging);
-    backlogSize = 1000;
-    config.lookupValue("backlogSize", backlogSize);
-    if(!ok) {
-        cerr << "error: Global configuration is missing options!" << endl;
-        exit(3);
     }
-    ensureEndsWIthSlash(printerConfigDir);
-    ensureEndsWIthSlash(storageDir);
-    ensureEndsWIthSlash(wwwDir);
-    ensureEndsWIthSlash(languageDir);    
+    conf.assign(new XMLConfiguration(filename));
+    string instdir = conf->getString("installation-directory");
+    ensureEndsWithSlash(instdir);
+    storageDir = conf->getString("storage-directory");
+    ensureEndsWithSlash(storageDir);
+    wwwDir = instdir+"www/";
+    languageDir = instdir+"languages/";
+    ports = conf->getString("port");
+    logging = conf->getBool("logging");
+    printerConfigDir = storageDir+"configs/";
+    defaultLanguage = conf->getString("default-language");
+    backlogSize = conf->getInt("backlog-size");
+    ensureEndsWithSlash(printerConfigDir);
+    ensureEndsWithSlash(storageDir);
+    ensureEndsWithSlash(wwwDir);
+    ensureEndsWithSlash(languageDir);
 #ifdef DEBUG
     cout << "Global configuration:" << endl;
     cout << "Web directory: " << wwwDir << endl;
     cout << "Printer config directory: " << printerConfigDir << endl;
     cout << "Storage directory: " << storageDir << endl;
 #endif
+    string extprgConfigFile = storageDir+"database/extcommands.xml";
+    if(exists(extprgConfigFile)) {
+        Poco::AutoPtr<Poco::Util::XMLConfiguration> extconf(new XMLConfiguration(extprgConfigFile));
+        int i = 0;
+        while(extconf->has("command["+NumberFormatter::format(i)+"]")) {
+            string base = "command["+NumberFormatter::format(i)+"]";
+            ExternalProgramPtr ptr(new ExternalProgram());
+            ptr->id = i++;
+            ptr->name = extconf->getString(base+".name");
+            ptr->execute = extconf->getString(base+".execute");
+            externalCommands.push_back(ptr);
+        }
+    }
 }
-void GlobalConfig::ensureEndsWIthSlash(std::string &path) {
+void GlobalConfig::ensureEndsWithSlash(std::string &path) {
     if(path.size()==0) {
         path = "/";
         return;
@@ -82,13 +139,29 @@ void GlobalConfig::readPrinterConfigs() {
         {
             if(itr->path().extension()==".xml") {
                 cout << "Printer config: " << itr->path() << " extension:" << itr->path().extension() << endl;
-                PrinterPtr p(new Printer(itr->path().string()));
-                p->Init(p);
-                printers.push_back(p);
+                addPrinterFromConfig(itr->path().string());
             }
         }
     }
 }
+PrinterPtr GlobalConfig::addPrinterFromConfig(std::string configfile) {
+    PrinterPtr p(new Printer(configfile));
+    p->Init(p);
+    printers.push_back(p);
+    return p;
+}
+void GlobalConfig::removePrinter(PrinterPtr printer) {
+    printer->stopThread();
+    for(vector<PrinterPtr>::iterator it=printers.begin();it!=printers.end();it++) {
+        PrinterPtr p = *it;
+        if(p->config->slug == printer->config->slug) {
+            printers.erase(it);
+            break;
+        }
+    }
+    printer->config->remove();
+}
+
 void GlobalConfig::startPrinterThreads() {
     vector<PrinterPtr>::iterator pi;
     for(pi=printers.begin();pi!=printers.end();pi++) {

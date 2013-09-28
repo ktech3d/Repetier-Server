@@ -108,7 +108,13 @@ public:
     PrinterConfiguration(std::string filename);
     PrinterConfiguration();
     ~PrinterConfiguration();
+    void createConfiguration(std::string name,std::string slug);
     void saveConfiguration();
+    inline std::string& getConfigurationFilename() {return configFilename;}
+    inline void setConfigurationFilename(std::string newname) {
+        configFilename = newname;
+        saveConfiguration();
+    }
     static bool parseBool(const std::string &text);
     static std::string encodeBool(bool b);
     Poco::XML::Element *getOrCreateElement(const std::string &path);
@@ -119,6 +125,7 @@ public:
     inline int getExtruderCount() {return (int)extruderList.size();}
     std::string getScript(std::string name);
     void setScript(std::string name,const std::string &text);
+    void remove();
     
     std::map<std::string,std::string> scriptList;
     std::vector<ExtruderConfigurationPtr> extruderList;

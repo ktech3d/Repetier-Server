@@ -1,0 +1,20 @@
+<config>
+    <!--
+       If you want to run external commands, enter them in this configuration with
+       full path. You will see them in the main menu. Copy this fiele into the
+       <storage>/database directory.
+
+       Security consideration: The reason there is no online editor for this is simply
+       security. The commands you enter here are executed with the privileges of the
+       daemon running the server. If you would allow online configuration, a hacker could
+       simply add any command he needs to hack your system.
+    -->
+    <command>
+        <name>Gnuplot</name>
+        <execute>/Applications/Gnuplot.app/Contents/MacOS/Gnuplot.app</execute>
+    </command>
+    <command>
+        <name>Slic3r</name>
+        <execute>/Applications/Slic3r.app/Contents/MacOS/slic3r</execute>
+    </command>
+</config>

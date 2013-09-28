@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<server>
+    <installation-directory>${CMAKE_INSTALL_PREFIX}</installation-directory>
+    <storage-directory>/Library/Application Support/${PROJECT_NAME}/</storage-directory>
+    <default-language>en</default-language>
+    <port>3344</port>
+    <logging>true</logging>
+    <backlog-size>1000</backlog-size>
+</server>

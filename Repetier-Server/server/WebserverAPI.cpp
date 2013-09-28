@@ -407,14 +407,15 @@ namespace repetier {
             resp.setContentType("Content-Type: text/html; charset=utf-8");
             resp.set("Cache-Control", "public, max-age=0");
         }
-        ostream& out = resp.send();
+        
         if(cmdgroup=="list") {
             listPrinter(ret);
-        } else if(printer==NULL) {
+        } else if(printer==NULL && segments.size()>2) {
             error = "Unknown printer";
         } else if(cmdgroup=="parsedgcode") {
             shared_ptr<GCodeToJSON> conv(new GCodeToJSON(printer));
             DynamicAny sid(form.get("id",""));
+            ostream& out = resp.send();
             if(!sid.isNumeric()) {
                 int id = sid.convert<int>();
                 PrintjobPtr job = printer->getModelManager()->findById(id);
@@ -583,6 +584,48 @@ namespace repetier {
                     printer->setActive(mode=="1");
                 }
                 listPrinter(ret);
+            } else if(a=="download") {
+                if(printer!=NULL) {
+                    string slug(printer->config->slug);
+                    // application/octet-stream
+                    resp.setContentType("application/octet-stream");
+                    resp.add("Content-Disposition", "attachment; filename="+slug+".xml");
+                    Poco::File file(printer->config->getConfigurationFilename());
+                    resp.setContentLength(file.getSize());
+                    resp.setStatus(HTTPResponse::HTTP_OK);
+                    
+                    ostream& out = resp.send();
+                    ifstream in(printer->config->getConfigurationFilename().c_str());
+                    StreamCopier::copyStream(in,out);
+                    out.flush();
+                    return;
+                }
+            } else if(a=="upload") {
+                int mode(NumberParser::parse(form.get("mode","1")));
+                PrinterConfigurationPtr conf(new PrinterConfiguration(partHandler.storage().toString()));
+                if(conf->slug == "unknown") {
+                    error = "Invalid configuration file.";
+                } else {
+                    string newname = form.get("name","");
+                    string newslug = form.get("slug","");
+                    if(newname.length()>0)
+                        conf->name = newname;
+                    if(newslug.length()>0)
+                        conf->slug = newslug;
+                    PrinterPtr prt(gconfig->findPrinterSlug(conf->slug));
+                    if(mode == 1 && prt!=NULL) {
+                        error = "Printer with slug "+conf->slug+" already exists.";
+                    } else if(mode == 0 && prt==NULL) {
+                        error = "Printer with slug "+conf->slug+" does not exist.";
+                    } else if(mode == 1) {
+                        conf->createConfiguration(conf->name, conf->slug);
+                        ret["ok"] = "Printer created";
+                    } else if(mode == 0) {
+                        conf->setConfigurationFilename(prt->config->getConfigurationFilename());
+                        prt->config = conf;
+                        prt->sendConfigEvent();
+                    }
+                }
             }
         } else if(printer->getOnlineStatus()==0) {
             error = "Printer offline";
@@ -596,6 +639,7 @@ namespace repetier {
         ret["error"] = error;
         
         // Print result
+        ostream& out = resp.send();
 		out << write(ret,json_spirit::raw_utf8);
         out.flush();
     }

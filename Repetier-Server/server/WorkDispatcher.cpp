@@ -301,14 +301,14 @@ void WorkDispatcher::executeCmdDispatcher(std::string data) {
     vector<string> args,all;
     WorkDispatcherData::getParameters(data, all);
     if(args.size()==0) return;
-    string prg = args.front().data();
+    string prg = all.front().data();
     vector<string>::iterator it = all.begin()++;
     while(it!=all.end()) {
         args.push_back(*it);
         it++;
     }
     ProcessHandle handle = Process::launch(prg,args);
-    handle.wait(); // Fair for the job to finish execution
+    handle.wait(); // Wait for the job to finish execution
 }
 
 void WorkDispatcher::generateGCodeStatsDispatcher(std::string data) {

@@ -122,12 +122,6 @@ GCodePreviewDirectives.directive('gcodepreview', function($http,$timeout,$rootSc
                 lst = '';
                 scene = new THREE.Scene();
                 scene.add( new THREE.AmbientLight( 0x404040 ) );
-                light = new THREE.DirectionalLight( 0xffffff );
-                light.position.set( 0.2, 0.5, 1 );
-                light.castShadow = true;
-                light.shadowCameraVisible = true;
-                light.shadowDarkness = 0.7;
-                scene.add( light );
                 bedMaterial = new THREE.MeshPhongMaterial( {ambient: 0x555555,color:0xff8080, specular: 0x111111, shininess: 200 /*parseInt("0x"+bs.color.substr(1))*/} );
                 if(bs.shape=="rectangle") {
                     geom = new THREE.ConvexGeometry([new THREE.Vector3(bs.xMin,bs.yMin,0),new THREE.Vector3(bs.xMax,bs.yMin,0),
@@ -145,27 +139,33 @@ GCodePreviewDirectives.directive('gcodepreview', function($http,$timeout,$rootSc
                 cube.position.set( 40, 80, 20 );
                 cube.castShadow = true;
                 scene.add( cube );
-
+                var lse = new THREE.Geometry();;
+                var lsm = new THREE.Geometry();;
                 var lastvec = null;
+                console.log("parse lines");
                 angular.forEach(code,function(val) {
                     if(val.p=='E')
                         bbox.addPoint(val);
-                    if(lst!=val.p) { // switch move type
-                        if(ls.vertices.length>0) {
-
-                            ls.vertices.push(lastvec);
-                            lines = new THREE.Line(ls,lst=='M' ? materialTravel : materialPrint);
-                            if(lst=='E')
-                                lines.castShadow = true;
-                            scene.add(lines);
-                            ls = new THREE.Geometry();
-                            ls.vertices.push(lastvec);
+                    vec = new THREE.Vector3(val.x,val.y,val.z);
+                    if(lastvec!=null) { // switch move type
+                        if(val.p=='E') {
+                            lse.vertices.push(lastvec);
+                            lse.vertices.push(vec);
+                        } else {
+                            lsm.vertices.push(lastvec);
+                            lsm.vertices.push(vec);
                         }
                     }
-                    lst = val.p;
-                    lastvec = new THREE.Vector3(val.x,val.y,val.z);
-                    ls.vertices.push(lastvec);
+                    lastvec = vec;
                 });
+                console.log("create lines");
+                lines = new THREE.Line(lse, materialTravel,THREE.LinePieces);
+                lines.castShadow = true;
+                scene.add(lines);
+                lines = new THREE.Line(lsm, materialPrint,THREE.LinePieces);
+                //lines.castShadow = true;
+                scene.add(lines);
+                console.log("create rest");
                 dx = bbox.max.x-bbox.min.x;
                 dy = bbox.max.y-bbox.min.y;
                 dz = bbox.max.z-bbox.min.z;
@@ -173,24 +173,39 @@ GCodePreviewDirectives.directive('gcodepreview', function($http,$timeout,$rootSc
                 cameraDistance = 2*diameter;
                 scene.fog = new THREE.Fog( 0x72645b, diameter, 4*diameter );
                 var d = diameter;
-                light.shadowCameraLeft = -d;
-                light.shadowCameraRight = d;
-                light.shadowCameraTop = d;
-                light.shadowCameraBottom = -d;
+                mx = Math.max(bbox.max.x,Math.abs(bbox.min.x));
+                my = Math.max(bbox.max.y,Math.abs(bbox.min.y));
+                var md = Math.sqrt(mx*mx+my*my);
+                light = new THREE.DirectionalLight( 0xffffff );
+                light.position.set( 0.2*2*d, 0.5*2*d, 1*2*d );
+                light.castShadow = true;
+                light.shadowCameraVisible = true;
+                light.shadowDarkness = 0.7;
+                scene.add( light );
+                light.shadowCameraLeft = -md;
+                light.shadowCameraRight = md;
+                light.shadowCameraTop = md;
+                light.shadowCameraBottom = -md;
 
                 light.shadowCameraNear = 1;
-                light.shadowCameraFar = 4;
+                light.shadowCameraFar = 4*d;
 
                 light.shadowMapWidth = 1024;
                 light.shadowMapHeight = 1024;
 
                 light.shadowBias = -0.005;
+                hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
+                hemiLight.color.setHSL( 0.6, 1, 0.6 );
+                hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+                hemiLight.position.set( 0, 500, 0 );
+                scene.add( hemiLight );
 
                 if(ls.length>0) {
                     scene.add(new THREE.Line(ls,lst=='M' ? materialTravel : materialPrint));
                 }
                 resizer();
                 render();
+                $rootScope.$broadcast('loaded');
             }
             /*scope.$watch('data',function(newval) {
                 console.log("data changed "+newval);
@@ -201,8 +216,9 @@ GCodePreviewDirectives.directive('gcodepreview', function($http,$timeout,$rootSc
             });*/
             attrs.$observe('data', function(value) {
                 if(scope.data == 0) return;
+                console.log("calling load");
+                $rootScope.$broadcast('load');
                 $http.get("/printer/parsedgcode/"+scope.slug+"?id="+scope.data).success(function(data) {
-                    console.log(data);
                     recomputeScene(data);
                 });
             });

@@ -8,7 +8,9 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q) {
     $rootScope.printerSetup = {};
     $rootScope.printerConfig = {};
     $rootScope.printer = {};
+    $scope.externalCommands = [];
     $scope.question = {};
+    $rootScope.loading = false;
     window.rs = $rootScope; // for debugging
     $rootScope.selectPrinter = function(slug) {
         console.log("Activate "+slug);
@@ -30,7 +32,7 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q) {
                         if(p.slug == $rootScope.activeSlug)
                             $rootScope.active = $rootScope.printer[p.slug];
                     } else $rootScope.printer[p.slug].status = p;
-                    if(firstPrinterPoll) {
+                    if(firstPrinterPoll || typeof($rootScope.printerConfig[p.slug])=="undefined") {
                         WS.send("getPrinterConfig",{printer: p.slug}).then(function(c) {
                             $rootScope.printerConfig[p.slug] = c;
                             $rootScope.activeConfig = $rootScope.printerConfig[p.slug];
@@ -63,7 +65,15 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q) {
     $scope.$on("connected",function(event) {
        printerPoller();
        messagesPoller();
+        WS.send("listExternalCommands",{}).then(function(r) {
+            console.log("external commands");
+            console.log(r);
+            $scope.externalCommands = r;
+        })
     });
+    $scope.runExternalCommand = function(id) {
+        WS.send("runExternalCommand",{id:id});
+    }
     $scope.removeMessage = function(idx) {
         m = $rootScope.messages[idx];
         a = 'job';
@@ -103,6 +113,13 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q) {
         $('#question').modal('hide');
         $scope.question.deferred.reject();
     }
+    $rootScope.$on('load',function(event) {
+        console.log("load called");
+        $scope.loading = true;
+    });
+    $rootScope.$on('loaded',function(event) {
+        $scope.loading = false;
+    });
 }
 
 function AboutController($scope) {

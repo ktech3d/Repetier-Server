@@ -1,6 +1,9 @@
 .DS_Store
 
 build/**
+buildosx/**
+buildlinux/**
+bildwindows/**
 
 Repetier-Server.xcodeproj
 
