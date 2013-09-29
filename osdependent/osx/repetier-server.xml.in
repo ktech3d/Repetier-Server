@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <server>
-    <installation-directory>${CMAKE_INSTALL_PREFIX}</installation-directory>
-    <storage-directory>/Library/Application Support/${PROJECT_NAME}/</storage-directory>
+    <installation-directory>${INSTALL_PATH}/</installation-directory>
+    <storage-directory>/Library/Application Support/${PROJECT_DIR}/</storage-directory>
     <default-language>en</default-language>
     <port>3344</port>
     <logging>true</logging>

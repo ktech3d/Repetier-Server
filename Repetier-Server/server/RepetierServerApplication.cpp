@@ -144,7 +144,7 @@ int RepetierServerApplication::main(const std::vector<std::string>& args)
 {
     json_spirit::mValue cmd;
     json_spirit::read("{\"action\":\"listPrinter\",\"data\":{},\"printer\":\"irapid\",\"callback_id\":1567}", cmd);
-    cout << cmd.get_obj()["action"].get_str();
+    //cout << cmd.get_obj()["action"].get_str();
     if (!_helpRequested)
     {
         boost::filesystem::path cf(configurationFile);

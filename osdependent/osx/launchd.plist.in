@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>Disabled</key>
+        <false/>
+        <key>Label</key>
+        <string>${PROJECT_NAME}</string>
+        <key>WorkingDirectory</key>
+        <string>/Library/Application Support/${PROJECT_DIR}</string>
+        <key>ProgramArguments</key>
+        <array>
+            <string>${INSTALL_PATH}/bin/${PROJECT_TARGET}</string>
+            <string>--config=${INSTALL_PATH}/etc/repetier-server.xml</string>
+        </array>
+        <key>KeepAlive</key>
+        <true/>
+        <key>EnvironmentVariables</key>
+        <dict/>
+        <key>RunAtLoad</key>
+        <false/>
+        <key>Listeners</key>
+        <dict>
+            <key>SockServiceName</key>
+            <string>3344</string>
+            <key>SockType</key>
+            <string>stream</string>
+            <key>SockFamily</key>
+            <string>IPv4</string>
+        </dict>
+    </dict>
+</plist>
