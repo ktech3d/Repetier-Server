@@ -80,3 +80,6 @@ void RLog::log(const std::string &line,const std::string& val,bool err) {
     res = line.substr(0,p)+val+line.substr(min(p+1,line.length()));
     log(res,err);
 }
+void RLog::log(const std::string &line,char *val,bool err) {
+    log(line,string(val),err);
+}

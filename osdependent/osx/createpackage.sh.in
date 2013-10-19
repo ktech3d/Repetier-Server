@@ -1,0 +1,26 @@
+#!/bin/bash
+# Create a distributable mac os x package using pkgbuild
+
+BUILDPATH=@PROJECT_BINARY_DIR@
+SOURCE=@PROJECT_SOURCE_DIR@
+DIST=$BUILDPATH/dist/Repetier-Server
+RES=$BUILDPATH/dist/Resources
+
+mkdir -p $RES
+mkdir -p $DIST
+mkdir -p $DIST/bin
+mkdir -p $DIST/scripts
+cp -rp $SOURCE/www $DIST
+cp -rp $SOURCE/languages $DIST
+cp -rp $BUILDPATH/etc $DIST
+cp -p $BUILDPATH/bin/installLaunchd.sh $DIST/bin
+cp -p $BUILDPATH/bin/uninstallLaunchd.sh $DIST/bin
+cp -p $SOURCE/osdependent/osx/scripts/postinstall $DIST/scripts/postinstall
+cp -p $BUILDPATH/RelWithDebInfo/@PROJECT_TARGET@ $DIST/bin
+cp $SOURCE/LICENSE.TXT $RES
+cp $BUILDPATH/readme.html $RES
+
+#pkgbuild --identifier com.hot-world.@PROJECT_TARGET@.pkg  --version 0.50.1 --root $DIST --install-location /usr/local/Repetier-Server  ~/Desktop/RepetierServer.pkg
+pkgbuild --identifier com.hot-world.@PROJECT_TARGET@.pkg  --version 0.50.1 --root $DIST --scripts $DIST/scripts --install-location /usr/local/Repetier-Server  $BUILDPATH/bin/serverInstaller.pkg
+
+productbuild --resources $RES --distribution $BUILDPATH/Distribution.xml ~/Desktop/RepetierServer.pkg

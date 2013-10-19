@@ -25,6 +25,11 @@ CHECK_INCLUDE_FILE( xlocale.h HAVE_XLOCALE_H )
 IF(HAVE_XLOCALE_H)
     ADD_DEFINITIONS("-DHAVE_XLOCALE_H")
 ENDIF()
+IF(NOT CMAKE_BUILD_TYPE)
+  SET(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING
+      "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
+      FORCE)
+ENDIF(NOT CMAKE_BUILD_TYPE)
 ############## include Boost
 
 # Activate debug if you don't know where cmake is looking for your boost files
@@ -44,6 +49,7 @@ ENDIF()
 
 
 add_subdirectory(Repetier-Server)
+INCLUDE_DIRECTORIES("Repetier-Server")
 INCLUDE_DIRECTORIES("Repetier-Server/json_spirit")
 INCLUDE_DIRECTORIES("Repetier-Server/moFileReader")
 # INCLUDE_DIRECTORIES("Repetier-Server/libconfig")
@@ -53,19 +59,25 @@ INCLUDE_DIRECTORIES("Repetier-Server/Poco/Util/include")
 INCLUDE_DIRECTORIES("Repetier-Server/Poco/XML/include")
 INCLUDE_DIRECTORIES("Repetier-Server/Poco/Net/include")
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Repetier-Server/productData.h.in ${CMAKE_CURRENT_SOURCE_DIR}/Repetier-Server/productData.h)
+
 #message("Files: ${RepetierServer_SOURCES}")
 #message("Boost libs: ${Boost_LIBRARIES}")
 add_executable(${PROJECT_TARGET} ${RepetierServer_SOURCES})
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set(INSTALL_PATH /usr/local/${PROJECT_DIR})
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/repetier-server.xml.in ${CMAKE_CURRENT_BINARY_DIR}/etc/repetier-server.xml)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/repetier-server.xml.in ${CMAKE_CURRENT_BINARY_DIR}/etc/${PROJECT_TARGET}.xml)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/etc/repetier-server.xml DESTINATION ${INSTALL_PATH}/etc)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/launchd.plist.in ${CMAKE_CURRENT_BINARY_DIR}/etc/${PROJECT_TARGET}.plist)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/etc/${PROJECT_TARGET}.plist DESTINATION ${INSTALL_PATH}/etc)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/installLaunchd.sh.in ${CMAKE_CURRENT_BINARY_DIR}/bin/installLaunchd.sh)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/installLaunchd.sh.in ${CMAKE_CURRENT_BINARY_DIR}/bin/installLaunchd.sh @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bin/installLaunchd.sh DESTINATION ${INSTALL_PATH}/bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE WORLD_READ WORLD_EXECUTE)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/uninstallLaunchd.sh.in ${CMAKE_CURRENT_BINARY_DIR}/bin/uninstallLaunchd.sh)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/uninstallLaunchd.sh.in ${CMAKE_CURRENT_BINARY_DIR}/bin/uninstallLaunchd.sh @ONLY)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bin/uninstallLaunchd.sh DESTINATION ${INSTALL_PATH}/bin PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE WORLD_READ WORLD_EXECUTE)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/createpackage.sh.in ${CMAKE_CURRENT_BINARY_DIR}/bin/createpackage.sh @ONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/scripts/postinstall.in ${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/scripts/postinstall @ONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/readme.html ${CMAKE_CURRENT_BINARY_DIR}/readme.html @ONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/osdependent/osx/Distribution.xml ${CMAKE_CURRENT_BINARY_DIR}/Distribution.xml @ONLY)
 ENDIF()
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 ENDIF()

@@ -1,5 +1,5 @@
 #!/bin/bash
 echo "This will uninstall the @PROJECT_NAME@ as a launchd daemon. "
-launchctl unload /Library/LaunchDaemons/@PROJECT_TARGET@.plist
+sudo launchctl unload /Library/LaunchDaemons/@PROJECT_TARGET@.plist
 sudo rm /Library/LaunchDaemons/@PROJECT_TARGET@.plist
 echo "Launchd connection uninstalled."

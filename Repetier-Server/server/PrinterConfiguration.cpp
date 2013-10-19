@@ -482,6 +482,29 @@ PrinterConfiguration::PrinterConfiguration(string filename) {
         }
         bedNodes->release();
         
+        NodeList *webcamNodes = config->getElementsByTagName("webcam");
+        if(webcamNodes->length()>0) {
+            NodeList *webcamNodes2 = webcamNodes->item(0)->childNodes();
+            for(int i=0;i<webcamNodes2->length();i++) {
+                Node *n = webcamNodes2->item(i);
+                tag = n->nodeName();
+                if(tag=="#text") continue;
+                if(tag == "method")
+                    webcamMethod = NumberParser::parse(n->innerText());
+                else if(tag == "timelapseMethod")
+                    webcamMethod = NumberParser::parse(n->innerText());
+                else if(tag == "staticUrl")
+                    webcamStaticUrl = n->innerText();
+                else if(tag == "dynamicUrl")
+                    webcamDynamicUrl = n->innerText();
+                else if(tag == "reloadInterval")
+                    webcamReloadInterval = NumberParser::parseFloat(n->innerText());
+                else if(tag == "timelapseInterval")
+                    webcamTimelapseInterval = NumberParser::parseFloat(n->innerText());
+            }
+        }
+        webcamNodes->release();
+
         NodeList *connectionNodes = config->getElementsByTagName("serial");
         if(connectionNodes->length()>0) {
             NodeList *connectionNodes2 = connectionNodes->item(0)->childNodes();
@@ -646,6 +669,12 @@ void PrinterConfiguration::setDefaults() {
     maxZSpeed = 4;
     timeMultiplier = 1;
     movebuffer = 16;
+    webcamMethod = 0;
+    webcamTimelapseMethod = 0;
+    webcamStaticUrl = "";
+    webcamDynamicUrl = "";
+    webcamReloadInterval = 3;
+    webcamTimelapseInterval = 10;
 }
 
 Poco::XML::Element *PrinterConfiguration::getOrCreateElement(const std::string &path) {
@@ -751,7 +780,13 @@ void PrinterConfiguration::saveConfiguration() {
         bedTemperatures[i].node = NULL;
         bedTemperatures[i].save(config,temps);
     }
-
+    setNodeText(getOrCreateElement("webcam.method"),NumberFormatter::format(webcamMethod));
+    setNodeText(getOrCreateElement("webcam.timelapseMethod"),NumberFormatter::format(webcamTimelapseMethod));
+    setNodeText(getOrCreateElement("webcam.staticUrl"),webcamStaticUrl);
+    setNodeText(getOrCreateElement("webcam.dynamicUrl"),webcamDynamicUrl);
+    setNodeText(getOrCreateElement("webcam.reloadInterval"),NumberFormatter::format(webcamReloadInterval));
+    setNodeText(getOrCreateElement("webcam.timelapseInterval"),NumberFormatter::format(webcamTimelapseInterval));
+    
     DOMWriter writer;
     ofstream out(configFilename.c_str());
     writer.setNewLine("\n");
@@ -808,7 +843,14 @@ void PrinterConfiguration::fromJSON(json_spirit::mObject &obj) {
         mObject &shape = obj["shape"].get_obj();
         mArray &extruders = obj["extruders"].get_array();
         mObject &hbed = obj["heatedBed"].get_obj();
-        
+        mObject &webcam = obj["webcam"].get_obj();
+        webcamMethod = (webcam["method"].type()==json_spirit::int_type ? webcam["method"].get_int(): NumberParser::parse(webcam["method"].get_str() ));
+        webcamTimelapseMethod = (webcam["timelapseMethod"].type()==json_spirit::int_type ? webcam["timelapseMethod"].get_int(): NumberParser::parse(webcam["timelapseMethod"].get_str() ));
+        webcamStaticUrl = webcam["staticUrl"].get_str();
+        webcamDynamicUrl = webcam["dynamicUrl"].get_str();
+        webcamReloadInterval = webcam["reloadInterval"].get_real();
+        webcamTimelapseInterval = webcam["timelapseInterval"].get_real();
+
         name = general["name"].get_str();
         if(slug.length()==0)
             slug = general["slug"].get_str();
@@ -961,6 +1003,14 @@ void PrinterConfiguration::fillJSON(json_spirit::mObject &obj) {
     
     obj["shape"] = mObject();
     shape->fillJSON(obj["shape"].get_obj());
+    obj["webcam"] = mObject();
+    mObject &webcam = obj["webcam"].get_obj();
+    webcam["method"] = webcamMethod;
+    webcam["timelapseMethod"] = webcamTimelapseMethod;
+    webcam["staticUrl"] = webcamStaticUrl;
+    webcam["dynamicUrl"] = webcamDynamicUrl;
+    webcam["reloadInterval"] = webcamReloadInterval;
+    webcam["timelapseInterval"] = webcamTimelapseInterval;
     
     obj["extruders"] = mArray();
     for(vector<ExtruderConfigurationPtr>::iterator it = extruderList.begin();it!=extruderList.end();++it) {

@@ -366,7 +366,9 @@ public:
       * \return The value you passed in via _id or the translated string.
       */
     virtual std::string Lookup( const char* id ) const;
-
+    void addTranslation(std::string key,std::string trans) {
+        m_lookup[key] = trans;
+    }
     /// \brief Returns the Error Description.
     virtual const std::string& GetErrorDescription() const;
 

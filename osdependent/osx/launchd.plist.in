@@ -11,7 +11,7 @@
         <key>ProgramArguments</key>
         <array>
             <string>${INSTALL_PATH}/bin/${PROJECT_TARGET}</string>
-            <string>--config=${INSTALL_PATH}/etc/repetier-server.xml</string>
+            <string>--config=${INSTALL_PATH}/etc/${PROJECT_TARGET}.xml</string>
         </array>
         <key>KeepAlive</key>
         <true/>

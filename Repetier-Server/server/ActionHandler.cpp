@@ -26,6 +26,7 @@
 #include "GCodeAnalyser.h"
 #include "PrinterConfiguration.h"
 #include "WorkDispatcher.h"
+#include "User.h"
 
 using namespace json_spirit;
 using namespace std;
@@ -76,8 +77,39 @@ namespace repetier {
         registerAction("runExternalCommand",&actionRunExternalCommand);
         registerAction("createConfiguration",&actionCreateConfiguration);
         registerAction("removeConfiguration",&actionRemoveConfiguration);
+        registerAction("login",&actionLogin);
+        registerAction("logout",&actionLogout);
+        registerAction("userlist",&actionUserlist);
+        registerAction("createUser",&actionCreateUser);
+        registerAction("updateUser",&actionUpdateUser);
+        registerAction("deleteUser",&actionDeleteUser);
     }
-    
+    bool ActionHandler::hasPermission(json_spirit::mObject &obj,json_spirit::mValue &out,Permission perm) {
+        if(!UserDatabase::loginRequired()) return true;
+        string sess(obj["session"].get_str());
+        UserSessionPtr session = UserSession::getSession(sess);
+        bool allowed = false;
+        if(session == NULL|| session->user == NULL) allowed = false;
+        else
+        switch(perm) {
+            case PRINT:
+                allowed = session->user->canPrint();
+                break;
+            case ADD_FILES:
+                allowed = session->user->canAddFiles();
+                break;
+            case DELETE_FILES:
+                allowed = session->user->canDeleteFiles();
+                break;
+            case CONFIGURE:
+                allowed = session->user->canConfigure();
+                break;
+        }
+        if(!allowed) {
+            out.get_obj()["permissionDenied"] = true;
+        }
+        return allowed;
+    }
     void ActionHandler::actionListPrinter(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mArray ret;
         std::vector<PrinterPtr> *list = &gconfig->getPrinterList();
@@ -107,6 +139,7 @@ namespace repetier {
     }
 
     void ActionHandler::actionResponse(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         if(printer==NULL) return;
         mObject lobj;
         uint8_t filter=obj["filter"].get_int();
@@ -132,6 +165,7 @@ namespace repetier {
     }
     
     void ActionHandler::actionMove(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         if(printer==NULL) return;
         double x=999999,y=999999,z=999999,e=999999;
         if(obj.find("x")!=obj.end())
@@ -167,6 +201,7 @@ namespace repetier {
     }
 
     void ActionHandler::actionRemoveModel(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,DELETE_FILES)) return;
         int id = obj["id"].get_int();
         if(printer == NULL) return;
         PrintjobPtr job = printer->getModelManager()->findById(id);
@@ -178,6 +213,7 @@ namespace repetier {
     }
     
     void ActionHandler::actionListModels(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         mObject ret;
         if(printer == NULL) return;
         PrintjobManager* manager = printer->getModelManager();
@@ -186,6 +222,7 @@ namespace repetier {
         out = ret;
     }
     void ActionHandler::actionCopyModel(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         if(printer == NULL) return;
         mObject ret;
         int id = obj["id"].get_int();
@@ -215,6 +252,7 @@ namespace repetier {
     
     void ActionHandler::actionListJobs(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
+        if(!hasPermission(obj,out,PRINT)) return;
         if(printer == NULL) return;
         printer->getJobManager()->fillSJONObject("data",ret);
         out = ret;
@@ -222,6 +260,7 @@ namespace repetier {
     
     void ActionHandler::actionStartJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
+        if(!hasPermission(obj,out,PRINT)) return;
         if(printer == NULL) return;
         int id = obj["id"].get_int();
         PrintjobPtr job = printer->getJobManager()->findById(id);
@@ -240,6 +279,7 @@ namespace repetier {
     
     void ActionHandler::actionStopJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         mObject ret;
+        if(!hasPermission(obj,out,PRINT)) return;
         if(printer == NULL) return;
         int id = obj["id"].get_int();
         PrintjobPtr job = printer->getJobManager()->findById(id);
@@ -252,6 +292,7 @@ namespace repetier {
     }
     
     void ActionHandler::actionRemoveJob(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         mObject ret;
         if(printer == NULL) return;
         int id = obj["id"].get_int();
@@ -270,6 +311,7 @@ namespace repetier {
         p->fillJSONConfig(out.get_obj());
     }
     void ActionHandler::actionSetPrinterConfig(mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
         if(printer == NULL) return;
         printer->config->fromJSON(obj);
         printer->sendConfigEvent();
@@ -282,6 +324,7 @@ namespace repetier {
         d["script"] = printer->config->getScript(obj["name"].get_str());
     }
     void ActionHandler::actionSetScript(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
         if(printer == NULL) return;
         out = mObject();
         mObject &d = out.get_obj();
@@ -290,11 +333,13 @@ namespace repetier {
         printer->config->saveConfiguration();
     }
     void ActionHandler::actionActivate(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         printer = gconfig->findPrinterSlug(obj["printer"].get_str());
         if(printer == NULL) return;
         printer->setActive(true);
     }
     void ActionHandler::actionDeactivate(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         printer = gconfig->findPrinterSlug(obj["printer"].get_str());
         if(printer == NULL) return;
         printer->setActive(false);
@@ -311,6 +356,7 @@ namespace repetier {
         printer->injectManualCommand("M205");
     }
     void ActionHandler::actionSetEeprom(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
         if(printer == NULL) return;
         mArray &a = obj["eeprom"].get_array();
         mArray::iterator it(a.begin()),ie(a.end());
@@ -335,18 +381,98 @@ namespace repetier {
         }
     }
     void ActionHandler::actionRunExternalCommand(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,PRINT)) return;
         vector<ExternalProgramPtr> &l = gconfig->getExternalCommands();
         int id = obj["id"].get_int();
         if(id>=0 && id<l.size())
             l[id]->runCommand();
     }
     void ActionHandler::actionCreateConfiguration(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
         PrinterConfigurationPtr conf(new PrinterConfiguration);
         conf->createConfiguration(obj["name"].get_str(),obj["slug"].get_str());
     }
     void ActionHandler::actionRemoveConfiguration(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
         PrinterPtr p(gconfig->findPrinterSlug(obj["slug"].get_str()));
         if(p!=NULL)
             gconfig->removePrinter(p);
     }
+    
+    void ActionHandler::actionLogin(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        mObject &res = out.get_obj();
+        string sessid = obj["session"].get_str();
+        UserSessionPtr session = UserSession::getSession(sessid);
+        if(session == NULL) return;
+        UserPtr user = UserDatabase::findUserByLogin(obj["login"].get_str());
+        if(user == NULL || !user->passwordCorrect(obj["password"].get_str(),sessid)) {
+            res["error"] = "Login or password invalid!";
+            return;
+        }
+        session->user = user;
+        res["ok"] = true;
+        res["permissions"] = user->permissions;
+        res["login"] = obj["login"].get_str();
+    }
+    void ActionHandler::actionLogout(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        string sessid = obj["session"].get_str();
+        UserSessionPtr session = UserSession::getSession(sessid);
+        session->user.reset();
+    }
+    void ActionHandler::actionUserlist(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
+        UserDatabase::fillUserlistJSON(out.get_obj());
+    }
+    void ActionHandler::actionCreateUser(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
+        mObject &data = out.get_obj();
+        int perm = obj["permissions"].get_int();
+        string login = obj["login"].get_str();
+        UserPtr u = UserDatabase::findUserByLogin(login);
+        if(u != NULL) {
+            data["succes"] = false;
+            data["error"] = "User already exists!";
+            return;
+        }
+        string password = obj["password"].get_str();
+        bool lRequired = UserDatabase::loginRequired();
+        u = UserDatabase::addUser(login, password,perm);
+        if(!lRequired) { // Login as created admin user if it is first user
+            string sessid = obj["session"].get_str();
+            UserSessionPtr session = UserSession::getSession(sessid);
+            session->user = u;
+        }
+        data["success"] = true;
+    }
+    
+    void ActionHandler::actionUpdateUser(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
+        mObject &data = out.get_obj();
+        string login = obj["login"].get_str();
+        string sessid = obj["session"].get_str();
+        UserSessionPtr session = UserSession::getSession(sessid);
+        if(session == NULL) return;
+        UserPtr u = UserDatabase::findUserByLogin(login);
+        if(u == NULL) return;
+        if(obj["password"].get_str().length()>0)
+            u->password = obj["password"].get_str();
+        if(session->user!=NULL && session->user->id != u->id)
+            u->permissions = obj["permissions"].get_int();
+        else {
+            u->permissions |= obj["permissions"].get_int();
+        }
+        u->save();
+    }
+    
+    void ActionHandler::actionDeleteUser(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
+        if(!hasPermission(obj,out,CONFIGURE)) return;
+        mObject &data = out.get_obj();
+        string login = obj["login"].get_str();
+        UserPtr u = UserDatabase::findUserByLogin(login);
+        data["success"] = false;
+        if(u == NULL) return;
+        if(UserDatabase::getNumberOfEntries()==1 || u->login != login)
+            data["success"] = UserDatabase::deleteUser(login);
+    }
+
 }

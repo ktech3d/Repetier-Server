@@ -9,56 +9,51 @@
  */
 
 // Core variables and mixins
-@import "variables";
-@import "mixins";
+@import "variables.less";
+@import "mixins.less";
 
 // Reset
-@import "normalize";
-@import "print";
+@import "normalize.less";
+@import "print.less";
 
 // Core CSS
-@import "scaffolding";
-@import "type";
-@import "code";
-@import "grid";
+@import "scaffolding.less";
+@import "type.less";
+@import "code.less";
+@import "grid.less";
+@import "tables.less";
+@import "forms.less";
+@import "buttons.less";
 
-@import "tables";
-@import "forms";
-@import "buttons";
+// Components
+@import "component-animations.less";
+@import "glyphicons.less";
+@import "dropdowns.less";
+@import "button-groups.less";
+@import "input-groups.less";
+@import "navs.less";
+@import "navbar.less";
+@import "breadcrumbs.less";
+@import "pagination.less";
+@import "pager.less";
+@import "labels.less";
+@import "badges.less";
+@import "jumbotron.less";
+@import "thumbnails.less";
+@import "alerts.less";
+@import "progress-bars.less";
+@import "media.less";
+@import "list-group.less";
+@import "panels.less";
+@import "wells.less";
+@import "close.less";
 
-// Components: common
-@import "component-animations";
-@import "input-groups";
-@import "dropdowns";
-@import "list-group";
-@import "panels";
-@import "wells";
-@import "close";
-
-// Components: Nav
-@import "navs";
-@import "navbar";
-@import "button-groups";
-@import "breadcrumbs";
-@import "pagination";
-@import "pager";
-
-// Components: Popovers
-@import "modals";
-@import "tooltip";
-@import "popovers";
-
-// Components: Misc
-@import "alerts";
-@import "thumbnails";
-@import "media";
-@import "labels";
-@import "badges";
-@import "progress-bars";
-@import "accordion";
-@import "carousel";
-@import "jumbotron";
+// Components w/ JavaScript
+@import "modals.less";
+@import "tooltip.less";
+@import "popovers.less";
+@import "carousel.less";
 
 // Utility classes
-@import "utilities"; // Has to be last to override when necessary
-@import "responsive-utilities";
+@import "utilities.less";
+@import "responsive-utilities.less";

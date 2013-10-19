@@ -18,57 +18,56 @@
 @error-color: #ff0000;
 
 // Core variables and mixins
-@import "variables";
-@import "mixins";
+@import "variables.less";
+@import "mixins.less";
 
-  // Reset
-@import "normalize";
-@import "print";
+// Reset
+@import "normalize.less";
+@import "print.less";
 
-  // Core CSS
-@import "scaffolding";
-@import "type";
-@import "code";
-@import "grid";
+// Core CSS
+@import "scaffolding.less";
+@import "type.less";
+@import "code.less";
+@import "grid.less";
+@import "tables.less";
+@import "forms.less";
+@import "buttons.less";
 
-@import "tables";
-@import "forms";
-@import "buttons";
+// Components
 
-  // Components: common
-@import "component-animations";
-@import "input-groups";
-@import "dropdowns";
-@import "list-group";
-@import "panels";
-@import "wells";
-@import "close";
+@import "component-animations.less";
+//@import "glyphicons.less";
+@import "dropdowns.less";
+@import "button-groups.less";
+@import "input-groups.less";
+@import "navs.less";
+@import "navbar.less";
+@import "breadcrumbs.less";
+@import "pagination.less";
+@import "pager.less";
+@import "labels.less";
+@import "badges.less";
+@import "jumbotron.less";
+@import "thumbnails.less";
+@import "alerts.less";
+@import "progress-bars.less";
+@import "media.less";
+@import "list-group.less";
+@import "panels.less";
+@import "wells.less";
+@import "close.less";
 
-  // Components: Nav
-@import "navs";
-@import "navbar";
-@import "button-groups";
-@import "breadcrumbs";
-@import "pagination";
-@import "pager";
+// Components w/ JavaScript
+@import "modals.less";
+@import "tooltip.less";
+@import "popovers.less";
+@import "carousel.less";
 
-  // Components: Popovers
-@import "modals";
-@import "tooltip";
-@import "popovers";
+// Utility classes
+@import "utilities.less";
+@import "responsive-utilities.less";
 
-  // Components: Misc
-@import "alerts";
-@import "thumbnails";
-@import "media";
-@import "labels";
-@import "badges";
-@import "progress-bars";
-@import "accordion";
-@import "carousel";
-@import "jumbotron";
-
-@import "responsive-utilities";
 
 // Some definitions for slider to work from Bootstrap 2
 @baseLineHeight:        20px;
@@ -78,16 +77,12 @@
   -moz-border-radius: @radius;
   border-radius: @radius;
 }
-
 @import "slider";
 
-  // Utility classes
-@import "utilities"; // Has to be last to override when necessary
-@import "responsive-utilities";
 
 /* Move down content because we have a fixed navbar that is 50px tall */
 body {
-  padding-top: 50px;
+  padding-top: 70px;
   padding-bottom: 20px;
 }
 
@@ -159,6 +154,13 @@ body {
 }
 .margin-top {
   margin-top:10px;
+}
+.small-margin {
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+.indent-left {
+  margin-left:15px;
 }
 .vcenter-btnline {
   padding-top: @padding-base-vertical+1;

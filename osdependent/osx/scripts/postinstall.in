@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+set -e
+# Server postinstall script to install daemon
+chmod 755 @INSTALL_PATH@/bin/installLaunchd.sh
+chmod 755 @INSTALL_PATH@/bin/uninstallLaunchd.sh
+cp @INSTALL_PATH@/etc/@PROJECT_TARGET@.plist /Library/LaunchDaemons
+chown root /Library/LaunchDaemons/@PROJECT_TARGET@.plist
+launchctl unload /Library/LaunchDaemons/@PROJECT_TARGET@.plist
+chmod 644 /Library/LaunchDaemons/@PROJECT_TARGET@.plist
+launchctl load /Library/LaunchDaemons/@PROJECT_TARGET@.plist
+# Open Server
+# open http://localhost:3344
+exit 0

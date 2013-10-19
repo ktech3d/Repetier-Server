@@ -1,8 +1,8 @@
 <div class="container">
     <ul class="breadcrumb">
-        <li><a href="#/">Dashboard</a></li>
+        <li><a href="#/"><?php _("Dashboard") ?></a></li>
         <li><a href="#/printer/{{activeSlug}}">{{active.status.name}}</a></li>
-        <li class="active">Scripts</li>
+        <li class="active"><?php _("Scripts") ?></li>
     </ul>
 
     <div class="row">
@@ -18,7 +18,7 @@
         </div>
         <div class="col-sm-4 col-1"></div>
         <div class="col-sm-2 col-3">
-            <button class="btn btn-primary btn-block" ng-click="saveScript()"><i class="icon-save"></i> Save</button>
+            <button class="btn btn-primary btn-block" ng-click="saveScript()"><i class="icon-save"></i> <?php _("Save") ?></button>
         </div>
     </div>
     <div class="row" style="margin-top:10px;">

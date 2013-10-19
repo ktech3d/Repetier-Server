@@ -157,6 +157,14 @@ public:
     int lastBedTemp;
     int movebuffer;
     std::vector<NamedTemperature> bedTemperatures;
+    
+    int webcamMethod;
+    int webcamTimelapseMethod;
+    std::string webcamStaticUrl;
+    std::string webcamDynamicUrl;
+    double webcamReloadInterval;
+    double webcamTimelapseInterval;
+    
 };
 
 #endif /* defined(__Repetier_Server__PrinterConfigiration__) */

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>@PROJECT_NAME@ @Server_VERSION_MAJOR@.@Server_VERSION_MINOR@</title>
+    <readme file="readme.html" />
+    <license file="LICENSE.TXT" />
+
+    <options customize="never" />
+    <choices-outline>
+        <line choice="install"/>
+    </choices-outline>
+    <choice id="install" visible="true" title="Install" description="Install @PROJECT_NAME@ @Server_VERSION_MAJOR@.@Server_VERSION_MINOR@">
+        <pkg-ref id="com.hot-world.@PROJECT_TARGET@.pkg">serverInstaller.pkg</pkg-ref>
+    </choice>
+</installer-gui-script>

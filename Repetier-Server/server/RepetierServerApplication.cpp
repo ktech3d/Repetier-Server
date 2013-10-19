@@ -17,6 +17,7 @@
  
  */
 
+#include "productData.h"
 #include "RepetierServerApplication.h"
 #include "WebserverAPI.h"
 
@@ -43,6 +44,7 @@
 #include "ActionHandler.h"
 #include "PrinterConfiguration.h"
 #include "WorkDispatcher.h"
+#include "User.h"
 
 using Poco::Net::ServerSocket;
 using Poco::Net::HTTPRequestHandler;
@@ -66,126 +68,128 @@ using namespace Poco;
 using namespace std;
 using namespace repetier;
 
-class RepetierHTTPRequestHandlerFactory: public HTTPRequestHandlerFactory
-{
-public:
-    RepetierHTTPRequestHandlerFactory()
+namespace repetier {
+    class RepetierHTTPRequestHandlerFactory: public HTTPRequestHandlerFactory
     {
-    }
-    
-    HTTPRequestHandler* createRequestHandler(
-                                             const HTTPServerRequest& request)
-    {
-            return new repetier::MainRequestHandler();
-    }
-    
-private:
-    std::string _format;
-};
-
-RepetierServerApplication::RepetierServerApplication(): _helpRequested(false)
-{
-    configurationFile = "/etc/repetier-server.conf";
-}
-
-RepetierServerApplication::~RepetierServerApplication()
-{
-}
-void RepetierServerApplication::initialize(Application& self)
-{
-    loadConfiguration();
-    ServerApplication::initialize(self);
-}
-
-void RepetierServerApplication::uninitialize()
-{
-    ServerApplication::uninitialize();
-}
-
-void RepetierServerApplication::defineOptions(Poco::Util::OptionSet& options)
-{
-    ServerApplication::defineOptions(options);
-    
-    options.addOption(
-                      Option("help", "h", "display argument help information")
-                      .required(false)
-                      .repeatable(false)
-                      .callback(OptionCallback<RepetierServerApplication>(
-                                                               this, &RepetierServerApplication::handleHelp)));
-    options.addOption(Option("config","c","configuration file").
-                      required(false).
-                      repeatable(false).
-                      argument("config",true).
-                      callback(Poco::Util::OptionCallback<RepetierServerApplication>(this,&RepetierServerApplication::handleConfig)));
-    options.addOption(Option("port","p","Webserver port").required(false).argument("port",true).
-                      callback(Poco::Util::OptionCallback<RepetierServerApplication>(this,&RepetierServerApplication::handlePort)));
-}
-
-void RepetierServerApplication::handleHelp(const std::string& name,
-                const std::string& value)
-{
-    HelpFormatter helpFormatter(options());
-    helpFormatter.setCommand(commandName());
-    helpFormatter.setUsage("OPTIONS");
-    helpFormatter.setHeader(
-                            "A server to handle multiple 3d printer with webserver access.");
-    helpFormatter.format(std::cout);
-    stopOptionsProcessing();
-    _helpRequested = true;
-}
-void RepetierServerApplication::handleConfig(const std::string& name, const std::string& value) {
-    configurationFile = value;
-}
-void RepetierServerApplication::handlePort(const std::string& name, const std::string& value) {
-    if(!Poco::NumberParser::tryParse(value,port))
-        port = 8080;
-}
-int RepetierServerApplication::main(const std::vector<std::string>& args)
-{
-    json_spirit::mValue cmd;
-    json_spirit::read("{\"action\":\"listPrinter\",\"data\":{},\"printer\":\"irapid\",\"callback_id\":1567}", cmd);
-    //cout << cmd.get_obj()["action"].get_str();
-    if (!_helpRequested)
-    {
-        boost::filesystem::path cf(configurationFile);
-        if(!boost::filesystem::exists(cf) || !boost::filesystem::is_regular_file(cf)) {
-            cerr << "Repetier-Server version " << REPETIER_SERVER_VERSION << endl;
-            cerr << "Configuration file not found at " << configurationFile << endl;
-            cerr << "Please use config option with correct path" << endl;
-            handleHelp("","");
-            return 2;
+    public:
+        RepetierHTTPRequestHandlerFactory()
+        {
         }
-        gconfig = new GlobalConfig(configurationFile); // Read global configuration
-
-        std::cout << "Configuration file:" << configurationFile << std::endl;
-        std::string format(
-                           config().getString("HTTPTimeServer.format",
-                                              DateTimeFormat::SORTABLE_FORMAT));
         
-        PrinterConfiguration pc("/Users/littwin/Documents/Projekte/Repetier-Server/Repetier-Server/configs/irapid.xml");
+        HTTPRequestHandler* createRequestHandler(
+                                                 const HTTPServerRequest& request)
+        {
+            return new repetier::MainRequestHandler();
+        }
         
-        if(port == 0)
-            port = Poco::NumberParser::parse(gconfig->getPorts());
-        repetier::MainRequestHandler::registerActionHandler("printer", &repetier::printerRequestHandler);
-        repetier::MainRequestHandler::registerActionHandler("socket",&repetier::socketRequestHandler);
-        repetier::ActionHandler::registerStandardActions();
-        ServerSocket socket(port);
-        Poco::Net::HTTPServerParams *params = new Poco::Net::HTTPServerParams();
-        params->setServerName("Repetier-Server");
-        params->setSoftwareVersion(REPETIER_SERVER_VERSION);
-        
-        HTTPServer srv(new RepetierHTTPRequestHandlerFactory(),
-                       socket,params);
-        gconfig->readPrinterConfigs();
-        gconfig->startPrinterThreads();
-        WorkDispatcher::init();
-        srv.start();
-        waitForTerminationRequest();
-        srv.stop();
-        ShutdownManager::waitForShutdown();
-        cout << "Closing server" << endl;
-        gconfig->stopPrinterThreads();
-        WorkDispatcher::shutdown();
+    private:
+        std::string _format;
+    };
+    
+    RepetierServerApplication::RepetierServerApplication(): _helpRequested(false)
+    {
+        configurationFile = "/etc/repetier-server.conf";
     }
-    return Application::EXIT_OK;
+    
+    RepetierServerApplication::~RepetierServerApplication()
+    {
+    }
+    void RepetierServerApplication::initialize(Application& self)
+    {
+        loadConfiguration();
+        ServerApplication::initialize(self);
+    }
+    
+    void RepetierServerApplication::uninitialize()
+    {
+        ServerApplication::uninitialize();
+    }
+    
+    void RepetierServerApplication::defineOptions(Poco::Util::OptionSet& options)
+    {
+        ServerApplication::defineOptions(options);
+        
+        options.addOption(
+                          Option("help", "h", "display argument help information")
+                          .required(false)
+                          .repeatable(false)
+                          .callback(OptionCallback<RepetierServerApplication>(
+                                                                              this, &RepetierServerApplication::handleHelp)));
+        options.addOption(Option("config","c","configuration file").
+                          required(false).
+                          repeatable(false).
+                          argument("config",true).
+                          callback(Poco::Util::OptionCallback<RepetierServerApplication>(this,&RepetierServerApplication::handleConfig)));
+        options.addOption(Option("port","p","Webserver port").required(false).argument("port",true).
+                          callback(Poco::Util::OptionCallback<RepetierServerApplication>(this,&RepetierServerApplication::handlePort)));
+    }
+    
+    void RepetierServerApplication::handleHelp(const std::string& name,
+                                               const std::string& value)
+    {
+        HelpFormatter helpFormatter(options());
+        helpFormatter.setCommand(commandName());
+        helpFormatter.setUsage("OPTIONS");
+        helpFormatter.setHeader(
+                                "A server to handle multiple 3d printer with webserver access.");
+        helpFormatter.format(std::cout);
+        stopOptionsProcessing();
+        _helpRequested = true;
+    }
+    void RepetierServerApplication::handleConfig(const std::string& name, const std::string& value) {
+        configurationFile = value;
+    }
+    void RepetierServerApplication::handlePort(const std::string& name, const std::string& value) {
+        if(!Poco::NumberParser::tryParse(value,port))
+            port = 8080;
+    }
+    int RepetierServerApplication::main(const std::vector<std::string>& args)
+    {
+        json_spirit::mValue cmd;
+        json_spirit::read("{\"action\":\"listPrinter\",\"data\":{},\"printer\":\"irapid\",\"callback_id\":1567}", cmd);
+        //cout << cmd.get_obj()["action"].get_str();
+        if (!_helpRequested)
+        {
+            boost::filesystem::path cf(configurationFile);
+            if(!boost::filesystem::exists(cf) || !boost::filesystem::is_regular_file(cf)) {
+                cerr << PROJECT_NAME_VERSION << endl;
+                cerr << "Configuration file not found at " << configurationFile << endl;
+                cerr << "Please use config option with correct path" << endl;
+                handleHelp("","");
+                return 2;
+            }
+            gconfig = new GlobalConfig(configurationFile); // Read global configuration
+            
+            std::cout << "Configuration file:" << configurationFile << std::endl;
+            std::string format(
+                               config().getString("HTTPTimeServer.format",
+                                                  DateTimeFormat::SORTABLE_FORMAT));
+            
+            if(port == 0)
+                port = Poco::NumberParser::parse(gconfig->getPorts());
+            repetier::MainRequestHandler::registerActionHandler("printer", &repetier::printerRequestHandler);
+            repetier::MainRequestHandler::registerActionHandler("socket",&repetier::socketRequestHandler);
+            repetier::ActionHandler::registerStandardActions();
+            ServerSocket socket(port);
+            Poco::Net::HTTPServerParams *params = new Poco::Net::HTTPServerParams();
+            params->setServerName(PROJECT_NAME);
+            params->setSoftwareVersion(Poco::NumberFormatter::format(PROJECT_MAJOR_VERSION)+"."+Poco::NumberFormatter::format(PROJECT_MINOR_VERSION));
+            
+            HTTPServer srv(new RepetierHTTPRequestHandlerFactory(),
+                           socket,params);
+            gconfig->readPrinterConfigs();
+            gconfig->startPrinterThreads();
+            WorkDispatcher::init();
+            UserDatabase::init();
+            srv.start();
+            waitForTerminationRequest();
+            srv.stop();
+            ShutdownManager::waitForShutdown();
+            cout << "Closing server" << endl;
+            gconfig->stopPrinterThreads();
+            WorkDispatcher::shutdown();
+            UserDatabase::shutdown();
+        }
+        return Application::EXIT_OK;
+    }
 }

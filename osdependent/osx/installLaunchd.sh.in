@@ -3,9 +3,10 @@ echo "This will install the @PROJECT_NAME@ as a launchd daemon. It will be start
 echo "port @SERVER_PORT@ occurs. After that it will continue to run in the background."
 echo "The installation requires root privileges!"
 
+sudo launchctl unload /Library/LaunchDaemons/@PROJECT_TARGET@.plist
 sudo cp @INSTALL_PATH@/etc/@PROJECT_TARGET@.plist /Library/LaunchDaemons
 sudo chown root /Library/LaunchDaemons/@PROJECT_TARGET@.plist
 sudo chmod 644 /Library/LaunchDaemons/@PROJECT_TARGET@.plist
-launchctl load /Library/LaunchDaemons/@PROJECT_TARGET@.plist
+sudo launchctl load /Library/LaunchDaemons/@PROJECT_TARGET@.plist
 
 echo "Server installed now."

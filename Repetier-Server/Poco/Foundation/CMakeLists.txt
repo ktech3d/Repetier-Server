@@ -5,27 +5,23 @@ file(GLOB FOUNDATION_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
    # Mac OS X specific code
-   SET(EXTRA "src/DirectoryIterator_UNIX.cpp" "src/Environment_UNIX.cpp" "src/File_UNIX.cpp" "src/LogFile_STD.cpp"
-    "src/NamedEvent_UNIX.cpp"  "src/NamedMutex_UNIX.cpp"  "src/Path_UNIX.cpp" "src/RWLock_POSIX.cpp" "src/Mutex_POSIX.cpp"
-     "src/Semaphore_POSIX.cpp" "src/SharedLibrary_UNIX.cpp" "src/SharedMemory_POSIX.cpp" "src/Thread_POSIX.cpp" "src/PipeImpl_POSIX.cpp"
-      "src/Timezone_UNIX.cpp" "src/Process_UNIX.cpp")
+   SET(EXTRA "src/SyslogChannel.cpp" "src/SignalHandler.cpp"
+   #"src/OpcomChannel.cpp"
+   )
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     # Linux specific code
-   SET(EXTRA "src/DirectoryIterator_UNIX.cpp" "src/Environment_UNIX.cpp" "src/File_UNIX.cpp" "src/LogFile_STD.cpp"
-    "src/NamedEvent_UNIX.cpp"  "src/NamedMutex_UNIX.cpp"  "src/Path_UNIX.cpp" "src/RWLock_POSIX.cpp" "src/Mutex_POSIX.cpp"
-     "src/Semaphore_POSIX.cpp" "src/SharedLibrary_UNIX.cpp" "src/SharedMemory_POSIX.cpp" "src/Thread_POSIX.cpp" "src/PipeImpl_POSIX.cpp"
-      "src/Timezone_UNIX.cpp" "src/Process_UNIX.cpp")
+   SET(EXTRA  "src/SyslogChannel.cpp" "src/SignalHandler.cpp"
+   #"src/OpcomChannel.cpp"
+   )
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 if(WIN32)
-   SET(EXTRA "src/DirectoryIterator_WIN32.cpp" "src/Environment_WIN32.cpp" "src/File_WIN32.cpp" "src/LogFile_WIN32.cpp"
-    "src/NamedEvent_WIN32.cpp"  "src/NamedMutex_WIN32.cpp"  "src/Path_WIN32.cpp" "src/RWLock_WIN32.cpp" "src/Mutex_WIN32.cpp"
-     "src/Semaphore_WIN32.cpp" "src/SharedLibrary_WIN32.cpp" "src/SharedMemory_WIN32.cpp" "src/Thread_WIN32.cpp" "src/PipeImpl_WIN32.cpp"
-      "src/Timezone_WIN32.cpp" "src/Process_WIN32.cpp"
-     "src/EventLogChannel.cpp" "src/OpcomChannel.cpp" "src/WindowsConsoleChannel.cpp"
+   SET(EXTRA 
+     "src/EventLogChannel.cpp"  "src/WindowsConsoleChannel.cpp"
       )
 
 ENDIF()
+        message("lib in ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}")        
 
 SET(FOUNDATION_SOURCES ${FOUNDATION_SOURCES}
     src/AbstractObserver.cpp
@@ -40,7 +36,7 @@ SET(FOUNDATION_SOURCES ${FOUNDATION_SOURCES}
     src/BinaryReader.cpp
     src/BinaryWriter.cpp
     src/Bugcheck.cpp
-    src/ByteOrder.cpp
+#    src/ByteOrder.cpp
     src/Channel.cpp
     src/Checksum.cpp
     src/Condition.cpp
@@ -123,7 +119,6 @@ SET(FOUNDATION_SOURCES ${FOUNDATION_SOURCES}
     src/SHA1Engine.cpp
     src/SharedLibrary.cpp
     src/SharedMemory.cpp
-    src/SignalHandler.cpp
     src/SimpleFileChannel.cpp
     src/SplitterChannel.cpp
     src/Stopwatch.cpp
@@ -131,10 +126,9 @@ SET(FOUNDATION_SOURCES ${FOUNDATION_SOURCES}
     src/StreamConverter.cpp
     src/StreamCopier.cpp
     src/StreamTokenizer.cpp
-    src/String.cpp
+ #   src/String.cpp
     src/StringTokenizer.cpp
     src/SynchronizedObject.cpp
-    src/SyslogChannel.cpp
     src/Task.cpp
     src/TaskManager.cpp
     src/TaskNotification.cpp
@@ -170,4 +164,7 @@ SET(FOUNDATION_SOURCES ${FOUNDATION_SOURCES}
 
 INCLUDE_DIRECTORIES("include")
 
-ADD_LIBRARY(PocoFoundation STATIC ${FOUNDATION_SOURCES})
+ADD_LIBRARY(PocoFoundation STATIC ${FOUNDATION_SOURCES} ${EXTRA})
+if(WIN32)
+  target_link_libraries(PocoFoundation IPHLPAPI)
+endif()

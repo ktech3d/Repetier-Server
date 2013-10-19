@@ -1,3 +1,4 @@
+function AboutController($scope) {}
 function HomeController($scope,$rootScope,WS) {
     $scope.r = $rootScope;
 

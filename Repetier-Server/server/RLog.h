@@ -30,6 +30,7 @@ public:
     static void log(const std::string &line,int val,bool err=false);
     static void log(const std::string &line,double val,bool err=false);
     static void log(const std::string &line,const std::string& val,bool err=false);
+    static void log(const std::string &line,char *val,bool err=false);
 };
 extern RLog rlog;
 

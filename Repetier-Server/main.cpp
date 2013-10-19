@@ -70,7 +70,7 @@ case SIGTERM:
 
 int main(int argc, char * argv[])
 {
-    RepetierServerApplication app;
+    repetier::RepetierServerApplication app;
     return app.run(argc, argv);
 }
 

@@ -1,4 +1,5 @@
-function ServerController($scope,$rootScope,$timeout,$http,WS,$q) {
+function ServerController($scope,$rootScope,$timeout,$http,WS,$q,User) {
+    $rootScope.user = User;
     $rootScope.printerList = [];
     $rootScope.messages = [];
     $rootScope.setup = {printer:[]};
@@ -66,8 +67,6 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q) {
        printerPoller();
        messagesPoller();
         WS.send("listExternalCommands",{}).then(function(r) {
-            console.log("external commands");
-            console.log(r);
             $scope.externalCommands = r;
         })
     });

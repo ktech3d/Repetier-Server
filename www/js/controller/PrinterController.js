@@ -17,9 +17,7 @@ ScriptConfigController = function ($scope, $routeParams, WS, $rootScope, $timeou
     $scope.scriptContent = "";
     var origScript = "";
     $scope.selectScript = function (script) {
-        console.log("selectScript");
         $scope.saveScript().then(function () {
-            console.log("saved");
             $scope.activeScript = script;
             WS.send("getScript", {name: script.name}).then(function (r) {
                 $scope.scriptContent = origScript = r.script;
@@ -28,12 +26,10 @@ ScriptConfigController = function ($scope, $routeParams, WS, $rootScope, $timeou
         });
     }
     $scope.saveScript = function () {
-        console.log("saveScript");
         var deferred = $q.defer();
         deferred.resolve();
         if ($scope.scriptLoaded == false) return deferred.promise;
         if (origScript == $scope.scriptContent) return deferred.promise;
-        console.log("changed");
         $scope.scriptLoaded = false;
         return WS.send("setScript", {name: $scope.activeScript.name, script: $scope.scriptContent});
     }
@@ -91,6 +87,7 @@ PrinterConfigController = function ($scope, $routeParams, WS, $rootScope, $timeo
     $('#printerTabs a').click(function (e) {
         e.preventDefault();
         $(this).tab('show');
+        preview.resizer();
     })
 
     $scope.bedTempUp = function (idx) {
@@ -126,7 +123,8 @@ PrinterConfigController = function ($scope, $routeParams, WS, $rootScope, $timeo
         ex.temperatures.push({name: "", temp: "50"});
     }
     $scope.addExtruder = function () {
-        $scope.editor.extruders.push({eJerk: 40, maxSpeed: 30, extrudeSpeed: 2, extrudeDistance: 10, retractSpeed: 20, retractDistance: 10, temperatures: []});
+        $scope.editor.extruders.push({eJerk: 40, maxSpeed: 30, acceleration:5000, extrudeSpeed: 2, extrudeDistance: 10,
+            retractSpeed: 20, retractDistance: 10, heatupPerSecond:1.5,lastTemp:0,cooldownPerSecond:1, temperatures: []});
     }
     $scope.removeExtruder = function (idx) {
         if (confirm("Really delete this extruder?")) {
@@ -165,6 +163,7 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$fi
     $scope.hsliderSize = 300;
     $scope.fanPercent = 100;
     $scope.eeprom = [];
+    $scope.webcammode = 0;
     var preview = new GCodePainter("control-view");
     preview.connectPrinter($rootScope.activeConfig);
 
@@ -266,11 +265,13 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$fi
         responsePoller();
         fetchPrintqueue();
         fetchModels();
+        updateModes();
         WS.send("setLoglevel", {level: getLoglevel()});
     });
     $scope.$watch("activeConfig", function () {
         preview.connectPrinter($rootScope.activeConfig);
         resizeContols();
+        updateModes();
     });
     $scope.$on("printqueueChanged", function (event) {
         fetchPrintqueue();
@@ -408,7 +409,46 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$fi
     $scope.$on('windowResized', function () {
         resizeContols();
     });
-
+    // $scope.webcammode = 0;
+    var webcamcount = 1;
+    var webcamRefreshRunning = false;
+    $scope.webcamUrl = '';
+    $scope.$watch('webcammode',function() {
+        if(typeof ($rootScope.activeConfig)=='undefined') return undefined;
+        //console.log("webcamUrl "+webcamcount);
+        //console.log($rootScope.activeConfig);
+        if($scope.webcammode == 1 && !webcamRefreshRunning) {
+            refreshWebcamTimer();
+            webcamRefreshRunning = true;
+        }
+        switch($scope.webcammode) {
+            case 1: $scope.webcamUrl = $rootScope.activeConfig.webcam.staticUrl+"&rand="+webcamcount;break;
+            case 2: $scope.webcamUrl = $rootScope.activeConfig.webcam.dynamicUrl;break;
+            default: $scope.webcamUrl = "";
+        }
+    });
+    var updateModes = function() {
+        if(!$rootScope.activeConfig) return;
+        $scope.webcammodes = [{id:0,name:'Disabled'}];
+        if($rootScope.activeConfig.webcam.method & 1)
+            $scope.webcammodes.push({id:1,name:'Poll Images'});
+        if($rootScope.activeConfig.webcam.method & 2)
+            $scope.webcammodes.push({id:2,name:'Motion JPG'});
+    }
+    $scope.refreshWebcamImage = function() {
+        if($scope.webcammode == 1) {
+            webcamcount++;
+            $scope.webcamUrl = $rootScope.activeConfig.webcam.staticUrl+"&rand="+webcamcount;
+        }
+    }
+    var refreshWebcamTimer = function() {
+        $scope.refreshWebcamImage();
+        if($scope.webcammode != 1) {
+            webcamRefreshRunning = false;
+            return;
+        }
+        $timeout(refreshWebcamTimer,1000*$rootScope.activeConfig.webcam.reloadInterval);
+    }
     responsePoller();
     fetchModels();
     $('#printerTabs a').click(function (e) {
@@ -417,5 +457,5 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$fi
     })
     //$("#printerTabs").tab();
     $("#printerTabs a:first").tab('show');
-    //$timeout(function() {console.log("show");$("#printerTabs a:first").tab('show');},200);
+    //(function() {console.log("show");$("#printerTabs a:first").tab('show');},200);
 }

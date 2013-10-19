@@ -17,6 +17,7 @@
  
  */
 
+#include "productData.h"
 #include "WebserverAPI.h"
 #include "global_config.h"
 #include "printer.h"
@@ -48,6 +49,7 @@
 #include "ActionHandler.h"
 #include "PrinterConfiguration.h"
 #include "utils/GCodeToJSON.h"
+#include "User.h"
 
 using namespace std;
 using namespace json_spirit;
@@ -116,6 +118,7 @@ namespace repetier {
         decreaseRunner();
     }
     
+    // Handles file downloads
     class MyPartHandler: public Poco::Net::PartHandler
     {
         static int counter;
@@ -192,7 +195,7 @@ namespace repetier {
             uriString = uriString.substr(0,endp);
         Path path(uriString);
         string extension = path.getExtension();
-        if(extension == "php" || req.getURI().length()<2) {
+        if(extension == "php" || extension == "js" || req.getURI().length()<2) { // Parse and translate php and js files
             PHPResponse(req, resp);
             return;
         }
@@ -205,7 +208,7 @@ namespace repetier {
         if(itHandler != actionMap.end())
             (*itHandler).second->handleRequest(req,resp);
         else
-            StaticResponse(req, resp);
+            StaticResponse(req, resp);  // Return th eunchanged file
     }
     void MainRequestHandler::serverError(Poco::Net::HTTPServerResponse &resp) {
         
@@ -249,9 +252,9 @@ namespace repetier {
         else if(extension=="gif")
             resp.setContentType("image/gif");
         else if(extension=="css")
-            resp.setContentType("text/css");
+            resp.setContentType("text/css; charset=utf-8");
         else if(extension=="js")
-            resp.setContentType("application/javascript");
+            resp.setContentType("application/javascript; charset=utf-8");
         else if(extension=="woff")
             resp.setContentType("application/font-woff");
         else if(extension=="otf")
@@ -286,38 +289,80 @@ namespace repetier {
             int flags;
             int logFilter = 0;
             int n;
+            UserSessionPtr session = UserSession::newSession();
+            
+            // Request authentication
+            try {
+                if(UserDatabase::loginRequired()) {
+                    mObject wsResponse;
+                    wsResponse["callback_id"] = -1;
+                    wsResponse["eventList"] = true;
+                    wsResponse["session"] = session->sessionId;
+                    wsResponse["data"] = mArray();
+                    mArray &eventArray = wsResponse["data"].get_array();
+                    mObject ev;
+                    ev["data"] = mObject();
+                    ev["event"] = "loginRequired";
+                    eventArray.push_back(ev);
+                    string ret = write(wsResponse,json_spirit::raw_utf8);
+                    mutex::scoped_lock l(sendMutex);
+                    ws.sendFrame(ret.c_str(), (int)ret.length(), WebSocket::FRAME_TEXT);
+                }
+            }
+            catch (WebSocketException& exc)
+            {
+                app.logger().log(exc);
+                switch (exc.code())
+                {
+                    case WebSocket::WS_ERR_HANDSHAKE_UNSUPPORTED_VERSION:
+                        response.set("Sec-WebSocket-Version", WebSocket::WEBSOCKET_VERSION);
+                        // fallthrough
+                    case WebSocket::WS_ERR_NO_HANDSHAKE:
+                    case WebSocket::WS_ERR_HANDSHAKE_NO_VERSION:
+                    case WebSocket::WS_ERR_HANDSHAKE_NO_KEY:
+                        response.setStatusAndReason(HTTPResponse::HTTP_BAD_REQUEST);
+                        response.setContentLength(0);
+                        response.send();
+                        break;
+                }
+            }
+            catch(Exception& ex) {
+                app.logger().log(ex);
+            }
             do
             {
                 try {
-                n = ws.receiveFrame(buffer, sizeof(buffer), flags);
-                if(ShutdownManager::shutdown) return;
-                //app.logger().information(Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)));
-                mValue cmd;
-                if((n > 0 || (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE) && read(buffer,cmd)) {
-                    mObject &oCmd = cmd.get_obj();
-                    string action = oCmd["action"].get_str();
-                    mObject &data = oCmd["data"].get_obj();
-                    mObject emptyObject;
-                    mValue rObj(emptyObject);
-                    if(oCmd.find("printer") != oCmd.end()) {
-                        string p = oCmd["printer"].get_str();
-                        if(printer == NULL || printer->config->slug != p)
-                            printer = gconfig->findPrinterSlug(p);
+                    n = ws.receiveFrame(buffer, sizeof(buffer), flags);
+                    if(ShutdownManager::shutdown) return;
+                    //app.logger().information(Poco::format("Frame received (length=%d, flags=0x%x).", n, unsigned(flags)));
+                    mValue cmd;
+                    if((n > 0 || (flags & WebSocket::FRAME_OP_BITMASK) != WebSocket::FRAME_OP_CLOSE) && read(buffer,cmd)) {
+                        mObject &oCmd = cmd.get_obj();
+                        string action = oCmd["action"].get_str();
+                        mObject &data = oCmd["data"].get_obj();
+                        data["session"] = session->sessionId;
+                        mObject emptyObject;
+                        mValue rObj(emptyObject);
+                        if(oCmd.find("printer") != oCmd.end()) {
+                            string p = oCmd["printer"].get_str();
+                            if(printer == NULL || printer->config->slug != p)
+                                printer = gconfig->findPrinterSlug(p);
+                        }
+                        if(action == "setLoglevel") {
+                            logFilter = data["level"].get_int();
+                        } else
+                            ActionHandler::dispatch(action, data,rObj,printer);
+                        mObject wsResponse;
+                        wsResponse["data"] = rObj;
+                        wsResponse["callback_id"] = oCmd["callback_id"];
+                        wsResponse["session"] = session->sessionId;
+                        string ret = write(wsResponse,json_spirit::raw_utf8);
+                        mutex::scoped_lock l(sendMutex);
+                        ws.sendFrame(ret.c_str(), (int)ret.length(), flags);
                     }
-                    if(action == "setLoglevel") {
-                        logFilter = data["level"].get_int();
-                    } else
-                        ActionHandler::dispatch(action, data,rObj,printer);
-                    mObject wsResponse;
-                    wsResponse["data"] = rObj;
-                    wsResponse["callback_id"] = oCmd["callback_id"];
-                    string ret = write(wsResponse,json_spirit::raw_utf8);
-                    mutex::scoped_lock l(sendMutex);
-                    ws.sendFrame(ret.c_str(), (int)ret.length(), flags);
-                }
                 }
                 catch(TimeoutException &to) {} // Expected timeout
-                if(eventQueue.hasMessageForPrinter(printer)) {
+                if(eventQueue.hasMessageForPrinter(printer)) { // Send any unsend new events
                     mObject wsResponse;
                     wsResponse["callback_id"] = -1;
                     wsResponse["eventList"] = true;
@@ -391,7 +436,10 @@ namespace repetier {
         Poco::URI uri(req.getURI());
         vector<string> segments;
         uri.getPathSegments(segments);
-        
+        string sessionId = form.get("sess","");
+        UserSessionPtr session;
+        if(sessionId.length()>0)
+            session = UserSession::getSession(sessionId);
         // First check the path for its parts
         string error;
         PrinterPtr printer((Printer*)NULL);
@@ -402,7 +450,7 @@ namespace repetier {
         mObject ret;
         resp.setStatus(HTTPResponse::HTTP_OK);
         if(cmdgroup=="parsedgcode") {
-            resp.setContentType("Content-Type: application/json");            
+            resp.setContentType("Content-Type: application/json");
         } else {
             resp.setContentType("Content-Type: text/html; charset=utf-8");
             resp.set("Cache-Control", "public, max-age=0");
@@ -533,109 +581,109 @@ namespace repetier {
                 printer->getJobManager()->fillSJONObject("data",ret);
             }
         } /*else if(cmdgroup=="script") {
-            string a(form.get("a",""));
-            if(a=="list") {
-                printer->getScriptManager()->fillSJONObject("data",ret);
-            } else if(a=="save") {
-                string name,jobname(form.get("f",""));
-                PrintjobPtr job = printer->getScriptManager()->findByName(jobname);
-                string text(form.get("text",""));
-                try {
-                    ofstream out;
-                    out.open(job->getFilename().c_str());
-                    out << text;
-                    out.close();
-                } catch(std::exception &ex) {
-                    RLog::log("Error writing script: @",static_cast<const string>(ex.what()));
-                }
-            } else if(a=="load") {
-                string name(form.get("f",""));
-                PrintjobPtr job = printer->getScriptManager()->findByName(name);
-                if(job.get()) {
-                    try {
-                        ifstream in;
-                        in.open(job->getFilename().c_str());
-                        StreamCopier::copyStream(in,out);
-                    } catch(std::exception &ex) {
-                        RLog::log("Error reading script: @",static_cast<string>(ex.what()));
-                    }
-                }
-                return;
-            }
-        }*/ else if(cmdgroup=="msg") {
-            string a(form.get("a",""));
-            DynamicAny sid(form.get("id",""));
-            int id = 0;
-            if(sid.isNumeric()) id = sid.convert<int>();
-            if(a=="unpause") {
-                printer->stopPause();
-            }
-            if(id) {
-                gconfig->removeMessage(id);
-                mArray msg;
-                gconfig->fillJSONMessages(msg);
-                ret["messages"] = msg;
-            }
-        } else if(cmdgroup == "pconfig") {
-            string a(form.get("a",""));
-            if(a=="active") {
-                string mode(form.get("mode",""));
-                if(!mode.empty()) {
-                    printer->setActive(mode=="1");
-                }
-                listPrinter(ret);
-            } else if(a=="download") {
-                if(printer!=NULL) {
-                    string slug(printer->config->slug);
-                    // application/octet-stream
-                    resp.setContentType("application/octet-stream");
-                    resp.add("Content-Disposition", "attachment; filename="+slug+".xml");
-                    Poco::File file(printer->config->getConfigurationFilename());
-                    resp.setContentLength(file.getSize());
-                    resp.setStatus(HTTPResponse::HTTP_OK);
-                    
-                    ostream& out = resp.send();
-                    ifstream in(printer->config->getConfigurationFilename().c_str());
-                    StreamCopier::copyStream(in,out);
-                    out.flush();
-                    return;
-                }
-            } else if(a=="upload") {
-                int mode(NumberParser::parse(form.get("mode","1")));
-                PrinterConfigurationPtr conf(new PrinterConfiguration(partHandler.storage().toString()));
-                if(conf->slug == "unknown") {
-                    error = "Invalid configuration file.";
-                } else {
-                    string newname = form.get("name","");
-                    string newslug = form.get("slug","");
-                    if(newname.length()>0)
-                        conf->name = newname;
-                    if(newslug.length()>0)
-                        conf->slug = newslug;
-                    PrinterPtr prt(gconfig->findPrinterSlug(conf->slug));
-                    if(mode == 1 && prt!=NULL) {
-                        error = "Printer with slug "+conf->slug+" already exists.";
-                    } else if(mode == 0 && prt==NULL) {
-                        error = "Printer with slug "+conf->slug+" does not exist.";
-                    } else if(mode == 1) {
-                        conf->createConfiguration(conf->name, conf->slug);
-                        ret["ok"] = "Printer created";
-                    } else if(mode == 0) {
-                        conf->setConfigurationFilename(prt->config->getConfigurationFilename());
-                        prt->config = conf;
-                        prt->sendConfigEvent();
-                    }
-                }
-            }
-        } else if(printer->getOnlineStatus()==0) {
-            error = "Printer offline";
-            // ============ ONLINE COMMANDS FROM HERE ==============
-        } else if(cmdgroup=="send") {
-            string cmd(form.get("cmd",""));
-            if(!cmd.empty()) {
-                printer->injectManualCommand(cmd);
-            }
-        }
+           string a(form.get("a",""));
+           if(a=="list") {
+           printer->getScriptManager()->fillSJONObject("data",ret);
+           } else if(a=="save") {
+           string name,jobname(form.get("f",""));
+           PrintjobPtr job = printer->getScriptManager()->findByName(jobname);
+           string text(form.get("text",""));
+           try {
+           ofstream out;
+           out.open(job->getFilename().c_str());
+           out << text;
+           out.close();
+           } catch(std::exception &ex) {
+           RLog::log("Error writing script: @",static_cast<const string>(ex.what()));
+           }
+           } else if(a=="load") {
+           string name(form.get("f",""));
+           PrintjobPtr job = printer->getScriptManager()->findByName(name);
+           if(job.get()) {
+           try {
+           ifstream in;
+           in.open(job->getFilename().c_str());
+           StreamCopier::copyStream(in,out);
+           } catch(std::exception &ex) {
+           RLog::log("Error reading script: @",static_cast<string>(ex.what()));
+           }
+           }
+           return;
+           }
+           }*/ else if(cmdgroup=="msg") {
+               string a(form.get("a",""));
+               DynamicAny sid(form.get("id",""));
+               int id = 0;
+               if(sid.isNumeric()) id = sid.convert<int>();
+               if(a=="unpause") {
+                   printer->stopPause();
+               }
+               if(id) {
+                   gconfig->removeMessage(id);
+                   mArray msg;
+                   gconfig->fillJSONMessages(msg);
+                   ret["messages"] = msg;
+               }
+           } else if(cmdgroup == "pconfig") {
+               string a(form.get("a",""));
+               if(a=="active") {
+                   string mode(form.get("mode",""));
+                   if(!mode.empty()) {
+                       printer->setActive(mode=="1");
+                   }
+                   listPrinter(ret);
+               } else if(a=="download") {
+                   if(printer!=NULL) {
+                       string slug(printer->config->slug);
+                       // application/octet-stream
+                       resp.setContentType("application/octet-stream");
+                       resp.add("Content-Disposition", "attachment; filename="+slug+".xml");
+                       Poco::File file(printer->config->getConfigurationFilename());
+                       resp.setContentLength(file.getSize());
+                       resp.setStatus(HTTPResponse::HTTP_OK);
+                       
+                       ostream& out = resp.send();
+                       ifstream in(printer->config->getConfigurationFilename().c_str());
+                       StreamCopier::copyStream(in,out);
+                       out.flush();
+                       return;
+                   }
+               } else if(a=="upload") {
+                   int mode(NumberParser::parse(form.get("mode","1")));
+                   PrinterConfigurationPtr conf(new PrinterConfiguration(partHandler.storage().toString()));
+                   if(conf->slug == "unknown") {
+                       error = "Invalid configuration file.";
+                   } else {
+                       string newname = form.get("name","");
+                       string newslug = form.get("slug","");
+                       if(newname.length()>0)
+                           conf->name = newname;
+                       if(newslug.length()>0)
+                           conf->slug = newslug;
+                       PrinterPtr prt(gconfig->findPrinterSlug(conf->slug));
+                       if(mode == 1 && prt!=NULL) {
+                           error = "Printer with slug "+conf->slug+" already exists.";
+                       } else if(mode == 0 && prt==NULL) {
+                           error = "Printer with slug "+conf->slug+" does not exist.";
+                       } else if(mode == 1) {
+                           conf->createConfiguration(conf->name, conf->slug);
+                           ret["ok"] = "Printer created";
+                       } else if(mode == 0) {
+                           conf->setConfigurationFilename(prt->config->getConfigurationFilename());
+                           prt->config = conf;
+                           prt->sendConfigEvent();
+                       }
+                   }
+               }
+           } else if(printer->getOnlineStatus()==0) {
+               error = "Printer offline";
+               // ============ ONLINE COMMANDS FROM HERE ==============
+           } else if(cmdgroup=="send") {
+               string cmd(form.get("cmd",""));
+               if(!cmd.empty()) {
+                   printer->injectManualCommand(cmd);
+               }
+           }
         ret["error"] = error;
         
         // Print result
@@ -765,6 +813,11 @@ namespace repetier {
         size_t p = uri.find_first_of('?');
         if(p!=string::npos)
             uri = uri.substr(0,p);
+        
+        size_t extPos = uri.find_last_of('.');
+        string extension = "php";
+        if(extPos!=string::npos) extension = uri.substr(extPos+1);
+
         HTMLForm form(req);
         //if(uri.length()<5 || uri.substr(uri.length()-4,4)!=".php") return NULL;
         
@@ -804,18 +857,21 @@ namespace repetier {
         // Step 2: Fill template parameter
         Object obj;
         string param = form.get("pn","");
-       /* if(!param.empty()) {
-            PrinterPtr p = gconfig->findPrinterSlug(param);
-            if(*p) p->fillJSONConfig(obj);
-        }*/
-        obj.push_back(Pair("version",string(REPETIER_SERVER_VERSION)));
+        /* if(!param.empty()) {
+         PrinterPtr p = gconfig->findPrinterSlug(param);
+         if(*p) p->fillJSONConfig(obj);
+         }*/
+        obj.push_back(Pair("version",Poco::NumberFormatter::format(PROJECT_MAJOR_VERSION)+"."+Poco::NumberFormatter::format(PROJECT_MINOR_VERSION)));
         // Step 3: Run template
         string content2;
         //FillTemplate(content, content2, obj);
-        ostream &out = resp.send();
-        resp.setContentType("text/html; charset=utf-8");
+        if(extension=="js")
+            resp.setContentType("application/javascript; charset=utf-8");
+        else
+            resp.setContentType("text/html; charset=utf-8");
         resp.setContentLength(content.length());
         resp.setStatus(HTTPResponse::HTTP_OK);
+        ostream &out = resp.send();
         out << content;
         out.flush();
     }
@@ -835,6 +891,8 @@ namespace repetier {
             }
             r = new moFileLib::moFileReader();
             r->ReadFile(mofile.c_str());
+            r->addTranslation("PROJECT_NAME",PROJECT_NAME);
+            r->addTranslation("PROJECT_NAME_VERSION",PROJECT_NAME_VERSION);
             rmap[lang].reset(r);
             return true;
         } else return true;

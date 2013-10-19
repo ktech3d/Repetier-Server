@@ -30,11 +30,12 @@ namespace repetier {
     typedef void (*actionFunction)( json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
     
     class ActionHandler {
+        enum Permission {PRINT = 1, ADD_FILES = 2, DELETE_FILES = 4, CONFIGURE = 8};
         static std::map<std::string,actionFunction> actionMap;
     public:
         static void registerAction(std::string action,actionFunction func);
         static void dispatch(std::string &action, json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
-        
+        static bool hasPermission(json_spirit::mObject &obj,json_spirit::mValue &out,Permission perm);
         static void registerStandardActions();
         static void actionListPrinter( json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
         static void actionMessages( json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
@@ -62,6 +63,12 @@ namespace repetier {
         static void actionRunExternalCommand(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
         static void actionCreateConfiguration(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
         static void actionRemoveConfiguration(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionLogin(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionLogout(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionUserlist(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionCreateUser(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionUpdateUser(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
+        static void actionDeleteUser(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer);
     };
 }
 #endif /* defined(__Repetier_Server__ActionHandler__) */

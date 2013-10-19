@@ -57,3 +57,19 @@ FilterModule.filter('hms', function () {
         return t+two_digits(input)+"s";
     }
 });
+
+FilterModule.filter('permissions', function () {
+    return function (input) {
+        s ="";
+        if(input & 1)
+          s +="/ Print";
+        if(input & 2)
+            s +="/ Add files";
+        if(input & 4)
+            s +="/ Remove files";
+        if(input & 8)
+            s +="/ Configure";
+        if(s.length>0) s = s.substr(2);
+        return s;
+    }
+});
