@@ -22,7 +22,7 @@
         <key>Listeners</key>
         <dict>
             <key>SockServiceName</key>
-            <string>3344</string>
+            <string>${SERVER_PORT}</string>
             <key>SockType</key>
             <string>stream</string>
             <key>SockFamily</key>

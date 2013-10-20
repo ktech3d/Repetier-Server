@@ -39,7 +39,6 @@ GCodePreviewDirectives.directive('gcodepreview', function($http,$timeout,$rootSc
 
             }
             var resizer = function () {
-                console.log("reszize width = "+qe.width());
                 canvas.width(qe.width());
                 canvas.height(qe.height());
                 camera.aspect =  qe.width()/ qe.height();

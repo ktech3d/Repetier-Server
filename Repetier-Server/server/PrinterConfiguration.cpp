@@ -585,7 +585,7 @@ PrinterConfiguration::PrinterConfiguration(string filename) {
                     if(e->hasAttribute("z"))
                         hasZHome = parseBool(e->getAttribute("z"));
                     if(e->hasAttribute("all"))
-                        hasXHome = parseBool(e->getAttribute("all"));
+                        hasHomeAll = parseBool(e->getAttribute("all"));
                     else
                         hasHomeAll = hasXHome & hasYHome & hasZHome;
                 }

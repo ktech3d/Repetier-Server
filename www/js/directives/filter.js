@@ -4,7 +4,7 @@ FilterModule = angular.module('Filter', []);
 FilterModule.filter('online', function () {
     return function (input) {
         if(!input.active)
-            return '<span class="label">Deactivated</span>';
+            return '<span class="label label-default">Deactivated</span>';
         if (input.online)
             return '<span class="label label-success">Online</span>';
         return '<span class="label label-danger">Offline</span>';

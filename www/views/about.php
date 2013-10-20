@@ -4,7 +4,7 @@
             <h1><?php _("PROJECT_NAME_VERSION") ?> Licence</h1>
 
             <p>&copy; 2013 Hot-World GmbH & Co. KG<br>
-                Part developed by Hot-World GmbH & Co. KG are distributed under the Apache V2 licence.
+                Parts developed by Hot-World GmbH & Co. KG are distributed under the Apache V2 licence.
                 The sources contain software from 3rd parties with different licences.</p>
 
             <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work

@@ -337,12 +337,14 @@ namespace repetier {
         printer = gconfig->findPrinterSlug(obj["printer"].get_str());
         if(printer == NULL) return;
         printer->setActive(true);
+        printer->config->saveConfiguration();
     }
     void ActionHandler::actionDeactivate(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         if(!hasPermission(obj,out,PRINT)) return;
         printer = gconfig->findPrinterSlug(obj["printer"].get_str());
         if(printer == NULL) return;
         printer->setActive(false);
+        printer->config->saveConfiguration();
     }
     void ActionHandler::actionCommunicationData(json_spirit::mObject &obj,json_spirit::mValue &out,PrinterPtr printer) {
         if(printer == NULL) return;

@@ -3,7 +3,7 @@
     <installation-directory>${INSTALL_PATH}/</installation-directory>
     <storage-directory>/Library/Application Support/${PROJECT_DIR}/</storage-directory>
     <default-language>en</default-language>
-    <port>3344</port>
+    <port>${SERVER_PORT}</port>
     <logging>true</logging>
     <backlog-size>1000</backlog-size>
 </server>

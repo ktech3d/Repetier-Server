@@ -10,12 +10,12 @@ function GCodePainter(elem) {
         height: element.height()
     });
     var that = this;
-    var resizer = function () {
+    this.resizer = function () {
         that.updateShape();
     };
-    $(window).resize(resizer);
+    $(window).resize(this.resizer);
     this.$destroy = function() {
-        $(window).off("resize",resizer);
+        $(window).off("resize",this.resizer);
         stage.destroy();
         stage = null;
     }

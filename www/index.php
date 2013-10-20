@@ -33,7 +33,7 @@
             <li class=""><a href="#"><i class="icon-home"></i><?php _("Dashboard") ?></a></li>
             <li class="dropdown"><a href="javascript:void(0)" class="dropdown-toggle" data-toggle="dropdown">Printer</a>
                 <ul class="dropdown-menu">
-                    <li ng-repeat="p in printerList"><a href="#/printer/{{p.slug}}">{{p.name}}</a>
+                    <li ng-repeat="p in printerList"><a href="#/printer/{{p.slug}}" style="padding-right:100px">{{p.name}} <span style="position:absolute;right:0;margin-right:10px" ng-bind-html-unsafe="p | online"></span></a>
                 </ul>
             </li>
             <li class=""><a data-reveal-id="messageList" href="javascript:void(0);" data-toggle="modal"

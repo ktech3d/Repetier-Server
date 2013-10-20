@@ -112,6 +112,7 @@ class Printer {
     uint64_t bytesSend;
     bool paused;
     uint64_t bytesReceived;
+    bool uploading; // Is sd card upload running?
     //int updateTempEvery;
     
     /** Resend all lines starting with line. Removes all commands stored in

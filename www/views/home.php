@@ -4,7 +4,7 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">{{p.name}}
                     <div class="btn-group" style="float: right;top: -9px;right: -13px;">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                             <i class="icon-cog"></i> <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" style="right:0;left:auto">

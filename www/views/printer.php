@@ -6,21 +6,29 @@
             <div class="panel panel-primary">
                 <div class="panel-heading">{{active.status.name}}
                     <div class="btn-group" style="float: right;top: -9px;right: -13px;">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
                             <i class="icon-cog"></i> <span class="caret"></span>
                         </button>
                         <ul class="dropdown-menu" style="right:0;left:auto">
-                            <li ng-hide="active.status.active"><a ng-click="activate()" href="javascript:void(0)"><?php _("Activate") ?></a></li>
-                            <li ng-show="active.status.active"><a ng-click="deactivate()" href="javascript:void(0)"><?php _("Deactivate") ?></a></li>
-                            <li ng-show="active.status.active"><a ng-click="showCommunication()" href="javascript:void(0)"><?php _("Connection Informations") ?></a></li>
-                            <li ng-show="active.status.active"><a ng-click="editEeprom()" href="javascript:void(0)"><?php _("EEPROM Settings") ?></a></li>
+                            <li ng-hide="active.status.active"><a ng-click="activate()"
+                                                                  href="javascript:void(0)"><?php _("Activate") ?></a>
+                            </li>
+                            <li ng-show="active.status.active"><a ng-click="deactivate()"
+                                                                  href="javascript:void(0)"><?php _("Deactivate") ?></a>
+                            </li>
+                            <li ng-show="active.status.active"><a ng-click="showCommunication()"
+                                                                  href="javascript:void(0)"><?php _("Connection Informations") ?></a>
+                            </li>
+                            <li ng-show="active.status.active"><a ng-click="editEeprom()"
+                                                                  href="javascript:void(0)"><?php _("EEPROM Settings") ?></a>
+                            </li>
                             <li><a href="#/scriptConfig/{{activeSlug}}"><?php _("Scripts") ?></a></li>
                             <li><a href="#/printerConfig/{{activeSlug}}"><?php _("Configuration") ?></a></li>
                         </ul>
                     </div>
                 </div>
 
-                <div class="small-font">
+                <div class="panel-body small-font" style="padding-left:0px;padding-right:0;">
                     <div class="row small-margin">
                         <div class="col-xs-5"><?php _("Status:") ?></div>
                         <div class="col-xs-7" ng-bind-html-unsafe="active.status | online"></div>
@@ -30,7 +38,7 @@
                             <div class="col-xs-5"><?php _("Extr.") ?> {{$index+1}}:</div>
                             <div class="col-xs-7">{{e.tempRead | temp}} / {{e.tempSet | temp}}</div>
                         </div>
-                        <div class="row small-margin">
+                        <div class="row small-margin" ng-show="activeConfig.general.heatedBed">
                             <div class="col-xs-5"><?php _("Bed:") ?></div>
                             <div class="col-xs-7">{{active.state.bedTempRead | temp}} / {{active.state.bedTempSet
                                 | temp}}
@@ -47,56 +55,60 @@
                     </div>
                 </div>
             </div>
-            <div class="panel" ng-show="isJobActive">
+            <div class="panel panel-default" ng-show="isJobActive">
                 <div class="panel-heading"><?php _("Current Print") ?></div>
-
-                <div class="row">
-                    <div class="col-xs-5"><?php _("Printing:") ?></div>
-                    <div class="col-xs-7">{{active.status.job}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-5">E<?php _("TA:") ?></div>
-                    <div class="col-xs-7">{{active.status.printTime-active.status.printedTimeComp | hms}}</div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12">
-                        <div class="progress progress-striped">
-                            <div class="metertext">{{active.status.done | number:2}}%</div>
-                            <div class="progress-bar progress-bar-success" role="progressbar"
-                                 style="width: {{active.status.done}}%"></div>
+                <div class="panel-body small-font">
+                    <div class="row">
+                        <div class="col-xs-5"><?php _("Printing:") ?></div>
+                        <div class="col-xs-7">{{active.status.job}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-5">E<?php _("TA:") ?></div>
+                        <div class="col-xs-7">{{active.status.printTime-active.status.printedTimeComp | hms}}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="progress progress-striped">
+                                <div class="metertext">{{active.status.done | number:2}}%</div>
+                                <div class="progress-bar progress-bar-success" role="progressbar"
+                                     style="width: {{active.status.done}}%"></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xs-6">
-                        <button ng-click="stopPrint()" class="btn btn-danger btn-block"><i class="icon-stop"></i> <?php _("Stop") ?>
-                        </button>
-                    </div>
-                    <div class="col-xs-6">
-                        <button ng-click="pausePrint()" class="btn btn-primary btn-block"><i class="icon-pause"></i>
-                            <?php _("Pause") ?>
-                        </button>
+                        <div class="col-xs-6">
+                            <button ng-click="stopPrint()" class="btn btn-danger btn-block"><i
+                                    class="icon-stop"></i> <?php _("Stop") ?>
+                            </button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button ng-click="pausePrint()" class="btn btn-primary btn-block"><i class="icon-pause"></i>
+                                <?php _("Pause") ?>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="panel small-font"
+            <div class="panel panel-default small-font"
                  ng-show="active.status.online && (queue.length>1 || (queue.length==1 && queue[0].id!=active.status.jobid))">
                 <div class="panel-heading"><?php _("Print Queue") ?></div>
-
-                <div class="row queue" ng-repeat="q in queue" ng-click="selectQueue(q,$event);"
-                     ng-hide="q.id==active.status.jobid" ng-class="{queueactive:queueFileSelected(q)}">
-                    <div class="col-xs-12">
-                        {{q.name}}
+                <div class="panel-body small-font">
+                    <div class="row queue" ng-repeat="q in queue" ng-click="selectQueue(q,$event);"
+                         ng-hide="q.id==active.status.jobid" ng-class="{queueactive:queueFileSelected(q)}">
+                        <div class="col-xs-12">
+                            {{q.name}}
+                        </div>
                     </div>
-                </div>
-                <div class="row" ng-show="activeQueue" style="margin-top:10px">
-                    <div class="col-xs-6">
-                        <button class="btn btn-block btn-danger" ng-click="dequeActive()"><i class="icon-minus"></i>
-                            <?php _("Deque") ?>
-                        </button>
-                    </div>
-                    <div class="col-xs-6">
-                        <button class="btn btn-block btn-primary" ng-hide="isJobActive" ng-click="printActiveQueue()"><i
-                                class="icon-print"></i> <?php _("Print") ?>
-                        </button>
+                    <div class="row" ng-show="activeQueue" style="margin-top:10px">
+                        <div class="col-xs-6">
+                            <button class="btn btn-block btn-danger" ng-click="dequeActive()"><i class="icon-minus"></i>
+                                <?php _("Remove") ?>
+                            </button>
+                        </div>
+                        <div class="col-xs-6">
+                            <button class="btn btn-block btn-primary" ng-hide="isJobActive"
+                                    ng-click="printActiveQueue()"><i
+                                    class="icon-print"></i> <?php _("Print") ?>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -107,12 +119,12 @@
 <ul class="nav nav-tabs" id="printerTabs">
     <li ng-show="active.status.online"><a href="#panel1" data-toggle="tab"><?php _("Control") ?></a></li>
     <li ng-show="active.status.online"><a href="#panelConsole" data-toggle="tab"><?php _("Console") ?></a></li>
-    <li><a href="#panel4" data-toggle="tab"><?php _("Camera") ?></a></li>
+    <li ng-show="activeConfig.webcam.method"><a href="#panel4" data-toggle="tab"><?php _("Camera") ?></a></li>
     <li><a href="#panel3" data-toggle="tab"><?php _("G-Codes") ?></a></li>
 </ul>
 <div class="tab-content">
-<div class="tab-pane active fade" id="panel1">
-    <div class="row" ng-show="active.status.online">
+<div class="tab-pane active fade" id="panel1" ng-show="active.status.online">
+    <div class="row">
         <div class="col-12 col-sm-8 hidden-sm" id="control-row">
             <div id="control-hscroll-container" style="margin-left:40px;padding:10px 11px">
                 <div id="xpos" slider orientation="horizontal" min="{{activeConfig.movement.xMin}}"
@@ -142,7 +154,8 @@
                     X: {{movoToXPos | number:2}} mm
                 </div>
                 <div class="col-xs-4">
-                    <button class="btn btn-block" ng-click="sendGCode('G28 X0')" ng-hide="isJobActive"><i
+                    <button ng-show="activeConfig.movement.xEndstop" class="btn btn-block"
+                            ng-click="sendGCode('G28 X0')" ng-hide="isJobActive"><i
                             class="icon-home"></i> X
                     </button>
                 </div>
@@ -152,7 +165,8 @@
                     Y: {{movoToYPos | number:2}} mm
                 </div>
                 <div class="col-xs-4">
-                    <button class="btn btn-block" ng-click="sendGCode('G28 Y0')" ng-hide="isJobActive"><i
+                    <button ng-show="activeConfig.movement.yEndstop" class="btn btn-block"
+                            ng-click="sendGCode('G28 Y0')" ng-hide="isJobActive"><i
                             class="icon-home"></i> Y
                     </button>
                 </div>
@@ -162,7 +176,8 @@
                     Z: {{movoToZPos | number:2}} mm
                 </div>
                 <div class="col-xs-4">
-                    <button class="btn btn-block" ng-click="sendGCode('G28 Z0')" ng-hide="isJobActive"><i
+                    <button ng-show="activeConfig.movement.zEndstop" class="btn btn-block"
+                            ng-click="sendGCode('G28 Z0')" ng-hide="isJobActive"><i
                             class="icon-home"></i> Z
                     </button>
                 </div>
@@ -171,7 +186,8 @@
                 <div class="col-xs-8">
                 </div>
                 <div class="col-xs-4">
-                    <button class="btn btn-block" ng-click="sendGCode('G28')" ng-hide="isJobActive"><i
+                    <button ng-show="activeConfig.movement.allEndstops" class="btn btn-block"
+                            ng-click="sendGCode('G28')" ng-hide="isJobActive"><i
                             class="icon-home"></i> All
                     </button>
                 </div>
@@ -223,6 +239,36 @@
             </div>
         </div>
     </div>
+    <div class="row">
+        <div class="col-xs-12 margin-top" ng-repeat="e in activeConfig.extruders">
+            Extruder {{$index+1}}:<input type="number" class="input-small" ng-model="e.settemp">
+            <button class="btn btn-default" ng-click="setExtruderTemperature($index,e.settemp)"><?php _("Set") ?></button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                   <?php _("Quick temperatures") ?> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="javascript:void(0)" ng-click="setExtruderTemperature($index,0)"><?php _("Off") ?></a></li>
+                    <li class="divider"></li>
+                    <li ng-repeat="t in e.temperatures"><a href="javascript:void(0)" ng-click="setExtruderTemperature($parent.$index,t.temp)">{{t.name}}</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-12 margin-top" ng-show="activeConfig.general.heatedBed">
+            <?php _("Heated bed") ?>:<input type="number" class="input-small" ng-model="activeConfig.heatedBed.settemp">
+            <button class="btn btn-default" ng-click="setBedTemperature(activeConfig.heatedBed.settemp)"><?php _("Set") ?></button>
+            <div class="btn-group">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    <?php _("Quick temperatures") ?> <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="javascript:void(0)" ng-click="setBedTemperature(0)"><?php _("Off") ?></a></li>
+                    <li class="divider"></li>
+                    <li ng-repeat="t in activeConfig.heatedBed.temperatures"><a href="javascript:void(0)" ng-click="setBedTemperature(t.temp)">{{t.name}}</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="tab-pane fade" id="panelConsole">
     <div class="row margin-top" ng-show="active.status.online">
@@ -244,35 +290,45 @@
         <div class="col-xs-2">
             <switch class="small" value="logPause"></switch>
         </div>
+    </div>
+    <div class="row">
         <div class="col-xs-12 margin-top">
             <div class="row">
-                <div class="col-xs-12">
-                    <div class=" input-group">
-                        <input type="text" class="form-control" ng-model="cmd"
-                               placeholder="<?php _("Enter your g-code here") ?>"
-                               enter="sendCmd()">
-                                    <span class="input-group-btn">
-                                        <div class="btn-group">
-                                            <button type="button" ng-click="sendCmd()" class="btn btn-primary"><?php _("Send") ?>
-                                            </button>
-                                            <button type="button" class="btn btn-primary dropdown-toggle"
-                                                    data-toggle="dropdown">
-                                                <span class="caret"></span>
-                                            </button>
-                                            <ul class="dropdown-menu" role="menu">
-                                                <li><a href="javascript:void(0)" ng-click="sendGCode('G28')"><?php _("Home All") ?></a></li>
-                                                <li><a href="javascript:void(0)" ng-click="sendGCode('M115')"><?php _("Show Capabilities") ?></a></li>
-                                                <li><a href="javascript:void(0)" ng-click="sendGCode('M119')"><?php _("Show Endstop Status") ?></a></li>
-                                                <li><a href="javascript:void(0)" ng-click="sendGCode('M114')"><?php _("Show Coordinates") ?></a></li>
-                                            </ul>
-                                        </div>
-                                    </span>
+                <div class="col-xs-7">
+                    <input type="text" class="form-control" ng-model="cmd"
+                           placeholder="<?php _("Enter your g-code here") ?>"
+                           enter="sendCmd()">
+                </div>
+                <div class="col-xs-5">
+                    <div class="btn-group">
+                        <button type="button" ng-click="sendCmd()"
+                                class="btn btn-primary"><?php _("Send") ?>
+                        </button>
+                        <button type="button" class="btn btn-primary dropdown-toggle"
+                                data-toggle="dropdown">
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="javascript:void(0)"
+                                   ng-click="sendGCode('G28')"><?php _("Home All") ?></a></li>
+                            <li><a href="javascript:void(0)"
+                                   ng-click="sendGCode('M115')"><?php _("Show Capabilities") ?></a>
+                            </li>
+                            <li><a href="javascript:void(0)"
+                                   ng-click="sendGCode('M119')"><?php _("Show Endstop Status") ?></a>
+                            </li>
+                            <li><a href="javascript:void(0)"
+                                   ng-click="sendGCode('M114')"><?php _("Show Coordinates") ?></a>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="row">
         <div class="col-xs-12 margin-top">
-            <div id="logpanel" class="panel" style="height:300px;overflow:scroll" autoscroll2="logAutoscroll">
+            <div id="logpanel" class="logpanel" style="height:300px;overflow:scroll" autoscroll2="logAutoscroll">
                 <div ng-repeat="l in active.log" ng-bind-html-unsafe="l.t" class="{{l.c}}"></div>
             </div>
         </div>
@@ -283,12 +339,12 @@
             </p>
         </div>
     </div>
-
 </div>
 <div class="tab-pane fade" id="panel4">
     <div class="row">
         <div class="col-xs-6">
-            <select class="form-control" ng-model="webcammode" ng-options="w.id as w.name for w in webcammodes"></select>
+            <select class="form-control" ng-model="webcammode"
+                    ng-options="w.id as w.name for w in webcammodes"></select>
         </div>
         <div class="col-lg-2 col-xs-4">
             <button ng-click="refreshWebcamImage()"><i class="icon-refresh"></i> <?php _("Reload") ?></button>
@@ -296,7 +352,7 @@
     </div>
 
     <div ng-show="webcammode" style="margin-top:10px">
-        <img ng-src="{{webcamUrl}}" />
+        <img ng-src="{{webcamUrl}}"/>
     </div>
 </div>
 <div class="tab-pane fade" id="panel3">
@@ -305,6 +361,9 @@
             <div class="filelist">
                 <div class="file" ng-repeat="f in models" ng-class="{active:f==activeGCode}"
                      ng-click="selectGCode(f)">{{f.name}}
+                </div>
+                <div ng-show="models.length==0" class="padding">
+                    <?php _("No g-code files available") ?>
                 </div>
             </div>
             <button data-toggle="modal" data-target="#uploadGCode" class="btn btn-primary"><i
@@ -321,21 +380,25 @@
             </div>
             <div class="infodesc"><?php _("Lines:") ?><span>{{activeGCode.lines}}</span></div>
             <div class="infodesc"><?php _("Layer:") ?><span>{{activeGCode.layer}}</span></div>
-            <div class="infodesc"><?php _("Filament usage:") ?><span>{{activeGCode.filamentTotal | number:0}} mm</span></div>
-                <div class="btn btn-primary" ng-click="printGCode()"><i class="icon-print"></i>
-                    <?php _("Print") ?>
-                </div>
+            <div class="infodesc"><?php _("Filament usage:") ?><span>{{activeGCode.filamentTotal | number:0}} mm</span>
+            </div>
+            <div class="btn btn-primary" ng-click="printGCode()"><i class="icon-print"></i>
+                <?php _("Print") ?>
+            </div>
             <div class="btn btn-primary" ng-click="previewGCode(activeGCode.id)"><i class="icon-eye-open"></i>
                 <?php _("Preview") ?>
             </div>
-                <div class="btn btn-danger" data-reveal-id="deleteGCodeQuestion"><i
-                        class="icon-trash"></i> <?php _("Delete") ?>
-                </div>
+            <div class="btn btn-danger" data-reveal-id="deleteGCodeQuestion"><i
+                    class="icon-trash"></i> <?php _("Delete") ?>
+            </div>
         </div>
     </div>
 </div>
 </div>
 </div>
+</div>
+<div class="row">
+    <div class="col-sm-12" ng-hide="true">{{printerConfig}}</div>
 </div>
 </div>
 
@@ -369,7 +432,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" ng-click="uploadGCode()"><i class="icon-upload-cloud"></i><?php _("Upload") ?></button>
+                <button type="button" class="btn btn-primary" ng-click="uploadGCode()"><i
+                        class="icon-upload-cloud"></i><?php _("Upload") ?></button>
             </div>
         </div>
     </div>
@@ -443,7 +507,8 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" ng-click="saveEeprom()"><i class="icon-save"></i> <?php _("Save") ?></button>
+                <button type="button" class="btn btn-primary" ng-click="saveEeprom()"><i
+                        class="icon-save"></i> <?php _("Save") ?></button>
                 <button type="button" class="btn" data-dismiss="modal"><?php _("Close") ?></button>
             </div>
         </div>

@@ -4,19 +4,6 @@ function newFid() {
     fidCounter++;
     return "fid" + fidCounter;
 }
-BootstrapDirectives.directive('foundation', function () {
-    return {
-        restrict: 'A',
-        controller: function ($scope, $element) {
-        },
-        replace: false,
-        link: function (scope, elem, attr) {
-            console.log("link foundation");
-            console.log(elem);
-            $(document).foundation();
-        }
-    };
-});
 BootstrapDirectives.directive('switch', function () {
     return {
         restrict: 'E',

@@ -87,7 +87,7 @@ PrinterConfigController = function ($scope, $routeParams, WS, $rootScope, $timeo
     $('#printerTabs a').click(function (e) {
         e.preventDefault();
         $(this).tab('show');
-        preview.resizer();
+        $timeout(preview.resizer,400);
     })
 
     $scope.bedTempUp = function (idx) {
@@ -329,7 +329,12 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$fi
     $scope.printGCode = function () {
         WS.send("copyModel", {id: $scope.activeGCode.id});
     }
-
+    $scope.setExtruderTemperature = function(extr,temp) {
+        WS.send("send", {cmd: "M104 S"+temp+" T"+extr});
+    }
+    $scope.setBedTemperature = function(temp) {
+        WS.send("send", {cmd: "M140 S"+temp});
+    }
     $scope.sendCmd = function () {
         WS.send("send", {cmd: $scope.cmd});
         $scope.cmd = "";
@@ -349,14 +354,15 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$fi
         $scope.active.state.flowMultiply += diff;
         WS.send("send",{cmd: "M221 S"+$scope.active.state.flowMultiply});
     }
-    $scope.fanEnabledChanged = function() {
-        if($scope.active.state.fanOn) {
+    $scope.fanEnabledChanged = function(val) {
+        if(!$scope.active.state.fanOn) {
             WS.send("send",{cmd:"M106 S"+Math.round($scope.fanPercent*2.55)});
         } else {
             WS.send("send",{cmd:"M107"});
         }
     }
     $scope.fanSpeedChanged = function(val) {
+        console.log("fan speed changed "+val);
         $scope.fanPercent = val;
         WS.send("send",{cmd:"M106 S"+Math.round(val*2.55)});
     }

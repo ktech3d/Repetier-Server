@@ -36,7 +36,7 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q,User) {
                     if(firstPrinterPoll || typeof($rootScope.printerConfig[p.slug])=="undefined") {
                         WS.send("getPrinterConfig",{printer: p.slug}).then(function(c) {
                             $rootScope.printerConfig[p.slug] = c;
-                            $rootScope.activeConfig = $rootScope.printerConfig[p.slug];
+                            $rootScope.activeConfig = $rootScope.printerConfig[$rootScope.activeSlug];
                         });
                     }
                 });
@@ -55,13 +55,12 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q,User) {
         });
     }
     $scope.$on("messagesChanged",function(event,data) {
-        console.log("messages changed event");
        messagesPoller();
     });
     // Update configuration when changed
     $scope.$on("config",function(event,data) {
         $rootScope.printerConfig[data.data.general.slug] = data.data;
-        $rootScope.activeConfig = $rootScope.printerConfig[slug];
+        $rootScope.activeConfig = $rootScope.printerConfig[$rootScope.activeSlug];
     });
     $scope.$on("connected",function(event) {
        printerPoller();
@@ -113,7 +112,6 @@ function ServerController($scope,$rootScope,$timeout,$http,WS,$q,User) {
         $scope.question.deferred.reject();
     }
     $rootScope.$on('load',function(event) {
-        console.log("load called");
         $scope.loading = true;
     });
     $rootScope.$on('loaded',function(event) {

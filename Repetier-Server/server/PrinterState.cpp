@@ -385,12 +385,12 @@ void PrinterState::analyseResponse(const string &res,uint8_t &rtype) {
             ex.tempRead = t;
             sprintf(b,"@%d:",ecnt);
             if(extract(res,b,h)) {
-                int  eo = atoi(h.c_str());
+                int eo = atoi(h.c_str());
                 if(isMarlin) eo*=2;
                 ex.output = eo;
             }
             ecnt++;
-        } while(true);
+        } while(ecnt<extruderCount);
     }
     if (extract(res,"T:",h))
     {
@@ -433,7 +433,11 @@ void PrinterState::analyseResponse(const string &res,uint8_t &rtype) {
     }
     if (extract(res,"Fanspeed:",h))  {
         rtype = 2;
-        fanVoltage = atoi(h.c_str());
+        int fanVoltage2 = atoi(h.c_str());
+        if(fanOn && fanVoltage2 == 0)
+            fanOn = false;
+        else if(fanVoltage2 != 0)
+            fanVoltage = fanVoltage2;
     }
     if (extract(res,"REPETIER_PROTOCOL:",h))
     {
@@ -523,7 +527,7 @@ void PrinterState::fillJSONObject(json_spirit::Object &obj) {
     obj.push_back(Pair("firmware",firmware));
     obj.push_back(Pair("firmwareURL",firmwareURL));
     Array ea;
-    for(int i=0;i<printer->config->getExtruderCount();i++) {
+    for(int i=0;i<min(extruderCount,printer->config->getExtruderCount());i++) {
         Object e;
         e.push_back(Pair("tempSet",extruder[i].tempSet));
         e.push_back(Pair("tempRead",extruder[i].tempRead));
@@ -556,7 +560,7 @@ void PrinterState::fillJSONObject(json_spirit::mObject &obj) {
     obj["firmware"] = firmware;
     obj["firmwareURL"] = firmwareURL;
     mArray ea;
-    for(int i=0;i<printer->config->getExtruderCount();i++) {
+    for(int i=0;i<min(extruderCount,printer->config->getExtruderCount());i++) {
         mObject e;
         e["tempSet"] = extruder[i].tempSet;
         e["tempRead"] = extruder[i].tempRead;

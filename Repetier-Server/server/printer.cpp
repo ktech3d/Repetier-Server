@@ -64,6 +64,7 @@ Printer::Printer(string conf):config(new PrinterConfiguration(conf)) {
     linesSend = 0;
     bytesSend = 0;
     paused = false;
+    uploading = false;
 }
 Printer::~Printer() {
     serial->close();
@@ -138,6 +139,7 @@ void Printer::run() {
             if(!serial->isConnected()) {
                 boost::this_thread::sleep(boost::posix_time::milliseconds(1000));
                 cacheSize = config->serialInputBufferSize;
+                binaryProtocol = config->serialProtocol;
                 serial->tryConnect();
             } else {
                 {
@@ -147,7 +149,7 @@ void Printer::run() {
                         posix_time::ptime now = boost::posix_time::microsec_clock::local_time();
                         td = now-lastTemp;
                     } // Must close mutex to prevent deadlock!
-                    if(manualCommands.size()<5 && config->tempUpdateEvery>0 && td.seconds()>=config->tempUpdateEvery) {
+                    if(!uploading && manualCommands.size()<5 && config->tempUpdateEvery>0 && td.seconds()>=config->tempUpdateEvery) {
                         injectManualCommand("M105");
                         lastTemp = microsec_clock::local_time();
                     }
