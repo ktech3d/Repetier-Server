@@ -1,0 +1,4 @@
+#!/bin/bash
+echo Uninstall @PROJECT_NAME@
+/etc/init.d/@PROJECT_TARGET@ stop
+update-rc.d -f @PROJECT_TARGET@ remove

@@ -25,37 +25,32 @@
 #if defined(_WIN32) && !defined(__SYMBIAN32__)
 #include <windows.h>
 #endif
+#include "productData.h"
+#include "Poco/SimpleFileChannel.h"
+#include "Poco/AutoPtr.h"
+
 using namespace std;
+using namespace Poco;
 
-RLog rlog;
+Poco::Logger *logger = NULL;
 
-RLog::RLog() {
-#ifdef __unix
-   openlog ("Repetier-Server", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL0);
-#endif
-}
-RLog::~RLog() {
-#ifdef __linux
-   closelog ();
-#endif
+void RLog::initLogger() {
+    AutoPtr<SimpleFileChannel> channel(new SimpleFileChannel);
+    channel->setProperty("path", gconfig->getLoggingDirectory()+"server.log");
+    channel->setProperty("rotation","2 M");
+    Logger::root().setChannel(channel);
+    logger = &Poco::Logger::get(PROJECT_NAME);
+    logger->information("Start logging...");
 }
 void RLog::log(const std::string &line,bool err) {
+    if(err)
+        logger->error(line);
+    else
+        logger->information(line);
     if(gconfig->daemon == false) {
         cout << line << endl;
         return;
     }
-#if defined(_WIN32) && !defined(__SYMBIAN32__)
-	//if(err)
-		//WriteEventLogEntry(line.c_str(), EVENTLOG_ERROR_TYPE);
-	//else
-		//WriteEventLogEntry(line.c_str(),  EVENTLOG_INFORMATION_TYPE);
-#endif
-#ifdef __unix
-    if(err)
-        syslog (LOG_ERR, "%s",line.c_str());
-    else
-        syslog (LOG_INFO,"%s", line.c_str());
-#endif
 }
 void RLog::log(const std::string &line,int val,bool err) {
     string res;

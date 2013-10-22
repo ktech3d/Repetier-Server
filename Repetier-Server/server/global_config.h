@@ -57,6 +57,7 @@ class GlobalConfig {
     std::string languageDir; ///< Dir with translation text.
     std::string ports; ///< Ports the server should listen to.
     std::string defaultLanguage; ///< Default language if no language is detected
+    std::string loggingDir;
     std::vector<PrinterPtr> printers;
     std::vector<ExternalProgramPtr> externalCommands;
     int backlogSize;
@@ -74,6 +75,7 @@ public:
     inline const std::string& getLanguageDir() {return languageDir;}
     inline const std::string& getDefaultLanguage() {return defaultLanguage;}
     inline const bool getLogging() {return logging;}
+    inline const std::string& getLoggingDirectory() {return loggingDir;}
     /** Load the global configuration file ans set variables accordingly. */
     GlobalConfig(std::string filename);
     /** Walk through all printer configuration files and load them. */

@@ -60,7 +60,7 @@
                 <div class="panel-body small-font">
                     <div class="row">
                         <div class="col-xs-5"><?php _("Printing:") ?></div>
-                        <div class="col-xs-7">{{active.status.job}}</div>
+                        <div class="col-xs-7" style="overflow: hidden;">{{active.status.job}}</div>
                     </div>
                     <div class="row">
                         <div class="col-xs-5">E<?php _("TA:") ?></div>
@@ -242,21 +242,26 @@
     <div class="row">
         <div class="col-xs-12 margin-top" ng-repeat="e in activeConfig.extruders">
             Extruder {{$index+1}}:<input type="number" class="input-small" ng-model="e.settemp">
-            <button class="btn btn-default" ng-click="setExtruderTemperature($index,e.settemp)"><?php _("Set") ?></button>
+            <button class="btn btn-default"
+                    ng-click="setExtruderTemperature($index,e.settemp)"><?php _("Set") ?></button>
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                   <?php _("Quick temperatures") ?> <span class="caret"></span>
+                    <?php _("Quick temperatures") ?> <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu" role="menu">
-                    <li><a href="javascript:void(0)" ng-click="setExtruderTemperature($index,0)"><?php _("Off") ?></a></li>
+                    <li><a href="javascript:void(0)" ng-click="setExtruderTemperature($index,0)"><?php _("Off") ?></a>
+                    </li>
                     <li class="divider"></li>
-                    <li ng-repeat="t in e.temperatures"><a href="javascript:void(0)" ng-click="setExtruderTemperature($parent.$index,t.temp)">{{t.name}}</a></li>
+                    <li ng-repeat="t in e.temperatures"><a href="javascript:void(0)"
+                                                           ng-click="setExtruderTemperature($parent.$index,t.temp)">{{t.name}}</a>
+                    </li>
                 </ul>
             </div>
         </div>
         <div class="col-xs-12 margin-top" ng-show="activeConfig.general.heatedBed">
             <?php _("Heated bed") ?>:<input type="number" class="input-small" ng-model="activeConfig.heatedBed.settemp">
-            <button class="btn btn-default" ng-click="setBedTemperature(activeConfig.heatedBed.settemp)"><?php _("Set") ?></button>
+            <button class="btn btn-default"
+                    ng-click="setBedTemperature(activeConfig.heatedBed.settemp)"><?php _("Set") ?></button>
             <div class="btn-group">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                     <?php _("Quick temperatures") ?> <span class="caret"></span>
@@ -264,7 +269,9 @@
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="javascript:void(0)" ng-click="setBedTemperature(0)"><?php _("Off") ?></a></li>
                     <li class="divider"></li>
-                    <li ng-repeat="t in activeConfig.heatedBed.temperatures"><a href="javascript:void(0)" ng-click="setBedTemperature(t.temp)">{{t.name}}</a></li>
+                    <li ng-repeat="t in activeConfig.heatedBed.temperatures"><a href="javascript:void(0)"
+                                                                                ng-click="setBedTemperature(t.temp)">{{t.name}}</a>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -388,9 +395,9 @@
             <div class="btn btn-primary" ng-click="previewGCode(activeGCode.id)"><i class="icon-eye-open"></i>
                 <?php _("Preview") ?>
             </div>
-            <div class="btn btn-danger" data-reveal-id="deleteGCodeQuestion"><i
+            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteGCodeQuestion"><i
                     class="icon-trash"></i> <?php _("Delete") ?>
-            </div>
+            </button>
         </div>
     </div>
 </div>
@@ -403,17 +410,27 @@
 </div>
 
 <div id="deleteGCodeQuestion" class="modal fade">
-    <h2><?php _("Security question") ?></h2>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"><?php _("Security question") ?></h4>
+            </div>
+            <div class="modal-body">
+                <p class="lead"><?php _("Do you really want to delete") ?> {{activeGCode.name}}?</p>
+            </div>
+            <div class="modal-footer">
 
-    <p class="lead"><?php _("Do you really want to delete") ?> {{activeGCode.name}}?</p>
-
-    <div class="row">
-        <div class="small-4 columns button" ng-click="closeReveal('deleteGCodeQuestion')"><?php _("No") ?></div>
-        <div class="small-4 small-offset-4 columns button alert" ng-click="deleteActiveGCode()"><i
-                class="icon-trash"></i> <?php _("Yes") ?>
+                <div class="row">
+                    <div class="col-xs-4 btn btn-primary" data-dismiss="modal"><?php _("No") ?></div>
+                    <div class="col-xs-4"></div>
+                    <div class="col-xs-4 btn btn-danger" ng-click="deleteActiveGCode()"><i
+                            class="icon-trash"></i> <?php _("Yes") ?>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <a class="close-reveal-modal">&#215;</a>
 </div>
 <div id="uploadGCode" class="modal fade">
     <div class="modal-dialog">

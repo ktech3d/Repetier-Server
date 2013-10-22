@@ -1,0 +1,5 @@
+#!/bin/bash
+echo Install @PROJECT_NAME@
+adduser --home /var/lib/${PROJECT_DIR} --system --disabled-login --ingroup dialout @LINUXUSER@
+update-rc.d @PROJECT_TARGET@ start 20 2 3 4 5 . stop 20 0 1 6 .
+/etc/init.d/@PROJECT_TARGET@ start

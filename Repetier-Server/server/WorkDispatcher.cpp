@@ -142,7 +142,7 @@ void WorkDispatcher::init() {
     char *zErrMsg = 0;
     rc = sqlite3_open(databasePath.c_str(), &db);
     if( rc ){
-        rlog.log("Can't open database: @",sqlite3_errmsg(db),true);
+        RLog::log("Can't open database: @",sqlite3_errmsg(db),true);
         sqlite3_close(db);
         exit(1);
     }
@@ -160,7 +160,7 @@ void WorkDispatcher::init() {
         // rlog.log("SQL error: @", zErrMsg,true);
         sqlite3_free(zErrMsg);
     } else {
-        rlog.log("WorkDispatcher table created successfully");
+        RLog::log("WorkDispatcher table created successfully");
     }
     registerDispatcher("gcodeInfo", generateGCodeStatsDispatcher);
     registerDispatcher("executeCmd", executeCmdDispatcher);
@@ -199,7 +199,7 @@ void WorkDispatcher::deleteFromDatabase(WorkDispatcherData &d) {
     boost::mutex::scoped_lock lock(mutex);
     int rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
     if( rc != SQLITE_OK ){
-        rlog.log("SQL error: @", zErrMsg);
+        RLog::log("SQL error: @", zErrMsg);
         sqlite3_free(zErrMsg);
     } else {
         d.id = sqlite3_last_insert_rowid(db);
@@ -213,7 +213,7 @@ void WorkDispatcher::insertIntoDatabase(WorkDispatcherData &d) {
     boost::mutex::scoped_lock lock(mutex);  
     int rc = sqlite3_exec(db, query, callback, 0, &zErrMsg);
     if( rc != SQLITE_OK ){
-        rlog.log("SQL error: @", zErrMsg);
+        RLog::log("SQL error: @", zErrMsg);
         sqlite3_free(zErrMsg);
     } else {
         d.id = sqlite3_last_insert_rowid(db);
@@ -228,7 +228,7 @@ boost::shared_ptr<WorkDispatcherData> WorkDispatcher::getNextJob() {
     shared_ptr<WorkDispatcherData> data(new WorkDispatcherData());
     int rc = sqlite3_exec(db, query.c_str(), callbackData, data.get(), &zErrMsg);
     if( rc != SQLITE_OK ){
-        rlog.log("SQL error: @", zErrMsg);
+        RLog::log("SQL error: @", zErrMsg);
         sqlite3_free(zErrMsg);
     }
     return data;
@@ -242,7 +242,7 @@ boost::shared_ptr<WorkDispatcherData> WorkDispatcher::doesJobExist(WorkDispatche
     shared_ptr<WorkDispatcherData> data(new WorkDispatcherData());
     int rc = sqlite3_exec(db, query, callbackData, data.get(), &zErrMsg);
     if( rc != SQLITE_OK ){
-        rlog.log("SQL error: @", zErrMsg);
+        RLog::log("SQL error: @", zErrMsg);
         sqlite3_free(zErrMsg);
     }
     sqlite3_free(query);

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<server>
+    <installation-directory>${INSTALL_PATH}/</installation-directory>
+    <storage-directory>/var/lib/${PROJECT_DIR}/</storage-directory>
+    <default-language>en</default-language>
+    <port>${SERVER_PORT}</port>
+    <logging>true</logging>
+    <backlog-size>1000</backlog-size>
+</server>

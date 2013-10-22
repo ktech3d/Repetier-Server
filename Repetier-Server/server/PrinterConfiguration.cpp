@@ -23,7 +23,7 @@
 #include "Poco/File.h"
 #include "Poco/Path.h"
 #include <boost/algorithm/string.hpp>
-#include <fstream.h>
+#include <fstream>
 #include "Printjob.h"
 #include "printer.h"
 #include "global_config.h"

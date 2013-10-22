@@ -10,8 +10,8 @@
 #define __Repetier_Server__PrinterConfigiration__
 
 #include <iostream>
-#include <vector.h>
-#include <map.h>
+#include <vector>
+#include <map>
 #include "Poco/DOM/Document.h"
 #include "Poco/DOM/Element.h"
 #include "Poco/DOM/AutoPtr.h"

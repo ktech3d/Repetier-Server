@@ -97,17 +97,24 @@ GlobalConfig::GlobalConfig(string filename) {
     printerConfigDir = storageDir+"configs";
     defaultLanguage = conf->getString("default-language");
     backlogSize = conf->getInt("backlog-size");
-    cout << "Creating config directory " << printerConfigDir << endl;
+    loggingDir = storageDir+"logs";
     if(!exists(printerConfigDir)) { // First call - create directory
         if(!create_directories(printerConfigDir)) {
             cerr << "error: Unable to create config directory " << printerConfigDir << "." << endl;
             exit(-1);
-        } else cout << "success" << endl;
+        }
+    }
+    if(!exists(loggingDir)) { // First call - create directory
+        if(!create_directories(loggingDir)) {
+            cerr << "error: Unable to create log directory " << loggingDir << "." << endl;
+            exit(-1);
+        }
     }
     ensureEndsWithSlash(printerConfigDir);
     ensureEndsWithSlash(storageDir);
     ensureEndsWithSlash(wwwDir);
     ensureEndsWithSlash(languageDir);
+    ensureEndsWithSlash(loggingDir);
 #ifdef DEBUG
     cout << "Global configuration:" << endl;
     cout << "Web directory: " << wwwDir << endl;

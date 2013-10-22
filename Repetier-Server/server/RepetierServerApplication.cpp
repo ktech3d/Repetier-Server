@@ -45,6 +45,7 @@
 #include "PrinterConfiguration.h"
 #include "WorkDispatcher.h"
 #include "User.h"
+#include "RLog.h"
 
 using Poco::Net::ServerSocket;
 using Poco::Net::HTTPRequestHandler;
@@ -88,7 +89,8 @@ namespace repetier {
     
     RepetierServerApplication::RepetierServerApplication(): _helpRequested(false)
     {
-        configurationFile = "/etc/repetier-server.conf";
+        configurationFile = "";
+        port = 0;
     }
     
     RepetierServerApplication::~RepetierServerApplication()
@@ -116,7 +118,7 @@ namespace repetier {
                           .callback(OptionCallback<RepetierServerApplication>(
                                                                               this, &RepetierServerApplication::handleHelp)));
         options.addOption(Option("config","c","configuration file").
-                          required(false).
+                          required(true).
                           repeatable(false).
                           argument("config",true).
                           callback(Poco::Util::OptionCallback<RepetierServerApplication>(this,&RepetierServerApplication::handleConfig)));
@@ -145,8 +147,6 @@ namespace repetier {
     }
     int RepetierServerApplication::main(const std::vector<std::string>& args)
     {
-        json_spirit::mValue cmd;
-        json_spirit::read("{\"action\":\"listPrinter\",\"data\":{},\"printer\":\"irapid\",\"callback_id\":1567}", cmd);
         //cout << cmd.get_obj()["action"].get_str();
         if (!_helpRequested)
         {
@@ -159,7 +159,7 @@ namespace repetier {
                 return 2;
             }
             gconfig = new GlobalConfig(configurationFile); // Read global configuration
-            
+            RLog::initLogger();
             std::cout << "Configuration file:" << configurationFile << std::endl;
             std::string format(
                                config().getString("HTTPTimeServer.format",

@@ -317,7 +317,7 @@ PrinterController = function ($scope, $routeParams, WS, $rootScope, $timeout,$fi
         WS.send("removeModel", {id: $scope.activeGCode.id}).then(function (r) {
             //$scope.models = r.data;
             $scope.activeGCode = false;
-            $('#deleteGCodeQuestion').foundation('reveal', 'close');
+            $('#deleteGCodeQuestion').modal('hide');
         });
     }
     $scope.uploadGCode = function () {
