@@ -63,8 +63,13 @@ struct mg_connection *conn) {
 	const struct mg_request_info *ri = mg_get_request_info(conn);
 
 	if (event == MG_NEW_REQUEST) {
+	
+		cerr << ri->uri << "\n";
+		if(strncmp(ri->uri,"/image/",7)==0) return repetier::HandleImage(conn);
+		if(strncmp(ri->uri,"/tools/",7)==0) return repetier::HandleTools(conn);
 		if(strncmp(ri->uri,"/printer/",9)!=0) return repetier::HandlePagerequest(conn);
 		repetier::HandleWebrequest(conn);
+		
 		// Mark as processed
 		return (void*)"";
 	} else {

@@ -21,6 +21,8 @@
 
 #include <iostream>
 namespace repetier {
+	extern void* HandleImage(struct mg_connection *conn);
+	extern void* HandleTools(struct mg_connection *conn);
     extern void HandleWebrequest(struct mg_connection *conn);
     extern void* HandlePagerequest(struct mg_connection *conn);
     /** Load the given file and translate contents. Store the translated file

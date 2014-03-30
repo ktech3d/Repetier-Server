@@ -27,6 +27,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
@@ -626,6 +627,42 @@ namespace repetier {
         vars.push_front(Value(data));
         FillTemplateRecursive(text,result,vars,start,end);
     }
+	
+	void* HandleImage(struct mg_connection *conn) {
+	
+		std::ifstream ifs("/home/kt/1.jpg");
+		std::string content2( (std::istreambuf_iterator<char>(ifs) ),
+                       (std::istreambuf_iterator<char>()    ) );
+	
+		//string content2 = "OK";
+        mg_printf(conn, "HTTP/1.0 200 OK\r\n"
+                  "Cache-Control:public, max-age=0\r\n"
+                  "Server: Repetier-Server\r\n"
+                  "Content-Type: image/jpg; charset=utf-8\r\n\r\n");
+        mg_write(conn, content2.c_str(), content2.length());
+        return (void*)"";	
+	}
+
+	void* HandleTools(struct mg_connection *conn) {
+		const struct mg_request_info *ri = mg_get_request_info(conn);
+        string uri(ri->uri);
+		string zero = uri.substr(7,4);
+		string number = "";
+		
+		if ( zero.compare("zero") == 0 ) {
+			number = uri.substr(12);
+		}
+		
+		std::string content = "[\"" + number + "\"]";
+	
+        mg_printf(conn, "HTTP/1.0 200 OK\r\n"
+                  "Cache-Control:public, max-age=0\r\n"
+                  "Server: Repetier-Server\r\n"
+                  "Content-Type: application/json; charset=utf-8\r\n\r\n");
+        mg_write(conn, content.c_str(), content.length());
+        return (void*)"";	
+	}
+	
     void* HandlePagerequest(struct mg_connection *conn) {
         const struct mg_request_info *ri = mg_get_request_info(conn);
         string uri(ri->uri);

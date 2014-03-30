@@ -49,6 +49,21 @@
     </div>
 
     <div class="container">
+	
+	<div id="ktech-modal-camera" class="modal hide fade in" style="display: none; ">
+		<div class="modal-header">  
+			<a class="close" data-dismiss="modal">×</a>  
+			<h3><?php _("Screenshot")?> </h3>  
+		</div>  
+		<div class="modal-body">  
+			<img src="" class="image" id="ktech-modal-image"/>          
+		</div>  
+		<div class="modal-footer">  
+			<button class="btn" data-dismiss="modal"><?php _("Close") ?></button>  
+		</div>  
+	</div>
+	
+	
     {{! ============= Upload job ======================= }}
 			<div id="dialog-uploadjob" class="modal hide fade in" style="display: none; ">
 				<div class="modal-header">  
@@ -155,7 +170,22 @@
   <div class="tab-content">
     {{! ============== Job panel ================ }}
     <div class="tab-pane active" id="tab1">
-	  <div class="row"><span class="span12"><a data-toggle="modal" href="#dialog-uploadjob" class="btn btn-primary btn-large"><i class="icon-plus-sign"></i> <?php _("Upload job")?></a><br/><br/>
+	  <div class="row">
+	  <span class="span12">
+		<a data-toggle="modal" href="#dialog-uploadjob" class="btn btn-primary btn-large"><i class="icon-plus-sign"></i> <?php _("Upload job")?></a>
+		<a href="#" id="ktech-camera" class="btn btn-warning btn-large"><i class="icon-camera"></i> <?php _("Make Screenshot")?></a>
+	
+		<div class="btn-group" style="float: right;">
+			<button data-pos="+0.1" class="btn btn-primary btn-large ktech-tool"><?php _("Z +0.1")?></button>
+			<button data-pos="-0.1" class="btn btn-primary btn-large ktech-tool"><?php _("Z -0.1")?></button>
+		</div>
+		
+		<div class="btn-group" style="float: right;margin-right: 5px">
+			<button data-pos="+0.05" class="btn btn-primary btn-large ktech-tool"><?php _("Z +0.05")?></button>
+			<button data-pos="-0.05" class="btn btn-primary btn-large ktech-tool"><?php _("Z -0.05")?></button>
+		</div>
+	  
+	  <br/><br/>
       <table class="table table-striped table-hover table-bordered">  
         <thead>  
           <tr>  
@@ -165,7 +195,7 @@
             <th><i class="icon-cog"></i> <?php _("Action")?></th>
           </tr>  
         </thead>  
-        <tbody id="joblist">  
+        <tbody id="joblist">
         </tbody>  
       </table> 
       </span></div>
@@ -310,6 +340,7 @@
 <script src="/bt/bootstrap.min.js"></script>
 <script src="/bt/bootstrap-arrows.min.js"></script>
 <script src="/jquery/bootbox.min.js"></script>
+<script src="/ktech/ktech.js"></script>
 <script type="text/javascript">
 
 function safe_tags(str) {
